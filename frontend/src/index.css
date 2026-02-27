@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 220 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 10%;
+
+    --primary: 220 70% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 14% 30%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 220 14% 92%;
+    --accent-foreground: 220 14% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 70% 50%;
+
+    --radius: 0.5rem;
+
+    /* Sprint health colors */
+    --health-healthy: 142 71% 45%;
+    --health-at-risk: 38 92% 50%;
+    --health-critical: 0 72% 51%;
+
+    /* Priority colors */
+    --priority-high: 0 72% 51%;
+    --priority-medium: 38 92% 50%;
+    --priority-low: 220 10% 46%;
+
+    /* Status colors */
+    --status-todo: 220 14% 80%;
+    --status-progress: 220 70% 50%;
+    --status-blocked: 0 72% 51%;
+    --status-done: 142 71% 45%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 14% 30%;
+    --sidebar-primary: 220 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 14% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 220 70% 50%;
+  }
+
+  .dark {
+    --background: 160 12% 9%;
+    --foreground: 40 30% 92%;
+
+    --card: 160 12% 12%;
+    --card-foreground: 40 30% 92%;
+
+    --popover: 160 12% 12%;
+    --popover-foreground: 40 30% 92%;
+
+    --primary: 42 75% 55%;
+    --primary-foreground: 160 20% 10%;
+
+    --secondary: 160 10% 16%;
+    --secondary-foreground: 40 30% 88%;
+
+    --muted: 160 10% 16%;
+    --muted-foreground: 40 10% 70%;
+
+    --accent: 160 12% 18%;
+    --accent-foreground: 40 30% 92%;
+
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 40 30% 92%;
+
+    --success: 150 35% 40%;
+    --success-foreground: 40 30% 92%;
+
+    --warning: 35 88% 55%;
+    --warning-foreground: 160 20% 10%;
+
+    --border: 160 10% 18%;
+    --input: 160 10% 18%;
+    --ring: 42 75% 55%;
+
+    --sidebar-background: 160 20% 12%;
+    --sidebar-foreground: 40 30% 88%;
+    --sidebar-primary: 42 75% 55%;
+    --sidebar-primary-foreground: 160 20% 10%;
+    --sidebar-accent: 160 16% 18%;
+    --sidebar-accent-foreground: 40 30% 92%;
+    --sidebar-border: 160 16% 20%;
+    --sidebar-ring: 42 75% 55%;
+
+    /* Sprint health colors (wizard palette) */
+    --health-healthy: 150 38% 32%;
+    --health-at-risk: 35 88% 52%;
+    --health-critical: 0 62% 45%;
+
+    /* Priority colors (wizard palette) */
+    --priority-high: 0 62% 45%;
+    --priority-medium: 35 88% 52%;
+    --priority-low: 26 10% 42%;
+
+    /* Status colors (wizard palette) */
+    --status-todo: 36 14% 70%;
+    --status-progress: 158 38% 38%;
+    --status-blocked: 0 62% 45%;
+    --status-done: 140 26% 32%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(1200px circle at 10% -20%, hsla(42, 45%, 35%, 0.22), transparent 45%),
+      radial-gradient(900px circle at 90% 10%, hsla(160, 40%, 30%, 0.2), transparent 55%),
+      linear-gradient(180deg, hsla(160, 20%, 12%, 0.9), hsla(160, 12%, 10%, 0.98));
+    background-attachment: fixed;
+  }
+}
+
+.app-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: hsl(var(--foreground));
+}
+
+.app-loading__orb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, hsl(var(--warning) / 0.9), hsl(var(--primary) / 0.9) 45%, hsl(var(--sidebar-background) / 0.9) 100%);
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.7),
+    0 0 22px hsl(var(--ring) / 0.35),
+    inset 0 0 18px hsl(var(--primary) / 0.35);
+  animation: orb-pulse 2.4s ease-in-out infinite;
+}
+
+.app-loading__orb::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  border: 1px dashed hsl(var(--ring) / 0.4);
+  opacity: 0.7;
+  animation: orb-spin 8s linear infinite;
+}
+
+.app-loading__text {
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+@keyframes orb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px hsl(var(--border) / 0.7),
+      0 0 22px hsl(var(--ring) / 0.35),
+      inset 0 0 18px hsl(var(--primary) / 0.35);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 0 1px hsl(var(--border) / 0.9),
+      0 0 30px hsl(var(--ring) / 0.55),
+      inset 0 0 22px hsl(var(--primary) / 0.5);
+  }
+}
+
+@keyframes orb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+  }
+}
