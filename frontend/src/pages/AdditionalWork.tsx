@@ -21,7 +21,7 @@ export default function AdditionalWork() {
   const sprint = sprints.find(s => s.is_active && (s.team || 'Developers') === selectedTeam) || null;
   const { data: tasks = [], isLoading: tasksLoading } = useTasksBySprint(sprint?.id || null);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
   const isLoading = sprintsLoading || membersLoading || tasksLoading || approvalsLoading;
 
   const additionalTasks = useMemo(() => {

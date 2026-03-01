@@ -78,8 +78,8 @@ export default function SprintBoard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeColumn, setActiveColumn] = useState<SprintBoardColumn | null>(null);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
-  const isGrcTeam = selectedTeam === 'GRC';
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
+  const isGrcTeam = ['GRC', 'Ascenders'].includes(selectedTeam);
   const moduleLabel = isGrcTeam ? 'Client' : 'Module';
 
   // Keyboard drag-drop targets for accessibility

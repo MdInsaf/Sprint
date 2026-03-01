@@ -45,7 +45,7 @@ export function CreateSprintDialog({ onSprintCreated }: CreateSprintDialogProps)
   const [holidayDates, setHolidayDates] = useState<Date[]>([]);
   const { teams, selectedTeam, setSelectedTeam } = useTeamSelection(user?.team);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   useEffect(() => {
     if (!startDate || !endDate) return;

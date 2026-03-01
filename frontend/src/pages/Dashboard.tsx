@@ -43,7 +43,7 @@ export default function Dashboard() {
   const { data: tasks = [], isLoading: tasksLoading } = useTasksBySprint(sprint?.id || null);
 
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const stats = useMemo(() => {
     const sprintTasks = tasks.filter(t => isPlannedType(t.type));

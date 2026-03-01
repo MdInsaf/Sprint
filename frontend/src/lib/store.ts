@@ -7,7 +7,7 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || `user-${Date.now()}`;
 
-const DEFAULT_TEAMS = ['Developers', 'R&D', 'GRC'];
+const DEFAULT_TEAMS = ['Developers', 'R&D', 'GRC', 'Ascenders'];
 export const DEFAULT_TEAM = DEFAULT_TEAMS[0];
 
 const CURRENT_USER_KEY = 'currentUser';

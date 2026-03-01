@@ -36,7 +36,7 @@ export default function TaskManagement() {
   const deleteTaskMutation = useDeleteTask();
 
   const { teams, selectedTeam, setSelectedTeam } = useTeamSelection(user?.team);
-  const isGrcTeam = selectedTeam === 'GRC';
+  const isGrcTeam = ['GRC', 'Ascenders'].includes(selectedTeam);
   const moduleLabel = isGrcTeam ? 'Client' : 'Module';
   const teamSprints = sprints.filter((s) => (s.team || DEFAULT_TEAM) === selectedTeam);
   const activeSprint = teamSprints.find(s => s.is_active) || null;
@@ -69,7 +69,7 @@ export default function TaskManagement() {
   const [pageSize, setPageSize] = useState('10');
   const [currentPage, setCurrentPage] = useState(1);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const selectedSprint = useMemo(
     () => teamSprints.find((s) => s.id === selectedSprintId) || null,

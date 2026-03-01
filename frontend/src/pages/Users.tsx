@@ -22,8 +22,8 @@ import { CalendarDays, ShieldCheck, Trash2, UserPlus2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const DEFAULT_TEAM = 'Developers';
-const ASSOCIATE_TEAMS = new Set(['R&D', 'GRC']);
-const SECURITY_TEAMS = new Set(['GRC']);
+const ASSOCIATE_TEAMS = new Set(['R&D', 'GRC', 'Ascenders']);
+const SECURITY_TEAMS = new Set(['GRC', 'Ascenders']);
 
 export default function Users() {
   const { user } = useAuth();
@@ -62,14 +62,14 @@ export default function Users() {
   useEffect(() => {
     if (newRole === 'Associate' && !ASSOCIATE_TEAMS.has(newTeam)) {
       setNewRole('Developer');
-      toast.error('Associate role is only allowed for R&D or GRC teams.');
+      toast.error('Associate role is only allowed for R&D, GRC, or Ascenders teams.');
     }
   }, [newRole, newTeam]);
 
   useEffect(() => {
     if (newRole === 'Security' && !SECURITY_TEAMS.has(newTeam)) {
       setNewRole('Developer');
-      toast.error('Security role is only allowed for GRC team.');
+      toast.error('Security role is only allowed for GRC or Ascenders teams.');
     }
   }, [newRole, newTeam]);
 
@@ -124,11 +124,11 @@ export default function Users() {
       return;
     }
     if (newRole === 'Associate' && !ASSOCIATE_TEAMS.has(newTeam)) {
-      toast.error('Associate role is only allowed for R&D or GRC teams.');
+      toast.error('Associate role is only allowed for R&D, GRC, or Ascenders teams.');
       return;
     }
     if (newRole === 'Security' && !SECURITY_TEAMS.has(newTeam)) {
-      toast.error('Security role is only allowed for GRC team.');
+      toast.error('Security role is only allowed for GRC or Ascenders teams.');
       return;
     }
 
@@ -162,11 +162,11 @@ export default function Users() {
       return;
     }
     if (isAssociateRole(role) && !ASSOCIATE_TEAMS.has(member.team || DEFAULT_TEAM)) {
-      toast.error('Associate role is only allowed for R&D or GRC teams.');
+      toast.error('Associate role is only allowed for R&D, GRC, or Ascenders teams.');
       return;
     }
     if (isSecurityRole(role) && !SECURITY_TEAMS.has(member.team || DEFAULT_TEAM)) {
-      toast.error('Security role is only allowed for GRC team.');
+      toast.error('Security role is only allowed for GRC or Ascenders teams.');
       return;
     }
 
@@ -177,11 +177,11 @@ export default function Users() {
     const member = members.find((m) => m.id === memberId);
     if (!member) return;
     if (isAssociateRole(member.role) && !ASSOCIATE_TEAMS.has(team)) {
-      toast.error('Associate role is only allowed for R&D or GRC teams.');
+      toast.error('Associate role is only allowed for R&D, GRC, or Ascenders teams.');
       return;
     }
     if (isSecurityRole(member.role) && !SECURITY_TEAMS.has(team)) {
-      toast.error('Security role is only allowed for GRC team.');
+      toast.error('Security role is only allowed for GRC or Ascenders teams.');
       return;
     }
     updateMemberMutation.mutate({ ...member, team });

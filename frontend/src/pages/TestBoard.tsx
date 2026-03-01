@@ -56,7 +56,7 @@ export default function TestBoard() {
   const updateTaskMutation = useUpdateTask();
 
   const { teams, selectedTeam, setSelectedTeam } = useTeamSelection(user?.team);
-  const isGrcTeam = selectedTeam === 'GRC';
+  const isGrcTeam = ['GRC', 'Ascenders'].includes(selectedTeam);
   const moduleLabel = isGrcTeam ? 'Client' : 'Module';
   const teamSprints = sprints.filter((s) => (s.team || DEFAULT_TEAM) === selectedTeam);
   const activeSprint = teamSprints.find(s => s.is_active) || null;
@@ -85,7 +85,7 @@ export default function TestBoard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeColumn, setActiveColumn] = useState<TestBoardColumn | null>('Ready to Test');
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const tasks = useMemo(() => {
     if (!selectedSprint) return [];
