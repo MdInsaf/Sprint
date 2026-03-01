@@ -84,7 +84,7 @@ export default function TestSummary() {
   const [pageSize, setPageSize] = useState('10');
   const [currentPage, setCurrentPage] = useState(1);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const { data: sprintTasks = [], isLoading: tasksLoading } = useTasksBySprint(selectedSprintId || null);
 

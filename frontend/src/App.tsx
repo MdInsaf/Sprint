@@ -62,7 +62,7 @@ function GrcRestrictedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" replace />;
   }
 
-  const isGrcUser = (user.team || '') === 'GRC';
+  const isGrcUser = ['GRC', 'Ascenders'].includes(user.team || '');
   if (isGrcUser && !isSuperAdmin(user.role)) {
     return <Navigate to="/board" replace />;
   }
@@ -117,7 +117,7 @@ function GrcQaRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" replace />;
   }
 
-  const isGrcUser = (user.team || '') === 'GRC';
+  const isGrcUser = ['GRC', 'Ascenders'].includes(user.team || '');
   if (isGrcUser && !isSuperAdmin(user.role)) {
     return <Navigate to="/board" replace />;
   }

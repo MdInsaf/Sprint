@@ -35,7 +35,7 @@ export function QuickAddTaskDialog({ ownerId, team, onTaskCreated }: QuickAddTas
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [type, setType] = useState<TaskType>('Sprint');
-  const moduleLabel = team === 'GRC' ? 'Client' : 'Module';
+  const moduleLabel = ['GRC', 'Ascenders'].includes(team) ? 'Client' : 'Module';
   const [module, setModule] = useState('');
   const [priority, setPriority] = useState<TaskPriority>('Medium');
   const [estimatedHours, setEstimatedHours] = useState('');

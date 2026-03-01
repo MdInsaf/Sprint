@@ -90,7 +90,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   usePrefetchCoreData();
 
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const isGrcRestricted = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const isGrcRestricted = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
   const restrictedRoutes = new Set(['/bugs', '/bug-summary', '/test-board', '/test-summary']);
   const baseNavItems = isManager ? managerNavItems : isQA ? qaNavItems : developerNavItems;
   const navItems = isGrcRestricted

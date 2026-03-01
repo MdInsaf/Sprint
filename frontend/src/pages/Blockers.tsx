@@ -20,7 +20,7 @@ export default function Blockers() {
   const sprint = sprints.find(s => s.is_active && (s.team || 'Developers') === selectedTeam) || null;
   const { data: tasks = [], isLoading: tasksLoading } = useTasksBySprint(sprint?.id || null);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const blockedTasks = useMemo(() => {
     return tasks.filter(t => t.status === 'Blocked');

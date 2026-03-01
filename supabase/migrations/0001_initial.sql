@@ -371,3 +371,13 @@ GRANT EXECUTE ON FUNCTION
   change_password(UUID, TEXT, TEXT),
   set_active_sprint(TEXT, TEXT)
 TO anon, authenticated;
+
+-- Disable RLS on all tables (auth enforced at application layer via RPC + anon key)
+ALTER TABLE team_members      DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sprints           DISABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks             DISABLE ROW LEVEL SECURITY;
+ALTER TABLE approvals         DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sprint_summaries  DISABLE ROW LEVEL SECURITY;
+ALTER TABLE task_comments     DISABLE ROW LEVEL SECURITY;
+ALTER TABLE task_attachments  DISABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs        DISABLE ROW LEVEL SECURITY;

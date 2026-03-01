@@ -154,7 +154,7 @@ export function TaskDetailsDialog({ task, open, onOpenChange }: TaskDetailsDialo
   const taskSprint = currentTask.sprint_id ? sprints.find((s) => s.id === currentTask.sprint_id) : null;
   const sprintName = taskSprint?.sprint_name || (currentTask.sprint_id || 'None');
   const taskTeam = taskSprint?.team || user?.team || '';
-  const moduleLabel = taskTeam === 'GRC' ? 'Client' : 'Module';
+  const moduleLabel = ['GRC', 'Ascenders'].includes(taskTeam) ? 'Client' : 'Module';
   const attachments = attachmentItems;
   const canDeleteAttachment = (file: TaskAttachment) => {
     if (!user) return false;

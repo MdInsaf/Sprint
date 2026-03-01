@@ -61,7 +61,7 @@ interface BugFormValues {
 
 export default function BugBoard() {
   const { user, isManager, isQA } = useAuth();
-  const isGrcTeam = (user?.team || '') === 'GRC';
+  const isGrcTeam = ['GRC', 'Ascenders'].includes(user?.team || '');
   const moduleLabel = isGrcTeam ? 'Client' : 'Module';
   const canManage = isManager || isQA;
 

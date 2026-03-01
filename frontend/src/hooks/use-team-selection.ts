@@ -3,7 +3,7 @@ import { useTeamMembers } from '@/hooks/use-team-members';
 import { useSprints } from '@/hooks/use-sprints';
 import { useAuth } from '@/context/AuthContext';
 
-const DEFAULT_TEAMS = ['Developers', 'R&D', 'GRC'];
+const DEFAULT_TEAMS = ['Developers', 'R&D', 'GRC', 'Ascenders'];
 const DEFAULT_TEAM = DEFAULT_TEAMS[0];
 
 export function useTeamSelection(preferredTeam?: string) {

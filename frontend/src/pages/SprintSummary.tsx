@@ -29,8 +29,8 @@ export default function SprintSummary() {
   );
   const selectedSprint = teamSprints.find(s => s.id === selectedSprintId);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
-  const moduleLabel = selectedTeam === 'GRC' ? 'Client' : 'Module';
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
+  const moduleLabel = ['GRC', 'Ascenders'].includes(selectedTeam) ? 'Client' : 'Module';
   const updateSprintMutation = useUpdateSprint();
 
   // Get saved summary for completed sprints, or calculate live for active sprint

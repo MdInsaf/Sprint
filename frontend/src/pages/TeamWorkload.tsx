@@ -116,7 +116,7 @@ export default function TeamWorkload() {
   const bugChangeTasks = tasks.filter((task) => isBugType(task.type));
   const [detailMemberId, setDetailMemberId] = useState<string | null>(null);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = (user?.team || '') === 'GRC' && !isSuperAdmin;
+  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const workloadMembers = teamMembersForTeam.filter(
     (member) =>
