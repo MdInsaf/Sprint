@@ -42,9 +42,14 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 700 ~/.ssh
+          # printf handles multiline PEM keys correctly (echo adds an extra newline on some shells)
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          # Pre-trust the host key so rsync doesn't prompt interactively.
+          # '|| true' prevents this from failing the step if the host is temporarily unreachable;
+          # rsync uses StrictHostKeyChecking=accept-new as a second layer of protection.
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy via rsync
         env:
@@ -54,7 +59,7 @@ jobs:
           TARGET_DIR: ${{ secrets.HOSTINGER_TARGET_DIR }}
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=accept-new" \
             dist/ \
             "$SSH_USER@$SSH_HOST:$TARGET_DIR/"
 
