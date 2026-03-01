@@ -1,0 +1,17 @@
+"id","app_label","model"
+1,admin,logentry
+2,auth,group
+3,auth,permission
+4,auth,user
+5,contenttypes,contenttype
+6,sessions,session
+7,api,approval
+8,api,sessionstate
+9,api,sprint
+10,api,sprintsummary
+11,api,task
+12,api,taskcomment
+13,api,teammember
+14,api,memberprofile
+15,api,taskattachment
+16,api,auditlog

@@ -1,0 +1,39 @@
+"id","file_name","file_size","content_type","s3_bucket","s3_key","created_date","task_id","uploaded_by"
+attachment-1769078718305,address issue_3.png,26166,image/png,whizz-sprint-flow-attachments,bugs/BUG-002/1769078718165-e725554b-address-issue_3.png,"2026-01-22T10:45:18Z",BUG-002,26
+attachment-1769080634402,address issue_5.png,29451,image/png,whizz-sprint-flow-attachments,tasks/BUG-006/1769080634261-72febdcd-address-issue_5.png,"2026-01-22T11:17:14Z",BUG-006,26
+attachment-1769598608204,TPRM _1.png,126015,image/png,whizz-sprint-flow-attachments,bugs/BUG-010/1769598608086-09ea05f3-TPRM-_1.png,"2026-01-28T11:10:08Z",BUG-010,26
+attachment-1769598645222,training_1.png,56999,image/png,whizz-sprint-flow-attachments,bugs/BUG-009/1769598645074-23b01487-training_1.png,"2026-01-28T11:10:45Z",BUG-009,26
+attachment-1769598674331,training_1.png,56999,image/png,whizz-sprint-flow-attachments,bugs/BUG-009/1769598674194-8af418fa-training_1.png,"2026-01-28T11:11:14Z",BUG-009,26
+attachment-1769598971304,training_1.png,56999,image/png,whizz-sprint-flow-attachments,bugs/BUG-009/1769598971171-b4335f69-training_1.png,"2026-01-28T11:16:11Z",BUG-009,26
+attachment-1769663411559,WhatsApp Image 2026-01-29 at 10.39.10-2.jpeg,60596,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-009/1769663411394-d76df2b4-WhatsApp-Image-2026-01-29-at-10.39.10-2.jpeg,"2026-01-29T05:10:11Z",SP-009,20
+attachment-1769663411606,WhatsApp Image 2026-01-29 at 10.39.10.jpeg,42895,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-009/1769663411562-dd10a844-WhatsApp-Image-2026-01-29-at-10.39.10.jpeg,"2026-01-29T05:10:11Z",SP-009,20
+attachment-1770182888303,people module.png,151837,image/png,whizz-sprint-flow-attachments,bugs/BUG-015/1770182888165-95c6a79f-people-module.png,"2026-02-04T05:28:08Z",BUG-015,26
+attachment-1770186938178,state spelling mistake_settings.png,46422,image/png,whizz-sprint-flow-attachments,bugs/BUG-016/1770186938044-4c67c386-state-spelling-mistake_settings.png,"2026-02-04T06:35:38Z",BUG-016,26
+attachment-1770200007221,WhatsApp Image 2026-02-04 at 15.41.08-2.jpeg,63578,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-056/1770200007041-79a36111-WhatsApp-Image-2026-02-04-at-15.41.08-2.jpeg,"2026-02-04T10:13:27Z",SP-056,20
+attachment-1770200007270,WhatsApp Image 2026-02-04 at 15.41.08-3.jpeg,66253,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-056/1770200007224-203d4b2f-WhatsApp-Image-2026-02-04-at-15.41.08-3.jpeg,"2026-02-04T10:13:27Z",SP-056,20
+attachment-1770200007342,WhatsApp Image 2026-02-04 at 15.41.08.jpeg,67446,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-056/1770200007273-58546df4-WhatsApp-Image-2026-02-04-at-15.41.08.jpeg,"2026-02-04T10:13:27Z",SP-056,20
+attachment-1770200007382,WhatsApp Image 2026-02-04 at 15.41.09.jpeg,56593,image/jpeg,whizz-sprint-flow-attachments,tasks/SP-056/1770200007345-fb141815-WhatsApp-Image-2026-02-04-at-15.41.09.jpeg,"2026-02-04T10:13:27Z",SP-056,20
+attachment-1770622151473,approvals status.png,125598,image/png,whizz-sprint-flow-attachments,bugs/BUG-018/1770622151337-6aedf792-approvals-status.png,"2026-02-09T07:29:11Z",BUG-018,26
+attachment-1770629190381,whizz ai.png,187013,image/png,whizz-sprint-flow-attachments,bugs/BUG-019/1770629190239-3b9ce2c2-whizz-ai.png,"2026-02-09T09:26:30Z",BUG-019,26
+attachment-1770641721684,no response.png,144599,image/png,whizz-sprint-flow-attachments,bugs/BUG-019/1770641721514-f22e9ff5-no-response.png,"2026-02-09T12:55:21Z",BUG-019,26
+attachment-1770703221173,promt is missing.png,193027,image/png,whizz-sprint-flow-attachments,bugs/BUG-024/1770703220950-48e83a10-promt-is-missing.png,"2026-02-10T06:00:21Z",BUG-024,26
+attachment-1770703302586,link not working.png,137480,image/png,whizz-sprint-flow-attachments,bugs/BUG-023/1770703302449-411aa492-link-not-working.png,"2026-02-10T06:01:42Z",BUG-023,26
+attachment-1770704199550,side_menu issue.png,105211,image/png,whizz-sprint-flow-attachments,bugs/BUG-012/1770704199406-038bc62f-side_menu-issue.png,"2026-02-10T06:16:39Z",BUG-012,26
+attachment-1770712426215,approvals error message.png,95268,image/png,whizz-sprint-flow-attachments,bugs/BUG-025/1770712426081-f0c24eed-approvals-error-message.png,"2026-02-10T08:33:46Z",BUG-025,26
+attachment-1770813048830,Alert message overlap.png,69194,image/png,whizz-sprint-flow-attachments,bugs/BUG-026/1770813048680-9812d437-Alert-message-overlap.png,"2026-02-11T12:30:48Z",BUG-026,26
+attachment-1770881947380,questionarie ai issue.png,128814,image/png,whizz-sprint-flow-attachments,bugs/BUG-028/1770881947243-e33d470e-questionarie-ai-issue.png,"2026-02-12T07:39:07Z",BUG-028,26
+attachment-1770903300519,image.png,93679,image/png,whizz-sprint-flow-attachments,bugs/BUG-030/1770903300379-d384b6b6-image.png,"2026-02-12T13:35:00Z",BUG-030,26
+attachment-1770959787910,AI image.png,166789,image/png,whizz-sprint-flow-attachments,bugs/BUG-031/1770959787742-39ab8677-AI-image.png,"2026-02-13T05:16:27Z",BUG-031,26
+attachment-1770963747886,address saving multiple times.png,56552,image/png,whizz-sprint-flow-attachments,bugs/BUG-032/1770963747761-38fa3a90-address-saving-multiple-times.png,"2026-02-13T06:22:27Z",BUG-032,26
+attachment-1771233766465,settings add button.png,84348,image/png,whizz-sprint-flow-attachments,bugs/BUG-033/1771233766324-231caac9-settings-add-button.png,"2026-02-16T09:22:46Z",BUG-033,26
+attachment-1771248603295,artifact evidence.png,82829,image/png,whizz-sprint-flow-attachments,bugs/BUG-034/1771248603147-a4221f6f-artifact-evidence.png,"2026-02-16T13:30:03Z",BUG-034,26
+attachment-1771329024086,GitHub-improper error message in private key.png,136757,image/png,whizz-sprint-flow-attachments,bugs/BUG-035/1771329023944-7c6cc148-GitHub-improper-error-message-in-private-key.png,"2026-02-17T11:50:24Z",BUG-035,26
+attachment-1771329024128,GitHub-improper app id.png,114358,image/png,whizz-sprint-flow-attachments,bugs/BUG-035/1771329024089-0efefd3d-GitHub-improper-app-id.png,"2026-02-17T11:50:24Z",BUG-035,26
+attachment-1771334600469,issue in integration.png,144832,image/png,whizz-sprint-flow-attachments,bugs/BUG-036/1771334600320-61ffc07a-issue-in-integration.png,"2026-02-17T13:23:20Z",BUG-036,26
+attachment-1771394050138,status empty in cloud scannning.png,20872,image/png,whizz-sprint-flow-attachments,bugs/BUG-037/1771394050002-ce6862db-status-empty-in-cloud-scannning.png,"2026-02-18T05:54:10Z",BUG-037,26
+attachment-1771397367458,acceptable capitalization.png,17803,image/png,whizz-sprint-flow-attachments,bugs/BUG-040/1771397367325-af7cba89-acceptable-capitalization.png,"2026-02-18T06:49:27Z",BUG-040,26
+attachment-1771404564126,connect button displaying.png,140173,image/png,whizz-sprint-flow-attachments,bugs/BUG-042/1771404563972-9ee9fe63-connect-button-displaying.png,"2026-02-18T08:49:24Z",BUG-042,26
+attachment-1771416675342,Evidence.PNG,31599,image/png,whizz-sprint-flow-attachments,tasks/SP-176/1771416675197-d74d6bde-Evidence.png,"2026-02-18T12:11:15Z",SP-176,41
+attachment-1771581980288,image (2).png,96794,image/png,whizz-sprint-flow-attachments,bugs/BUG-043/1771581980097-3e9887d7-image-2.png,"2026-02-20T10:06:20Z",BUG-043,26
+attachment-1771932599650,Notification issue.png,128019,image/png,whizz-sprint-flow-attachments,bugs/BUG-045/1771932599520-f244e9e4-Notification-issue.png,"2026-02-24T11:29:59Z",BUG-045,26
+attachment-1772182654003,cloud provider drop down.png,96905,image/png,whizz-sprint-flow-attachments,bugs/BUG-046/1772182653853-525003d8-cloud-provider-drop-down.png,"2026-02-27T08:57:33Z",BUG-046,26

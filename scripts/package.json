@@ -1,0 +1,14 @@
+{
+  "name": "sprint-flow-migration",
+  "version": "1.0.0",
+  "description": "Django → Supabase data migration script",
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate-data.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.3"
+  }
+}

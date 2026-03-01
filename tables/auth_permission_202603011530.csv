@@ -1,0 +1,65 @@
+"id","name","content_type_id","codename"
+1,Can add log entry,1,add_logentry
+2,Can change log entry,1,change_logentry
+3,Can delete log entry,1,delete_logentry
+4,Can view log entry,1,view_logentry
+5,Can add permission,3,add_permission
+6,Can change permission,3,change_permission
+7,Can delete permission,3,delete_permission
+8,Can view permission,3,view_permission
+9,Can add group,2,add_group
+10,Can change group,2,change_group
+11,Can delete group,2,delete_group
+12,Can view group,2,view_group
+13,Can add user,4,add_user
+14,Can change user,4,change_user
+15,Can delete user,4,delete_user
+16,Can view user,4,view_user
+17,Can add content type,5,add_contenttype
+18,Can change content type,5,change_contenttype
+19,Can delete content type,5,delete_contenttype
+20,Can view content type,5,view_contenttype
+21,Can add session,6,add_session
+22,Can change session,6,change_session
+23,Can delete session,6,delete_session
+24,Can view session,6,view_session
+25,Can add sprint,9,add_sprint
+26,Can change sprint,9,change_sprint
+27,Can delete sprint,9,delete_sprint
+28,Can view sprint,9,view_sprint
+29,Can add team member,13,add_teammember
+30,Can change team member,13,change_teammember
+31,Can delete team member,13,delete_teammember
+32,Can view team member,13,view_teammember
+33,Can add sprint summary,10,add_sprintsummary
+34,Can change sprint summary,10,change_sprintsummary
+35,Can delete sprint summary,10,delete_sprintsummary
+36,Can view sprint summary,10,view_sprintsummary
+37,Can add task,11,add_task
+38,Can change task,11,change_task
+39,Can delete task,11,delete_task
+40,Can view task,11,view_task
+41,Can add task comment,12,add_taskcomment
+42,Can change task comment,12,change_taskcomment
+43,Can delete task comment,12,delete_taskcomment
+44,Can view task comment,12,view_taskcomment
+45,Can add session state,8,add_sessionstate
+46,Can change session state,8,change_sessionstate
+47,Can delete session state,8,delete_sessionstate
+48,Can view session state,8,view_sessionstate
+49,Can add approval,7,add_approval
+50,Can change approval,7,change_approval
+51,Can delete approval,7,delete_approval
+52,Can view approval,7,view_approval
+53,Can add member profile,14,add_memberprofile
+54,Can change member profile,14,change_memberprofile
+55,Can delete member profile,14,delete_memberprofile
+56,Can view member profile,14,view_memberprofile
+57,Can add task attachment,15,add_taskattachment
+58,Can change task attachment,15,change_taskattachment
+59,Can delete task attachment,15,delete_taskattachment
+60,Can view task attachment,15,view_taskattachment
+61,Can add audit log,16,add_auditlog
+62,Can change audit log,16,change_auditlog
+63,Can delete audit log,16,delete_auditlog
+64,Can view audit log,16,view_auditlog

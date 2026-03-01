@@ -1,0 +1,12 @@
+"id","sprint_name","start_date","end_date","sprint_goal","is_active","holiday_dates","team"
+sprint-1771310676523,GRC Sprint - Feb 16-Feb28,"2026-02-16","2026-02-27","",true,"[]",GRC
+sprint-1767186388824,WHI-SPR-001,"2025-12-29","2026-01-09","",false,"[]",Developers
+sprint-1768200585609,WHI-SPR-002,"2026-01-12","2026-01-23","",false,"[]",Developers
+sprint-1769504239258,WHI-SPR-003,"2026-01-27","2026-02-06","",false,"[]",Developers
+sprint-1770615073846,WHI-SPR-004,"2026-02-09","2026-02-20","On-Prem product audit module, microsoft integrations",false,"[]",Developers
+sprint-1771825706501,WHI-SPR-005,"2026-02-23","2026-03-06",On prem launch,true,"[]",Developers
+sprint-1767859515657,R&D Sprint 1,"2025-12-29","2026-01-09","",false,"[]",R&D
+sprint-1768289722350,R&D Sprint 2,"2026-01-12","2026-01-23","",false,"[]",R&D
+sprint-1769677972065,R&D Sprint 3,"2026-01-26","2026-02-06","",false,"[""2026-01-26"", ""2026-01-31"", ""2026-02-01""]",R&D
+sprint-1770615834256,R&D Sprint 4,"2026-02-09","2026-02-20","",false,"[]",R&D
+sprint-1771825655592,R&D Sprint 5,"2026-02-23","2026-03-06","",true,"[]",R&D
