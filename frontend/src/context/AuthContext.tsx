@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TeamMember } from '@/types';
-import { fetchCurrentUser, loginWithCredentials, logoutCurrentUser } from '@/lib/store';
+import { fetchCurrentUser, loginWithCredentials, logoutCurrentUser, changePassword } from '@/lib/store';
 
 interface AuthContextType {
   user: TeamMember | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  changeUserPassword: (currentPassword: string, newPassword: string) => Promise<void>;
   isManager: boolean;
   isQA: boolean;
   ready: boolean;
@@ -22,9 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const bootstrap = async () => {
       try {
         const me = await fetchCurrentUser();
-        if (me) {
-          setUser(me);
-        }
+        if (me) setUser(me);
       } finally {
         setReady(true);
       }
@@ -47,9 +46,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     const me = await fetchCurrentUser();
-    if (me) {
-      setUser(me);
-    }
+    if (me) setUser(me);
+  };
+
+  const changeUserPassword = async (currentPassword: string, newPassword: string) => {
+    await changePassword(currentPassword, newPassword);
   };
 
   const normalizedRole = (user?.role || '').toLowerCase();
@@ -57,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isQA = normalizedRole === 'qa';
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, refreshUser, isManager, isQA, ready }}>
+    <AuthContext.Provider value={{ user, login, logout, refreshUser, changeUserPassword, isManager, isQA, ready }}>
       {children}
     </AuthContext.Provider>
   );

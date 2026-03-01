@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
-import { appendPaginationParams, getNextPageParam, PaginatedResponse } from '@/lib/pagination';
+import { supabase } from '@/lib/supabase';
+import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { AuditLog } from '@/types';
 import { useSmartPolling } from './use-smart-polling';
 
@@ -15,8 +15,16 @@ export function useAuditLogsPage(page: number, pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 30000, idleInterval: 120000, inactiveInterval: false });
   return useQuery({
     queryKey: auditLogKeys.page(page, pageSize),
-    queryFn: () =>
-      apiRequest<PaginatedResponse<AuditLog>>(appendPaginationParams('/audit-logs', page, pageSize)),
+    queryFn: async (): Promise<PaginatedResponse<AuditLog>> => {
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('audit_logs')
+        .select('*, user:team_members(id,name,username,email,role)', { count: 'exact' })
+        .order('created_date', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AuditLog>(data as AuditLog[], count, page, pageSize);
+    },
     refetchInterval,
   });
 }
@@ -25,8 +33,17 @@ export function useAuditLogsInfinite(pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 30000, idleInterval: 120000, inactiveInterval: false });
   return useInfiniteQuery({
     queryKey: auditLogKeys.infinite(pageSize),
-    queryFn: ({ pageParam = 1 }) =>
-      apiRequest<PaginatedResponse<AuditLog>>(appendPaginationParams('/audit-logs', pageParam, pageSize)),
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<AuditLog>> => {
+      const page = pageParam as number;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('audit_logs')
+        .select('*, user:team_members(id,name,username,email,role)', { count: 'exact' })
+        .order('created_date', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AuditLog>(data as AuditLog[], count, page, pageSize);
+    },
     initialPageParam: 1,
     getNextPageParam,
     refetchInterval,

@@ -24,8 +24,19 @@ export function appendPaginationParams(path: string, page: number, pageSize: num
   return `${base}?${params.toString()}`;
 }
 
-export function getNextPageParam<T>(page: PaginatedResponse<T>): number | undefined {
+/**
+ * React Query getNextPageParam compatible with both:
+ * - Django REST paginated responses (next is a full URL with ?page=N)
+ * - Supabase paginated responses (next is 'has-more' sentinel)
+ */
+export function getNextPageParam<T>(
+  page: PaginatedResponse<T>,
+  allPages: PaginatedResponse<T>[]
+): number | undefined {
   if (!page.next) return undefined;
+  // Supabase sentinel — use total pages loaded as next page number
+  if (page.next === 'has-more') return allPages.length + 1;
+  // Django URL-based pagination
   try {
     const origin = typeof window === 'undefined' ? 'http://localhost' : window.location.origin;
     const url = new URL(page.next, origin);
@@ -34,4 +45,21 @@ export function getNextPageParam<T>(page: PaginatedResponse<T>): number | undefi
   } catch {
     return undefined;
   }
+}
+
+/** Build a PaginatedResponse from Supabase range query results. */
+export function toPagedResponse<T>(
+  data: T[] | null,
+  count: number | null,
+  page: number,
+  pageSize: number
+): PaginatedResponse<T> {
+  const total = count ?? 0;
+  const offset = (page - 1) * pageSize;
+  return {
+    count: total,
+    next: offset + pageSize < total ? 'has-more' : null,
+    previous: page > 1 ? 'has-previous' : null,
+    results: data ?? [],
+  };
 }

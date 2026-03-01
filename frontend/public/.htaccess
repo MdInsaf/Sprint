@@ -1,0 +1,48 @@
+# Sprint Flow — Apache configuration for React SPA
+# Required for React Router (BrowserRouter) on Hostinger shared hosting.
+# All requests that don't match a real file/directory are served index.html,
+# which lets the client-side router handle the URL.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing files and directories directly
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Serve index.html for everything else (client-side routing)
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# Gzip compression for faster load times
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml font/woff font/woff2
+</IfModule>
+
+# Cache static assets aggressively (Vite adds content hashes to filenames)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # Hashed assets (JS/CSS bundles) — cache for 1 year
+  <FilesMatch "\.(js|css)$">
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # Images and fonts — cache for 1 month
+  <FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$">
+    ExpiresDefault "access plus 1 month"
+  </FilesMatch>
+  # HTML — always revalidate (ensures users get latest app version)
+  <FilesMatch "\.html$">
+    ExpiresDefault "access plus 0 seconds"
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

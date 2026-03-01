@@ -1,11 +1,10 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
-import { appendPaginationParams, extractResults, getNextPageParam, PaginatedResponse } from '@/lib/pagination';
+import { supabase } from '@/lib/supabase';
+import { extractResults, getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { Task } from '@/types';
 import { toast } from 'sonner';
 import { useSmartPolling } from './use-smart-polling';
 
-// Query keys - centralized for cache invalidation
 export const taskKeys = {
   all: ['tasks'] as const,
   lists: () => [...taskKeys.all, 'list'] as const,
@@ -17,28 +16,19 @@ export const taskKeys = {
   bySprint: (sprintId: string) => [...taskKeys.all, 'sprint', sprintId] as const,
 };
 
-type TaskQueryValue = string | number | boolean | null | undefined;
-
-function buildTasksPath(params?: Record<string, TaskQueryValue>): string {
-  if (!params) return '/tasks';
-  const query = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
-    query.set(key, String(value));
-  });
-  const queryString = query.toString();
-  return queryString ? `/tasks?${queryString}` : '/tasks';
+async function fetchAllTasks(): Promise<Task[]> {
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*, attachments:task_attachments(*)');
+  if (error) throw error;
+  return data as Task[];
 }
 
 export function useTasks() {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: taskKeys.lists(),
-    queryFn: () =>
-      apiRequest<Task[] | PaginatedResponse<Task>>(
-        buildTasksPath({ include_attachments: false })
-      ),
-    select: (data) => extractResults(data),
+    queryFn: fetchAllTasks,
     staleTime: 30000,
     refetchInterval,
   });
@@ -48,14 +38,14 @@ export function useTasksBySprint(sprintId: string | null) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: taskKeys.bySprint(sprintId || ''),
-    queryFn: () =>
-      apiRequest<Task[] | PaginatedResponse<Task>>(
-        buildTasksPath({
-          sprint_id: sprintId,
-          include_attachments: false,
-        })
-      ),
-    select: (data) => extractResults(data),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*, attachments:task_attachments(*)')
+        .eq('sprint_id', sprintId!);
+      if (error) throw error;
+      return data as Task[];
+    },
     enabled: !!sprintId,
     refetchInterval,
   });
@@ -65,17 +55,16 @@ export function useTasksByQaSprint(sprintId: string | null) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: [...taskKeys.all, 'qa_sprint', sprintId],
-    queryFn: () =>
-      apiRequest<Task[] | PaginatedResponse<Task>>(
-        buildTasksPath({
-          qa_sprint_id: sprintId,
-          include_attachments: false,
-        })
-      ),
-    select: (data) =>
-      extractResults(data).filter(
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*, attachments:task_attachments(*)')
+        .eq('qa_sprint_id', sprintId!);
+      if (error) throw error;
+      return (data as Task[]).filter(
         (t) => t.qa_sprint_id === sprintId && t.sprint_id !== sprintId
-      ),
+      );
+    },
     enabled: !!sprintId,
     refetchInterval,
   });
@@ -85,14 +74,15 @@ export function useTasksPage(page: number, pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: taskKeys.page(page, pageSize),
-    queryFn: () =>
-      apiRequest<PaginatedResponse<Task>>(
-        appendPaginationParams(
-          buildTasksPath({ include_attachments: false }),
-          page,
-          pageSize
-        )
-      ),
+    queryFn: async (): Promise<PaginatedResponse<Task>> => {
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('tasks')
+        .select('*, attachments:task_attachments(*)', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<Task>(data as Task[], count, page, pageSize);
+    },
     refetchInterval,
   });
 }
@@ -101,14 +91,16 @@ export function useTasksInfinite(pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useInfiniteQuery({
     queryKey: taskKeys.infinite(pageSize),
-    queryFn: ({ pageParam = 1 }) =>
-      apiRequest<PaginatedResponse<Task>>(
-        appendPaginationParams(
-          buildTasksPath({ include_attachments: false }),
-          pageParam,
-          pageSize
-        )
-      ),
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<Task>> => {
+      const page = pageParam as number;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('tasks')
+        .select('*', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<Task>(data as Task[], count, page, pageSize);
+    },
     initialPageParam: 1,
     getNextPageParam,
     refetchInterval,
@@ -118,28 +110,62 @@ export function useTasksInfinite(pageSize = 50) {
 export function useTask(taskId: string, enabled = true) {
   return useQuery({
     queryKey: taskKeys.detail(taskId),
-    queryFn: () => apiRequest<Task>(`/tasks/${taskId}`),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*, attachments:task_attachments(*)')
+        .eq('id', taskId)
+        .single();
+      if (error) throw error;
+      return data as Task;
+    },
     enabled: !!taskId && enabled,
   });
 }
 
+const DONE_STATUSES = new Set(['Done', 'Closed', 'Fixed']);
+const WORK_STATUSES = new Set(['In Progress', 'Reopen']);
+
+function applyStatusDates(next: Task, prev?: Task): Task {
+  const result = { ...next };
+  const oldStatus = prev?.status;
+  const newStatus = next.status;
+  if (newStatus && newStatus !== oldStatus) {
+    if (WORK_STATUSES.has(newStatus) && !result.in_progress_date) {
+      result.in_progress_date = new Date().toISOString();
+    }
+    if (DONE_STATUSES.has(newStatus) && !DONE_STATUSES.has(oldStatus || '')) {
+      result.closed_date = new Date().toISOString();
+    }
+    if (newStatus === 'Blocked' && oldStatus !== 'Blocked') {
+      result.blocker_date = new Date().toISOString();
+    }
+  }
+  const oldQa = prev?.qa_status;
+  const newQa = next.qa_status;
+  if (newQa && newQa !== oldQa) {
+    if ((newQa === 'Testing' || newQa === 'Rework') && !result.qa_in_progress_date) {
+      result.qa_in_progress_date = new Date().toISOString();
+    }
+    if (newQa === 'Fixing' && !result.qa_fixing_in_progress_date) {
+      result.qa_fixing_in_progress_date = new Date().toISOString();
+    }
+  }
+  return result;
+}
+
 export function useCreateTask() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (task: Task & { attachments?: File[] }) => {
-      const { attachments, ...taskData } = task;
-      const body = attachments?.length
-        ? buildTaskFormData(taskData, attachments)
-        : JSON.stringify(taskData);
-
-      return apiRequest<Task>('/tasks', {
-        method: 'POST',
-        body,
-      });
+    mutationFn: async (task: Task) => {
+      const { data: generatedId, error: idError } = await supabase.rpc('generate_task_id', { p_type: task.type });
+      const taskId = idError ? task.id : (generatedId as string);
+      const { attachments: _att, ...taskRow } = { ...task, id: taskId } as Task & { attachments?: unknown };
+      const { data, error } = await supabase.from('tasks').insert(taskRow).select('*').single();
+      if (error) throw error;
+      return data as Task;
     },
     onSuccess: (newTask) => {
-      // Invalidate queries to trigger refetch
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
       if (newTask.sprint_id) {
         queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(newTask.sprint_id) });
@@ -154,108 +180,54 @@ export function useCreateTask() {
 
 export function useUpdateTask() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (task: Task & { attachments?: File[] }) => {
-      const { attachments, ...taskData } = task;
-      const body = attachments?.length
-        ? buildTaskFormData(taskData, attachments)
-        : JSON.stringify(taskData);
-
-      return apiRequest<Task>(`/tasks/${task.id}`, {
-        method: 'PUT',
-        body,
-      });
+    mutationFn: async (task: Task) => {
+      const previousTask = queryClient.getQueryData<Task>(taskKeys.detail(task.id));
+      const updated = applyStatusDates(task, previousTask);
+      const { attachments: _att, ...taskRow } = updated as Task & { attachments?: unknown };
+      const { data, error } = await supabase
+        .from('tasks')
+        .update(taskRow)
+        .eq('id', task.id)
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as Task;
     },
     onMutate: async (updatedTask) => {
-      // Cancel outgoing refetches for all task queries
       await queryClient.cancelQueries({ queryKey: taskKeys.all });
-
-      // Snapshot raw cached values (getQueryData returns pre-select raw data)
       const previousTask = queryClient.getQueryData<Task>(taskKeys.detail(updatedTask.id));
-      const rawList = queryClient.getQueryData<Task[] | PaginatedResponse<Task>>(taskKeys.lists());
+      const rawList = queryClient.getQueryData<Task[]>(taskKeys.lists());
       const previousListItems = rawList ? extractResults(rawList) : undefined;
-
-      const rawBySprint = (sprintId: string) =>
-        queryClient.getQueryData<Task[] | PaginatedResponse<Task>>(taskKeys.bySprint(sprintId));
-
       const previousSprintId =
         previousTask?.sprint_id ??
         previousListItems?.find((t) => t.id === updatedTask.id)?.sprint_id ??
         null;
-
-      const rawPreviousBySprint = previousSprintId ? rawBySprint(previousSprintId) : undefined;
-      const rawNextBySprint = updatedTask.sprint_id ? rawBySprint(updatedTask.sprint_id) : undefined;
+      const rawPreviousBySprint = previousSprintId
+        ? queryClient.getQueryData<Task[]>(taskKeys.bySprint(previousSprintId))
+        : undefined;
+      const rawNextBySprint = updatedTask.sprint_id
+        ? queryClient.getQueryData<Task[]>(taskKeys.bySprint(updatedTask.sprint_id))
+        : undefined;
 
       const mergedTask: Task = {
         ...(previousTask || {}),
         ...updatedTask,
         attachments: updatedTask.attachments ?? previousTask?.attachments,
       };
-
-      // Optimistically update detail cache
       queryClient.setQueryData(taskKeys.detail(updatedTask.id), mergedTask);
-
-      // Optimistically update flat list cache (preserve paginated wrapper if present)
       if (rawList !== undefined) {
         const items = extractResults(rawList);
         const updatedItems = items.some((t) => t.id === updatedTask.id)
-          ? items.map((t) =>
-              t.id === updatedTask.id
-                ? { ...t, ...mergedTask, attachments: mergedTask.attachments ?? t.attachments }
-                : t
-            )
+          ? items.map((t) => t.id === updatedTask.id ? mergedTask : t)
           : [...items, mergedTask];
-        const nextRawList =
-          rawList && !Array.isArray(rawList)
-            ? { ...rawList, results: updatedItems }
-            : updatedItems;
-        queryClient.setQueryData(taskKeys.lists(), nextRawList);
+        queryClient.setQueryData(taskKeys.lists(), updatedItems);
       }
-
-      // Optimistically update sprint-specific caches
-      const patchSprintCache = (
-        sprintId: string,
-        raw: Task[] | PaginatedResponse<Task> | undefined,
-        patch: (items: Task[]) => Task[]
-      ) => {
-        if (raw === undefined) return;
-        const items = extractResults(raw);
-        const patched = patch(items);
-        const next =
-          raw && !Array.isArray(raw) ? { ...raw, results: patched } : patched;
-        queryClient.setQueryData(taskKeys.bySprint(sprintId), next);
-      };
-
-      if (previousSprintId && previousSprintId !== updatedTask.sprint_id) {
-        patchSprintCache(previousSprintId, rawPreviousBySprint, (items) =>
-          items.filter((t) => t.id !== updatedTask.id)
-        );
-      }
-      if (updatedTask.sprint_id) {
-        const sprintId = updatedTask.sprint_id;
-        const baseRaw = sprintId === previousSprintId ? rawPreviousBySprint : rawNextBySprint;
-        patchSprintCache(sprintId, baseRaw, (items) =>
-          items.some((t) => t.id === updatedTask.id)
-            ? items.map((t) =>
-                t.id === updatedTask.id
-                  ? { ...t, ...mergedTask, attachments: mergedTask.attachments ?? t.attachments }
-                  : t
-              )
-            : [...items, mergedTask]
-        );
-      }
-
       return { previousTask, rawList, rawPreviousBySprint, previousSprintId, rawNextBySprint };
     },
     onError: (error, updatedTask, context) => {
-      // Rollback optimistic updates on error
-      if (context?.previousTask) {
-        queryClient.setQueryData(taskKeys.detail(updatedTask.id), context.previousTask);
-      }
-      if (context?.rawList !== undefined) {
-        queryClient.setQueryData(taskKeys.lists(), context.rawList);
-      }
+      if (context?.previousTask) queryClient.setQueryData(taskKeys.detail(updatedTask.id), context.previousTask);
+      if (context?.rawList !== undefined) queryClient.setQueryData(taskKeys.lists(), context.rawList);
       if (context?.previousSprintId && context?.rawPreviousBySprint !== undefined) {
         queryClient.setQueryData(taskKeys.bySprint(context.previousSprintId), context.rawPreviousBySprint);
       }
@@ -265,31 +237,18 @@ export function useUpdateTask() {
       toast.error(error.message || 'Failed to update task');
     },
     onSuccess: (serverTask) => {
-      // Patch cache directly with server-confirmed data — no extra network round-trip
-      const patchCache = (
-        key: readonly unknown[],
-        raw: Task[] | PaginatedResponse<Task> | undefined
-      ) => {
-        if (!raw) return;
-        const items = extractResults(raw);
-        const patched = items.map((t) => (t.id === serverTask.id ? { ...t, ...serverTask } : t));
-        queryClient.setQueryData(key, Array.isArray(raw) ? patched : { ...raw, results: patched });
-      };
-
-      patchCache(taskKeys.lists(), queryClient.getQueryData(taskKeys.lists()));
-      if (serverTask.sprint_id) {
-        patchCache(
-          taskKeys.bySprint(serverTask.sprint_id),
-          queryClient.getQueryData(taskKeys.bySprint(serverTask.sprint_id))
-        );
-      }
       queryClient.setQueryData(taskKeys.detail(serverTask.id), serverTask);
+      const rawList = queryClient.getQueryData<Task[]>(taskKeys.lists());
+      if (rawList) {
+        const patched = extractResults(rawList).map((t) => t.id === serverTask.id ? { ...t, ...serverTask } : t);
+        queryClient.setQueryData(taskKeys.lists(), patched);
+      }
+      if (serverTask.sprint_id) {
+        queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(serverTask.sprint_id) });
+      }
       toast.success('Task updated successfully');
     },
     onSettled: (_data, _error, variables, context) => {
-      // Mark as stale so the next natural refetch picks up server state,
-      // but do NOT trigger an immediate background refetch that could race
-      // against the onSuccess cache patch and cause flicker.
       queryClient.invalidateQueries({ queryKey: taskKeys.lists(), refetchType: 'none' });
       if (context?.previousSprintId) {
         queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(context.previousSprintId), refetchType: 'none' });
@@ -303,25 +262,17 @@ export function useUpdateTask() {
 
 export function useDeleteTask() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (taskId: string) =>
-      apiRequest<void>(`/tasks/${taskId}`, { method: 'DELETE' }),
+    mutationFn: async (taskId: string) => {
+      const { error } = await supabase.from('tasks').delete().eq('id', taskId);
+      if (error) throw error;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
       toast.success('Task deleted successfully');
     },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to delete task');
+    },
   });
-}
-
-// Helper function
-function buildTaskFormData(task: Task, attachments: File[]): FormData {
-  const form = new FormData();
-  Object.entries(task).forEach(([key, value]) => {
-    if (key !== 'attachments' && value !== undefined && value !== null) {
-      form.append(key, String(value));
-    }
-  });
-  attachments.forEach(file => form.append('attachments', file));
-  return form;
 }

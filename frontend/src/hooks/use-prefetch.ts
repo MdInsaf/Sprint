@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { apiRequest } from '@/lib/api-client';
-import { extractResults, PaginatedResponse } from '@/lib/pagination';
+import { supabase } from '@/lib/supabase';
 import { Sprint, TeamMember, Task } from '@/types';
 import { sprintKeys } from './use-sprints';
 import { teamMemberKeys } from './use-team-members';
@@ -10,29 +9,42 @@ import { taskKeys } from './use-tasks';
 /**
  * Prefetches core data (sprints, team members, tasks) at the layout level
  * so it's already cached when individual pages render.
- * This eliminates the waterfall where each page independently fetches the same data.
  */
 export function usePrefetchCoreData() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Prefetch all three in parallel — React Query deduplicates if a fetch is already in-flight
     queryClient.prefetchQuery({
       queryKey: sprintKeys.lists(),
-      queryFn: () => apiRequest<Sprint[] | PaginatedResponse<Sprint>>('/sprints'),
+      queryFn: async () => {
+        const { data, error } = await supabase.from('sprints').select('*');
+        if (error) throw error;
+        return data as Sprint[];
+      },
       staleTime: 60000,
     });
 
     queryClient.prefetchQuery({
       queryKey: teamMemberKeys.lists(),
-      queryFn: () => apiRequest<TeamMember[] | PaginatedResponse<TeamMember>>('/team-members'),
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('id,name,username,email,role,avatar,team,leave_dates');
+        if (error) throw error;
+        return data as TeamMember[];
+      },
       staleTime: 60000,
     });
 
     queryClient.prefetchQuery({
       queryKey: taskKeys.lists(),
-      queryFn: () =>
-        apiRequest<Task[] | PaginatedResponse<Task>>('/tasks?include_attachments=false'),
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select('*, attachments:task_attachments(*)');
+        if (error) throw error;
+        return data as Task[];
+      },
       staleTime: 30000,
     });
   }, [queryClient]);

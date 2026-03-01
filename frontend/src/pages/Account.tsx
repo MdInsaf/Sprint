@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { apiRequest } from '@/lib/api-client';
+import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { ShieldCheck } from 'lucide-react';
 
 export default function Account() {
+  const { changeUserPassword } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,13 +24,7 @@ export default function Account() {
     }
     setSaving(true);
     try {
-      await apiRequest('/auth/change-password', {
-        method: 'POST',
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-        }),
-      });
+      await changeUserPassword(currentPassword, newPassword);
       toast.success('Password updated successfully.');
       setCurrentPassword('');
       setNewPassword('');

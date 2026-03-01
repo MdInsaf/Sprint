@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
+import { supabase } from '@/lib/supabase';
 import { TaskComment } from '@/types';
 import { toast } from 'sonner';
 
@@ -12,24 +12,31 @@ export const taskCommentKeys = {
 export function useTaskComments(taskId: string) {
   return useQuery({
     queryKey: taskCommentKeys.byTask(taskId),
-    queryFn: () => apiRequest<TaskComment[]>('/task-comments'),
-    select: (comments) =>
-      comments
-        .filter(c => c.task_id === taskId)
-        .sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime()),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_comments')
+        .select('*')
+        .eq('task_id', taskId)
+        .order('created_date', { ascending: true });
+      if (error) throw error;
+      return data as TaskComment[];
+    },
     enabled: !!taskId,
   });
 }
 
 export function useCreateTaskComment() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (comment: TaskComment) =>
-      apiRequest<TaskComment>('/task-comments', {
-        method: 'POST',
-        body: JSON.stringify(comment),
-      }),
+    mutationFn: async (comment: TaskComment) => {
+      const { data, error } = await supabase
+        .from('task_comments')
+        .insert(comment)
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as TaskComment;
+    },
     onSuccess: (comment) => {
       queryClient.invalidateQueries({ queryKey: taskCommentKeys.byTask(comment.task_id) });
       toast.success('Comment added successfully');

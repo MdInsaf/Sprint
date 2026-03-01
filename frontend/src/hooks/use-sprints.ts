@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
-import { appendPaginationParams, extractResults, getNextPageParam, PaginatedResponse } from '@/lib/pagination';
+import { supabase } from '@/lib/supabase';
+import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { Sprint } from '@/types';
 import { toast } from 'sonner';
 
@@ -17,25 +17,43 @@ export const sprintKeys = {
 export function useSprints() {
   return useQuery({
     queryKey: sprintKeys.lists(),
-    queryFn: () => apiRequest<Sprint[] | PaginatedResponse<Sprint>>('/sprints'),
-    select: (data) => extractResults(data),
-    staleTime: 60000, // 1 minute - sprints change less frequently
+    queryFn: async () => {
+      const { data, error } = await supabase.from('sprints').select('*');
+      if (error) throw error;
+      return data as Sprint[];
+    },
+    staleTime: 60000,
   });
 }
 
 export function useSprintsPage(page: number, pageSize = 50) {
   return useQuery({
     queryKey: sprintKeys.page(page, pageSize),
-    queryFn: () =>
-      apiRequest<PaginatedResponse<Sprint>>(appendPaginationParams('/sprints', page, pageSize)),
+    queryFn: async (): Promise<PaginatedResponse<Sprint>> => {
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('sprints')
+        .select('*', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<Sprint>(data as Sprint[], count, page, pageSize);
+    },
   });
 }
 
 export function useSprintsInfinite(pageSize = 50) {
   return useInfiniteQuery({
     queryKey: sprintKeys.infinite(pageSize),
-    queryFn: ({ pageParam = 1 }) =>
-      apiRequest<PaginatedResponse<Sprint>>(appendPaginationParams('/sprints', pageParam, pageSize)),
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<Sprint>> => {
+      const page = pageParam as number;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('sprints')
+        .select('*', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<Sprint>(data as Sprint[], count, page, pageSize);
+    },
     initialPageParam: 1,
     getNextPageParam,
   });
@@ -44,7 +62,15 @@ export function useSprintsInfinite(pageSize = 50) {
 export function useSprint(sprintId: string) {
   return useQuery({
     queryKey: sprintKeys.detail(sprintId),
-    queryFn: () => apiRequest<Sprint>(`/sprints/${sprintId}`),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sprints')
+        .select('*')
+        .eq('id', sprintId)
+        .single();
+      if (error) throw error;
+      return data as Sprint;
+    },
     enabled: !!sprintId,
   });
 }
@@ -52,25 +78,33 @@ export function useSprint(sprintId: string) {
 export function useActiveSprint(team?: string) {
   return useQuery({
     queryKey: sprintKeys.active(team),
-    queryFn: () => apiRequest<Sprint>('/active-sprint'),
-    select: (sprint) => {
-      if (!team) return sprint;
-      return sprint && (sprint.team || 'Developers') === team ? sprint : null;
+    queryFn: async () => {
+      let query = supabase.from('sprints').select('*').eq('is_active', true);
+      if (team) query = query.eq('team', team);
+      const { data, error } = await query.maybeSingle();
+      if (error) throw error;
+      return data as Sprint | null;
     },
   });
 }
 
 export function useCreateSprint() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (sprint: Sprint) =>
-      apiRequest<Sprint>('/sprints', {
-        method: 'POST',
-        body: JSON.stringify(sprint),
-      }),
+    mutationFn: async (sprint: Sprint) => {
+      const { data, error } = await supabase.from('sprints').insert(sprint).select('*').single();
+      if (error) throw error;
+      if (sprint.is_active) {
+        await supabase.rpc('set_active_sprint', {
+          p_sprint_id: sprint.id,
+          p_team: sprint.team || 'Developers',
+        });
+      }
+      return data as Sprint;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: sprintKeys.active() });
       toast.success('Sprint created successfully');
     },
     onError: (error: Error) => {
@@ -81,13 +115,23 @@ export function useCreateSprint() {
 
 export function useUpdateSprint() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (sprint: Sprint) =>
-      apiRequest<Sprint>(`/sprints/${sprint.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(sprint),
-      }),
+    mutationFn: async (sprint: Sprint) => {
+      const { data, error } = await supabase
+        .from('sprints')
+        .update(sprint)
+        .eq('id', sprint.id)
+        .select('*')
+        .single();
+      if (error) throw error;
+      if (sprint.is_active) {
+        await supabase.rpc('set_active_sprint', {
+          p_sprint_id: sprint.id,
+          p_team: sprint.team || 'Developers',
+        });
+      }
+      return data as Sprint;
+    },
     onSuccess: (updatedSprint) => {
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
       queryClient.invalidateQueries({ queryKey: sprintKeys.detail(updatedSprint.id) });

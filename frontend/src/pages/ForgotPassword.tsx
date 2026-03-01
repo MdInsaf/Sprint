@@ -1,33 +1,9 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Zap, ArrowLeft, Mail } from 'lucide-react';
-import { apiRequest } from '@/lib/api-client';
-import { toast } from 'sonner';
+import { Zap, ArrowLeft, ShieldAlert } from 'lucide-react';
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  const handleSubmit = async () => {
-    if (!email) return;
-    setIsSubmitting(true);
-    try {
-      await apiRequest('/auth/request-password-reset', {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-      });
-      setSent(true);
-    } catch {
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent p-4">
       <Card className="w-full max-w-md animate-fade-in">
@@ -38,65 +14,28 @@ export default function ForgotPassword() {
           <div>
             <CardTitle className="text-2xl font-semibold">Reset Password</CardTitle>
             <CardDescription className="text-muted-foreground mt-1">
-              {sent
-                ? 'Check your email for the reset link'
-                : 'Enter your email to receive a password reset link'}
+              Password reset via email is not available
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {sent ? (
-            <div className="text-center space-y-4">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                <Mail className="h-6 w-6 text-green-600" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                If an account with <strong>{email}</strong> exists, we've sent a password reset link.
-                Please check your inbox and spam folder.
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 flex gap-3">
+            <ShieldAlert className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">Contact your Manager</p>
+              <p>
+                This application uses custom authentication without email-based password reset.
+                Please contact your Manager or Super Admin to reset your password.
               </p>
-              <Button
-                variant="outline"
-                onClick={() => setSent(false)}
-                className="w-full"
-              >
-                Send again
-              </Button>
             </div>
-          ) : (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground" htmlFor="reset-email">
-                  Email
-                </label>
-                <Input
-                  id="reset-email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                />
-              </div>
-
-              <Button
-                onClick={handleSubmit}
-                disabled={!email || isSubmitting}
-                className="w-full"
-                size="lg"
-              >
-                {isSubmitting ? 'Sending...' : 'Send Reset Link'}
-              </Button>
-            </>
-          )}
+          </div>
 
           <div className="text-center">
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="h-3 w-3" />
-              Back to Sign In
+            <Link to="/login">
+              <Button variant="outline" className="w-full">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Sign In
+              </Button>
             </Link>
           </div>
         </CardContent>

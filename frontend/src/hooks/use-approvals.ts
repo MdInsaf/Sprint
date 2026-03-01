@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
-import { appendPaginationParams, extractResults, getNextPageParam, PaginatedResponse } from '@/lib/pagination';
+import { supabase } from '@/lib/supabase';
+import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { AdditionalWorkApproval } from '@/types';
 import { toast } from 'sonner';
 import { useSmartPolling } from './use-smart-polling';
@@ -17,8 +17,11 @@ export function useApprovals() {
   const refetchInterval = useSmartPolling({ activeInterval: 30000, idleInterval: 120000, inactiveInterval: false });
   return useQuery({
     queryKey: approvalKeys.lists(),
-    queryFn: () => apiRequest<AdditionalWorkApproval[] | PaginatedResponse<AdditionalWorkApproval>>('/approvals'),
-    select: (data) => extractResults(data),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('approvals').select('*');
+      if (error) throw error;
+      return data as AdditionalWorkApproval[];
+    },
     staleTime: 30000,
     refetchInterval,
   });
@@ -27,8 +30,15 @@ export function useApprovals() {
 export function useApprovalByTask(taskId: string) {
   return useQuery({
     queryKey: approvalKeys.byTask(taskId),
-    queryFn: () => apiRequest<AdditionalWorkApproval[] | PaginatedResponse<AdditionalWorkApproval>>('/approvals'),
-    select: (data) => extractResults(data).find(a => a.task_id === taskId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('approvals')
+        .select('*')
+        .eq('task_id', taskId)
+        .maybeSingle();
+      if (error) throw error;
+      return data as AdditionalWorkApproval | null;
+    },
     enabled: !!taskId,
   });
 }
@@ -37,8 +47,15 @@ export function useApprovalsPage(page: number, pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 30000, idleInterval: 120000, inactiveInterval: false });
   return useQuery({
     queryKey: approvalKeys.page(page, pageSize),
-    queryFn: () =>
-      apiRequest<PaginatedResponse<AdditionalWorkApproval>>(appendPaginationParams('/approvals', page, pageSize)),
+    queryFn: async (): Promise<PaginatedResponse<AdditionalWorkApproval>> => {
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('approvals')
+        .select('*', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AdditionalWorkApproval>(data as AdditionalWorkApproval[], count, page, pageSize);
+    },
     refetchInterval,
   });
 }
@@ -47,10 +64,16 @@ export function useApprovalsInfinite(pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 30000, idleInterval: 120000, inactiveInterval: false });
   return useInfiniteQuery({
     queryKey: approvalKeys.infinite(pageSize),
-    queryFn: ({ pageParam = 1 }) =>
-      apiRequest<PaginatedResponse<AdditionalWorkApproval>>(
-        appendPaginationParams('/approvals', pageParam, pageSize)
-      ),
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<AdditionalWorkApproval>> => {
+      const page = pageParam as number;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('approvals')
+        .select('*', { count: 'exact' })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AdditionalWorkApproval>(data as AdditionalWorkApproval[], count, page, pageSize);
+    },
     initialPageParam: 1,
     getNextPageParam,
     refetchInterval,
@@ -59,13 +82,16 @@ export function useApprovalsInfinite(pageSize = 50) {
 
 export function useCreateOrUpdateApproval() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (approval: AdditionalWorkApproval) =>
-      apiRequest<AdditionalWorkApproval>('/approvals', {
-        method: 'POST',
-        body: JSON.stringify(approval),
-      }),
+    mutationFn: async (approval: AdditionalWorkApproval) => {
+      const { data, error } = await supabase
+        .from('approvals')
+        .upsert(approval, { onConflict: 'task_id' })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as AdditionalWorkApproval;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: approvalKeys.lists() });
       toast.success('Approval saved successfully');

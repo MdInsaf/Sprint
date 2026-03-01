@@ -1,49 +1,9 @@
-import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Zap, ArrowLeft } from 'lucide-react';
-import { apiRequest } from '@/lib/api-client';
-import { toast } from 'sonner';
+import { Zap, ArrowLeft, ShieldAlert } from 'lucide-react';
 
 export default function ResetPassword() {
-  const { uid, token } = useParams<{ uid: string; token: string }>();
-  const navigate = useNavigate();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = async () => {
-    if (!newPassword || !confirmPassword) return;
-
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
-    setError('');
-    setIsSubmitting(true);
-    try {
-      await apiRequest('/auth/reset-password', {
-        method: 'POST',
-        body: JSON.stringify({ uid, token, new_password: newPassword }),
-      });
-      toast.success('Password has been reset successfully');
-      navigate('/login');
-    } catch {
-      setError('This reset link has expired or is invalid. Please request a new one.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent p-4">
       <Card className="w-full max-w-md animate-fade-in">
@@ -54,66 +14,28 @@ export default function ResetPassword() {
           <div>
             <CardTitle className="text-2xl font-semibold">Set New Password</CardTitle>
             <CardDescription className="text-muted-foreground mt-1">
-              Enter your new password below
+              Token-based reset is not supported
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground" htmlFor="new-password">
-              New Password
-            </label>
-            <Input
-              id="new-password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 flex gap-3">
+            <ShieldAlert className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800">
+              <p className="font-medium mb-1">Contact your Manager</p>
+              <p>
+                Password resets must be performed by a Manager or Super Admin via the Users management page.
+                Log in with your current credentials or ask your manager to set a new password for you.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground" htmlFor="confirm-password">
-              Confirm Password
-            </label>
-            <Input
-              id="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            />
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
-
-          <Button
-            onClick={handleSubmit}
-            disabled={!newPassword || !confirmPassword || isSubmitting}
-            className="w-full"
-            size="lg"
-          >
-            {isSubmitting ? 'Resetting...' : 'Reset Password'}
-          </Button>
-
-          <div className="flex justify-center gap-4 text-sm">
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="h-3 w-3" />
-              Back to Sign In
-            </Link>
-            <Link
-              to="/forgot-password"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Request new link
+          <div className="text-center">
+            <Link to="/login">
+              <Button variant="outline" className="w-full">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Sign In
+              </Button>
             </Link>
           </div>
         </CardContent>

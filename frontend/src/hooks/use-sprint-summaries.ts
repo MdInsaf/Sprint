@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/api-client';
+import { supabase } from '@/lib/supabase';
 import { SprintSummary } from '@/types';
 import { toast } from 'sonner';
 
@@ -13,28 +13,43 @@ export const sprintSummaryKeys = {
 export function useSprintSummaries() {
   return useQuery({
     queryKey: sprintSummaryKeys.lists(),
-    queryFn: () => apiRequest<SprintSummary[]>('/sprint-summaries'),
-    staleTime: 60000, // 1 minute
+    queryFn: async () => {
+      const { data, error } = await supabase.from('sprint_summaries').select('*');
+      if (error) throw error;
+      return data as SprintSummary[];
+    },
+    staleTime: 60000,
   });
 }
 
 export function useSprintSummary(sprintId: string) {
   return useQuery({
     queryKey: sprintSummaryKeys.detail(sprintId),
-    queryFn: () => apiRequest<SprintSummary>(`/sprint-summaries/${sprintId}`),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sprint_summaries')
+        .select('*')
+        .eq('sprint_id', sprintId)
+        .maybeSingle();
+      if (error) throw error;
+      return data as SprintSummary | null;
+    },
     enabled: !!sprintId,
   });
 }
 
 export function useCreateOrUpdateSprintSummary() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (summary: SprintSummary) =>
-      apiRequest<SprintSummary>('/sprint-summaries', {
-        method: 'POST',
-        body: JSON.stringify(summary),
-      }),
+    mutationFn: async (summary: SprintSummary) => {
+      const { data, error } = await supabase
+        .from('sprint_summaries')
+        .upsert(summary, { onConflict: 'sprint_id' })
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data as SprintSummary;
+    },
     onSuccess: (summary) => {
       queryClient.invalidateQueries({ queryKey: sprintSummaryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: sprintSummaryKeys.detail(summary.sprint_id) });
