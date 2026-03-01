@@ -1,0 +1,676 @@
+"id","title","type","sprint_id","module","owner_id","priority","status","estimated_hours","actual_hours","blocker","blocker_date","created_date","description","steps_to_reproduce","test_reproduced","closed_date","in_progress_date","blocked_hours","qa_status","qa_in_progress_date","qa_actual_hours","qa_fixing_in_progress_date","qa_fixing_hours","qa_sprint_id"
+task-1767332172273,Task1,Sprint,sprint-1767186388824,New,20,Medium,Done,1.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1767350360296,Task 03,Sprint,sprint-1767186388824,"",19,Medium,Done,0.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1767350394652,Task 03,Sprint,sprint-1767186388824,"",20,Medium,Done,0.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1767351628554,test,Sprint,sprint-1767186388824,test,22,Medium,Done,0.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1767356352707,test 5,Sprint,sprint-1767186388824,test,19,Medium,Done,2.0,0.0,,,"2026-01-02",aksd,,0,,,0.0,,,0.0,,0.0,
+task-1767427494731,test,Sprint,sprint-1767186388824,testeee,21,Medium,Done,4.0,0.0,,,"2026-01-03",test,,0,,,0.0,,,0.0,,0.0,
+task-1767331329847,test-2,Sprint,sprint-1767186388824,"",18,Medium,Done,0.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1767348418523,insaf,Sprint,sprint-1767186388824,new,21,High,Done,0.0,0.0,,,"2026-01-02","",,0,,,0.0,,,0.0,,0.0,
+task-1768210584091,GitLab activity logging (basic),Sprint,sprint-1768200585609,Integration,21,High,Done,1.0,4.867361,,,"2026-01-12","Log GitLab integration activities.
+
+Scope:
+- Log authentication attempts
+- Log repository sync actions
+- Log GitLab API calls",,0,"2026-01-27T02:48:55Z",,0.0,,,0.0,,0.0,
+task-1768205805997,Encrypt the secret key,Sprint,sprint-1768200585609,Integration,24,High,Done,1.0,6.4600697,,,"2026-01-12","",,0,"2026-01-19T11:02:30Z",,0.0,,,0.0,,0.0,
+task-1768210387948,GitLab API connectivity test,Sprint,sprint-1769504239258,Integration,21,High,Done,1.0,0.266794,,,"2026-01-12","Test GitLab API access using stored access token.
+
+Scope:
+- Call GitLab /user API
+- Call GitLab /projects API
+- Handle invalid token and permission errors",,0,"2026-01-27T09:12:59Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768202289712,Bitbucket checks implementation,Sprint,sprint-1768200585609,Integration,18,High,Done,2.0,4.9985995,,,"2026-01-12","need to verify and check if the bitbucket checks satisfies the given data, check if it is pass or fail based on the Bitbucket account user permissions.",,0,"2026-01-27T05:30:27Z",,0.0,,,0.0,,0.0,
+SP-072,ISO 27001 - Advanced,Sprint,,"",30,Medium,To Do,0.0,0.0,,,"2026-02-06","",,0,,,0.0,,,0.0,,0.0,
+task-1768212407629,Dashboard Bug,Sprint,sprint-1768200585609,Artifact,22,Medium,Done,1.0,7.278588,,,"2026-01-12",Artifact Counts are not Properly calculated in Dashboard,,0,"2026-01-20T06:41:10Z",,0.0,,,0.0,,0.0,
+task-1768210546147,GitLab basic checks (MVP),Sprint,sprint-1768200585609,Integration,21,High,Done,1.0,3.1120486,,,"2026-01-12","Implement basic GitLab repository checks (MVP).
+
+Scope:
+- Check branch protection for main/master
+- Fetch pipeline status
+- Track last commit activity",,0,"2026-01-27T08:41:06Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768203210303,GitLab integration – Authentication,Sprint,sprint-1768200585609,Integration,21,High,Done,2.0,6.6772876,,,"2026-01-12","Implement GitLab authentication flow for product integration.
+
+Scope:
+- Decide authentication method (OAuth / Personal Access Token)
+- Implement backend API to connect GitLab
+- Receive and validate access token
+- Securely store token in database
+- Handle authentication errors
+
+Acceptance Criteria:
+- User can connect GitLab successfully
+- Valid token is received and stored
+- GitLab API can be accessed using the token
+- Proper error handling for invalid/expired tokens",,0,"2026-01-20T05:28:46Z",,0.01313813048611111,,,0.0,,0.0,
+task-1768210438195,GitLab repository sync,Sprint,sprint-1768200585609,Integration,21,High,Done,1.0,0.24452546,,,"2026-01-12","Fetch and sync GitLab repositories for connected user.
+
+Scope:
+- Fetch repository list
+- Store repository metadata
+- Map repositories to organization/user",,0,"2026-01-27T08:41:15Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768210636986,GitLab integration testing and bug fixes,Sprint,sprint-1769504239258,Integration,21,High,Done,1.0,4.4155297,,,"2026-01-12","Test GitLab integration end-to-end and fix issues.
+
+Scope:
+- Postman testing
+- Error scenario testing
+- Bug fixes and stabilization",,0,"2026-01-27T09:12:55Z",,0.0000274413310185,Ready to Test,,0.0,,0.0,
+task-1769510526595,Manual Testing for Approvals,Sprint,sprint-1769504239258,Approvals,26,Medium,Done,1.5,1.9921242,,,"2026-01-27","1. Maintainence and Regression Testing",,0,"2026-01-29T13:20:59Z",,0.11814348445601852,Ready to Test,,0.0,,0.0,
+task-1768201410783,Bitbucket Authentication and Connection,Sprint,sprint-1768200585609,Integration,18,High,Done,1.0,6.4451737,,,"2026-01-12",Bitbucket authentication and connection using the Oauth method and also need to encrypt the secrets and keys from the bitbucket.,,0,"2026-01-19T10:41:03Z",,0.0,,,0.0,,0.0,
+task-1768207166863,Bitbucket webhook implementation,Sprint,sprint-1768200585609,Integration,18,High,Done,1.0,2.7827547,,,"2026-01-12","After successful implementation of Oauth, to Invoke the webhook custom bitbucket API using the credentials stored after the Oauth connection.",,0,"2026-01-22T05:30:51Z",,0.0,,,0.0,,0.0,
+task-1768213668282,Sub-Clause Inheritance Guardrails,Sprint,sprint-1768200585609,AI AUTO-MAPPING,25,Medium,Done,1.0,0.0019328704,,,"2026-01-12",make the AI to distinguish between the class and sub class for the mapping ,,0,"2026-01-19T10:42:35Z",,0.0,,,0.0,,0.0,
+SP-073,Risk Assessment Updates,Sprint,,"",30,Medium,To Do,0.0,0.0,,,"2026-02-06","1. Include Dashboard, KRI, 31000",,0,,,0.0,,,0.0,,0.0,
+task-1768205934381,End-to-End Testing & Error Handling,Sprint,sprint-1768200585609,Integartion,24,High,Done,2.0,0.0,,,"2026-01-12","Perform full integration testing, improve error messages, and finalize GitHub connection workflow with edge-case handling.",,0,"2026-01-27T05:31:12Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768203377366,GitLab token storage and validation,Sprint,sprint-1768200585609,Integration,21,High,Done,2.0,2.1266088,,,"2026-01-12","Implement secure storage and validation of GitLab access tokens.
+
+Scope:
+- Encrypt token before storing
+- Validate token before API calls
+- Handle token expiry or revocation",,0,"2026-01-22T09:10:19Z",,0.0,,,0.0,,0.0,
+task-1769510374691,Testcase updation in Approval module.,Sprint,sprint-1769504239258,Approvals,26,Medium,Done,2.0,1.107905,,,"2026-01-27",Testcase updation on approvals module.,,0,"2026-01-29T13:21:03Z",,1.0041999972685185,Ready to Test,,0.0,,0.0,
+task-1767330996588,test - task,Sprint,sprint-1767186388824,"",21,Medium,In Progress,0.0,0.0,,,"2026-01-02","",,0,,"2026-01-13",0.0,,,0.0,,0.0,
+SP-077,TPRM Questionare/Risk Table,Sprint,sprint-1770615834256,"",30,Medium,Done,0.0,2.0,,,"2026-02-06","",,0,"2026-02-12T20:18:26Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-018,AI Chatbot Verification,Sprint,sprint-1771825655592,"",30,Medium,Blocked,0.0,14.03303,Working on other modules will pick the task after that,"2026-02-06T05:40:27.117Z","2026-01-29",Partially done by Siddharth,,0,,,0.0,,,0.0,,0.0,
+task-1768888579226,Integration Connection Implementation,Sprint,sprint-1768200585609,Integration,23,High,Done,0.5,0.0,,,"2026-01-20","Implemented the integration connection logic for Google Workspace by handling authentication flow, API integration, connection status validation, and redirect handling to ensure a secure and reliable setup.",,0,"2026-01-20T06:02:51Z",,0.0,,,0.0,,0.0,
+SP-060,SSO API check,Sprint,sprint-1769504239258,"",19,Medium,Done,1.0,2.5611806,,,"2026-02-05","",,0,"2026-02-06T05:32:00Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768888940259,Data Encryption Implementation,Sprint,sprint-1768200585609,Integration,23,High,Done,2.0,0.045868054,,,"2026-01-20","Implemented data encryption mechanisms to securely protect sensitive information during storage and transmission, ensuring compliance with security standards and preventing unauthorized access.",,0,"2026-01-27T06:38:54Z",,0.0,,,0.0,,0.0,
+task-1768888772210,google workspace checks implementation,Sprint,sprint-1768200585609,Integration,23,High,Done,3.0,6.9611344,,,"2026-01-20","Implemented validation and status checks for Google Workspace integration by verifying authentication results, handling test connection responses, and ensuring accurate success or failure states are reflected in the application.",,0,"2026-01-27T05:22:23Z",,0.0,,,0.0,,0.0,
+SP-001,Access and Asset Review,Sprint,sprint-1771310676523,Terzo,40,High,Done,0.25,0.24215278,,,"2026-02-17",Perform Access and Asset Review and share the report to Terzo,,0,"2026-02-17T10:31:41Z",,0.0,,,0.0,,0.0,
+task-1768892238750,DPA (for website),Sprint,sprint-1768289722350,Website,30,Medium,Done,0.5,0.9624421,,,"2026-01-20","",,0,"2026-01-21T06:04:01Z",,0.0,,,0.0,,0.0,
+CHG-001,Export Functionality Feature.,Change,,People Module,22,High,Done,0.0,0.0,,,"2026-01-28","",Export functinality added in people module.,0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+task-1768893081777,People Page Bug - Adding New Export Button,Sprint,sprint-1768200585609,People,22,High,Done,2.0,0.8254514,,,"2026-01-20","",,0,"2026-01-28T05:16:03Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768205860922,Repository Access,Sprint,sprint-1768200585609,Integration,24,High,Done,2.0,14.230104,,,"2026-01-12",Verify repository access using installation token and validate required GitHub App permissions.,,0,"2026-01-27T05:31:21Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-011,Completion Status,Bug,,Training,22,High,Done,0.0,0.0,,,"2026-01-28",Completion Status displaying wrong,"",0,"2026-01-28",,0.0,Ready to Test,,0.0,,0.0,
+task-1768887609181,Regression Testing,Sprint,sprint-1768200585609,Artifact,26,High,Done,0.5,0.011875,,,"2026-01-20","framework updations.
+Testing on dev and stage environment",,0,"2026-01-20T05:57:17Z",,0.0,,,0.0,,0.0,
+task-1768887779476,Re-Testing,Sprint,sprint-1768200585609,General,26,High,Done,0.5,0.009930556,,,"2026-01-20","testing the fixed bugs updated in mail 
+WIZ-817
+WIZ-782
+WIZ-783
+WIZ-806
+
+1. TPRM: Previously, questionnaire completion was enforced only on the frontend. The same validation has now been implemented at the backend to ensure all questions are answered.
+
+2. People Module: File upload was restricted for non-admin users. This issue has been resolved.
+
+3. Bug 821: The overall count and completed count were not updating correctly. This has been fixed.
+Training Module: Trainings are now restricted for employees with an Inactive status.
+
+4.People Page: File upload–related issues have been resolved.
+
+5.Postal Code: Clients were unable to add overseas (international) postal pincodes. 
+
+6. This issue has been fixed.
+Artifact Approval Notifications: Duplicate email notifications during artifact approval sharing have been reviewed and fixed.",,0,"2026-01-20T05:57:20Z",,0.0,,,0.0,,0.0,
+task-1768887467173,Re-testing,Sprint,sprint-1768200585609,Artifact,26,High,Done,0.5,0.013773148,,,"2026-01-20","Testing the artifact module for the new framework updation
+on dev and stage environment",,0,"2026-01-20T05:57:43Z",,0.0,,,0.0,,0.0,
+CHG-002,Training Video number is not aligned,Change,,Training,22,High,To Do,0.0,0.0,,,"2026-01-28","Under the compliance training section, there are four videos, but the numbering is not aligned correctly.","",0,,,0.0,,,0.0,,0.0,
+task-1768213759401,Confidence Calibration,Sprint,sprint-1769504239258,AI AUTO-MAPPING,25,Medium,Done,1.0,0.9735069,,,"2026-01-12","Finalize confidence weighting: semantic_score, artifact_presence, llm_validation, inheritance_penalty",,0,"2026-02-04T13:44:02Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768286853722,PDF to Meta data,Sprint,sprint-1768200585609,AI AUTO-MAPPING,25,Medium,Done,1.0,6.442743,,,"2026-01-13",convert the raw pdf with images to a meta data segregating clauses and standards,,0,"2026-01-19T10:37:33Z",,0.0,,,0.0,,0.0,
+task-1768210114104,"Bitbucket Checks – Table Review, Data Import",Sprint,sprint-1768200585609,Integration,18,High,Done,2.0,6.476586,,,"2026-01-12","Check usability of existing Bitbucket checks tables and import checks data into the database to support integration and related functionality.
+
+And also need Invoke access token using the refresh token after the connection is expired only if we initiate scan or trigger the connected bitbucket account.",,0,"2026-01-19T11:26:17Z",,0.0,,,0.0,,0.0,
+task-1768888427898,google workspace authentication setup,Sprint,sprint-1768200585609,Integration,23,High,Done,2.0,0.0,,,"2026-01-20","Implemented authentication flow for Google Workspace by configuring OAuth, handling callback redirects, and validating connection status to securely integrate Workspace services with the application.",,0,"2026-01-20T06:02:43Z",,0.0,,,0.0,,0.0,
+task-1768889880367,People and Policy Page Filter,Sprint,sprint-1768289722350,People and Policy,30,Medium,Done,0.5,0.019953704,,,"2026-01-20","",,0,"2026-01-20T06:48:55Z",,0.0,,,0.0,,0.0,
+task-1768899317087,"Integration check description and Rephrase (Repository, Google Workspace, ZOHO People)",Sprint,sprint-1768289722350,"",30,Medium,Done,0.5,0.07042824,,,"2026-01-20","",,0,"2026-01-20T10:37:01Z",,0.0,,,0.0,,0.0,
+task-1768819169848,Auto Standard fetching with description,Sprint,sprint-1768200585609,AI AUTO-MAPPING,25,Medium,Done,2.0,1.78875,,,"2026-01-19",fetching the pdf data and list out the standards as how we do in whizzc,,0,"2026-01-21T05:35:25Z",,0.0,,,0.0,,0.0,
+task-1768887941100,Automate the filters in policy,Sprint,sprint-1768200585609,Policy,26,High,Done,2.0,0.9940278,,,"2026-01-20",writing the script fot the policy filter.,,0,"2026-01-21T05:37:13Z",,0.0,,,0.0,,0.0,
+task-1768973777207,mapping requirements,Sprint,sprint-1768200585609,AI AUTO-MAPPING,25,Medium,Done,2.0,1.7494212,,,"2026-01-21",mapping fetched clause from the pdf with existing requirements,,0,"2026-01-23T07:23:24Z",,0.0,,,0.0,,0.0,
+task-1769066485542,Test case creation on address ,Sprint,sprint-1768200585609,settings module,26,Medium,Done,1.0,4.924927,,,"2026-01-22",creating the testcase for address functionality on settings page in dev environment,,0,"2026-01-27T05:35:35Z",,0.0000347222222222,,,0.0,,0.0,
+task-1769504602077,Data Collection,Sprint,sprint-1769504239258,AI VERIFICATION,25,Medium,Done,2.0,1.8444328,,,"2026-01-27",COLLECTING DESCRIPTION FOR AI VERIFICATION,,0,"2026-01-29T05:19:31Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-005,Delete is not working,Bug,,Settings,22,High,Done,0.0,0.02707176,,,"2026-01-22",Delete the address.,"1. Add the address and then delete the address.",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+task-1769504588301,Management command implementation for bitbucket.,Sprint,sprint-1769504239258,Integration,18,High,Done,1.0,0.8975116,,,"2026-01-27",Implement a cloud scanner management command that dynamically handles bitbucket scans using a cron flow.,,0,"2026-01-29T04:56:13Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-007,change the location name,Change,,Settings,22,High,Done,0.0,0.0,,,"2026-01-22","1. change locamtion name to Landmark.
+2. Remove the sort by asc and desc order feature.
+3. Remove filter feature.","",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+CHG-003,"In people page only ""Not Initiated"" and ""Completed"" status is showing.",Change,,people,22,High,To Do,0.0,0.0,,,"2026-01-28","In people page, only ""Not Initiated"" and ""Completed"" status is available. Need to include other statuses ""In-Progress"", ""On-hold""","",0,,,0.0,,,0.0,,0.0,
+CHG-004,Information Icon,Change,,Training,22,High,To Do,0.0,0.0,,,"2026-01-28","Need to add information icon for the ""Frequency"", ""Expiry in Days"", ""Reminder in Days"", ""Auto-Initiate""","",0,,,0.0,,,0.0,,0.0,
+BUG-003,Error message should display,Bug,,Settings,22,High,Done,0.0,0.084525466,,,"2026-01-22","1. select country and city and state and pincode and click on save.
+2. In the backend the error was Letter with space not allowed wrong error displaying","1. when user adding the address and click on the save.",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+task-1768988379279,Newletter _ jan,Sprint,sprint-1768289722350,"",30,Medium,Done,0.0,5.838831,,,"2026-01-21","",,0,"2026-01-29T05:47:48Z",,0.0,Ready to Test,,0.0,,0.0,
+CHG-005,Name Change - Reminder In Days,Change,,Training,22,High,To Do,0.0,0.0,,,"2026-01-28",Need to change the naming for Reminder In Days field in Add Training Profile,"",0,,,0.0,,,0.0,,0.0,
+BUG-006,Manual enter must.,Change,,Settings,22,High,Done,0.0,0.06439815,,,"2026-01-22","","1. selecting Aland Island country in that state is not there so manual enter want.
+2. same for city manual enter is need when there is no city lists.",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+task-1769506624145,Code Merging,Sprint,sprint-1769504239258,Integration,23,Medium,Done,0.5,0.15603009,,,"2026-01-27","",,0,"2026-01-27T13:21:55Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-010,Discussion with gladwin for org setting flow,Sprint,sprint-1769504239258,"",20,High,Done,0.5,0.0015972222,,,"2026-01-29","",,0,"2026-01-29T11:40:28Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-010,Issue in custom questions,Bug,,TPRM,22,High,To Do,0.0,0.0,,,"2026-01-28","Adding ""-"" in TPRM question there is no error message appears and also the question is not updated until we remove that.","Create custom question in that question add ""_"" and click create.",0,,,0.0,,,0.0,,0.0,
+SP-081,Chat bot changes,Sprint,sprint-1770615073846,AI Chatbot,25,Medium,Done,1.0,2.0,,,"2026-02-06",change the chat bot way of answer to a partial queries and invalid queries and add user preferences,,0,"2026-02-09T05:33:17Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-014,New Training Status in Training Portal,Change,,Training,22,High,To Do,0.0,0.0,,,"2026-01-28","Currently New Training Status is showing as ""Not Completed"", request to change the status to ""Yet to Start""","",0,,,0.0,,,0.0,,0.0,
+CHG-007,Additional filter option in people page,Change,,people,22,Low,To Do,0.0,0.0,,,"2026-01-28","","",0,,,0.0,,,0.0,,0.0,
+SP-005,github scan management command,Sprint,sprint-1769504239258,Integration,24,High,Done,0.5,0.14174768,,,"2026-01-28","",,0,"2026-01-28T13:17:20Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-004,Restricted the duplicates code merge,Sprint,sprint-1769504239258,Integration,23,Medium,Done,0.5,0.3250463,,,"2026-01-28","Implemented validation to restrict duplicate entries during the merge process, ensuring data consistency and preventing redundant records.",,0,"2026-01-28T13:43:34Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-144,UIDAI - Tables,Sprint,sprint-1771825655592,Framework Delivery,30,Medium,To Do,0.0,0.0,,,"2026-02-17",Need to work on master and mapping tables for UIDAI,,0,,,0.0,,,0.0,,0.0,
+SP-008,Sprint Flow deployment,Sprint,sprint-1769504239258,"",20,Medium,Done,0.5,0.0,,,"2026-01-29","",,0,"2026-01-29T05:06:15Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-002,Standardize management command for GitLab integration,Sprint,sprint-1769504239258,Integration,21,Medium,Done,1.0,0.007071759,,,"2026-01-28","Standardizing the management command to support GitLab integration using a common, scalable framework.
+This involves refactoring the existing Bitbucket-based flow into a provider-driven structure
+to enable easy extension for GitLab and future integrations.
+",,0,"2026-01-29T05:06:26Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-075,M365 Checks,Sprint,sprint-1769677972065,"",30,Medium,Done,0.5,0.46229166,,,"2026-02-06","",,0,"2026-02-06T09:20:15Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-061,Planning for AI report generation,Sprint,sprint-1769504239258,AI report generation,25,Medium,Done,0.25,2.6934028,,,"2026-02-05",AI report generation tool kit planning for GRC team,,0,"2026-02-06T07:00:17Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-004,Madatory mark missing,Bug,,Settings,22,Low,Done,0.0,0.004340278,,,"2026-01-22",There is mandatory star is missing on address.,"",0,"2026-02-03",,0.0,Ready to Test,,0.0,,0.0,
+SP-156,Internal audit report - kuya,Sprint,sprint-1771310676523,Kuya,38,High,In Progress,0.25,0.0,,,"2026-02-18","Need to submit internal audit report to kuya as internal audit conducted on 17/02/2026
+Given credential to siddharth for evidence check",,0,,"2026-02-20T05:34:11Z",0.0,,,0.0,,0.0,
+SP-011,Create plan for OnPrem product development,Sprint,,"",20,High,To Do,2.0,0.0,,,"2026-01-29","",,0,,,0.0,,,0.0,,0.0,
+task-1768888479036,Smoke and Sanity Testing in production,Sprint,sprint-1768200585609,General,26,High,Done,0.0,1.2652315,,,"2026-01-20","Checking critical functionalities in production after deployment.
+Post Release Validation
+
+This release introduces four new frameworks — BCMS, TISAX, DPDPA, and NESA — which are now live in the production environment. In addition, several bugs across multiple modules have been identified and resolved to enhance overall system stability and functionality.
+Tickets Addressed in This Release:
+WIZ-817
+WIZ-782
+WIZ-783
+WIZ-806
+WIZ-821
+WIZ-787
+Key Updates and Fixes:
+TPRM: Previously, questionnaire completion validation was enforced only on the frontend. This validation has now been implemented at the backend to ensure all questions are answered.
+People Module: File upload restrictions for non-admin users have been resolved.
+Training Module: Trainings are now restricted for employees with an Inactive status.
+People Page: File upload–related issues have been fixed, including date format corrections and the addition of an instruction sheet.
+Postal Code: The issue preventing clients from adding international postal pincodes has been resolved.
+Default Files: Templates and trackers have been moved to the Default Files section, allowing users to edit the files and link them to the respective artifacts.",,0,"2026-01-22T11:57:33Z",,0.0,,,0.0,,0.0,
+CHG-006,Modules Reordering. Need to check with Vignesh,Change,,QA,22,Low,To Do,0.0,0.0,,,"2026-01-28","Rearrange the Modules according to the workflow, Ex. Settings page is given at the bottom, it can be moved at the top or other side.","",0,,,0.0,,,0.0,,0.0,
+task-1769153104711,Chat bot,Additional,sprint-1768200585609,chat bot,25,High,Done,1.0,3.9227545,,,"2026-01-23",little changes need to be done for chatbot to push it to production,,0,"2026-01-27T05:34:35Z",,0.0,,,0.0,,0.0,
+BUG-008,Remove the unassigned in the assignee.,Bug,,Artifact,22,High,Done,0.0,0.01625,,,"2026-01-22","1. remove the unassigned function in both bulk assignee and singal assigne.
+2. add assignee remover feature in the artifact.","",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+ADD-001,Raise the bugs,Additional,sprint-1769504239258,General,26,Medium,Done,2.0,1.8138611,,,"2026-01-28","1. need to update the bugs and feature from the R&D team.",,0,"2026-02-03T07:55:28Z",,2.0743247189467593,Ready to Test,,0.0,,0.0,
+task-1769153065138,AI verifier ,Additional,sprint-1768200585609,Artifact,25,High,Done,1.0,3.9227893,,,"2026-01-23",changes need to be made in artifact upload and link to push it to protection,,0,"2026-01-27T05:34:37Z",,0.0,,,0.0,,0.0,
+CHG-008,Template Rename,Change,,Artifact,22,High,To Do,0.0,0.0,,,"2026-01-28",Available tracker and template must be renamed based on the exact artifact name,"",0,,,0.0,,,0.0,,0.0,
+task-1769504967661,Implement Common Integration Format for Cloud Scanner.,Sprint,sprint-1769504239258,Integration,18,Medium,Done,0.5,0.83269674,,,"2026-01-27","Refactor the cloud scanner to use a common integration flow with dynamic provider-based handling, ensuring all current and future integrations follow a single, maintainable scanning pattern.",,0,"2026-01-28T05:14:46Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-009,Discussion with kaviranjini for OnPrem product flow,Sprint,sprint-1769504239258,"",20,Medium,Done,1.0,4.0124073,,,"2026-01-29","",,0,"2026-02-04T05:28:45Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-145,Integration Checks Mapping,Sprint,,Integration,30,Medium,To Do,0.0,0.0,,,"2026-02-17","Need to work on Mapping of Integration checks (Repository, Zoho people, Microsoft)",,0,,,0.0,,,0.0,,0.0,
+BUG-009,Improper navigation,Bug,,Training,22,High,To Do,0.0,0.0,,,"2026-01-28","After completing the training assessment and attempting to submit it, an error message appears stating: “A minimum of seven correct answers is required to pass the assessment.” but the page stale in assessment page its not redirecting to the video.","1. attend the assessment.
+2. Fail the assessment.",0,,,0.0,,,0.0,,0.0,
+SP-012,study and prepare MLOP,Sprint,sprint-1769504239258,Whizz AI,25,Medium,Done,2.0,1.7693518,,,"2026-01-29",study and prepare a process for making an auto learning MLOP using the feed back for both auto mapping and chat bot,,0,"2026-01-31T06:54:26Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1769162767656,test,Sprint,sprint-1768200585609,tesy,25,Medium,Done,0.0,0.01,,,"2026-01-23",tesy,,0,"2026-01-23T10:07:12Z",,0.0,Testing,"2026-01-27T08:48:46Z",1.7877314814814815,,0.005138888888888889,
+BUG-013,Artifact status Filter,Bug,,Artifact,22,High,To Do,0.0,0.0,,,"2026-01-28","While filtering the Status tab, selecting both Approved and Not Approved but it shows only the unapproved requirements.","1. apply filter both approved and not approved.",0,,,0.0,,,0.0,,0.0,
+task-1769504780752,common file for scanner file,Sprint,sprint-1769504239258,Integration,24,High,Done,1.0,0.14167824,,,"2026-01-27","",,0,"2026-01-28T13:17:05Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1769504866372,Implement Common Integration Format for Management Command,Sprint,sprint-1769504239258,Integration,18,Medium,Done,0.5,0.48424768,,,"2026-01-27","Standardize the management command to support multiple integrations using a common, scalable format with dynamic provider handling.",,0,"2026-01-28T21:46:42Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-003,Zoho people integration,Sprint,sprint-1769504239258,Integration,19,Medium,Done,2.0,3.0222569,,,"2026-01-28","changing the code to common encryption flow, scanner calling method, API for checks",,0,"2026-02-02T05:56:51Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-082,AI Mapping Verification,Sprint,,"",30,Medium,To Do,0.0,0.0,,,"2026-02-06","",,0,,,0.0,,,0.0,,0.0,
+SP-013,GitLab integration code review,Sprint,sprint-1769504239258,Integration,21,Medium,Done,1.0,0.44002315,,,"2026-01-29","Review the existing GitLab integration code to understand the current implementation,
+identify gaps, and prepare for upcoming enhancements.",,0,"2026-01-29T18:14:45Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-062,suggestion in questionnare model,Sprint,sprint-1769504239258,Questionnare,25,Medium,Done,1.0,2.6644096,,,"2026-02-05",need to suggestion for generated answers from the support kb,,0,"2026-02-06T07:00:17Z",,0.0,Ready to Test,,1.0,,0.0,
+SP-078,TPRM Report,Sprint,sprint-1770615834256,"",30,Medium,Done,0.0,0.49850693,,,"2026-02-06","",,0,"2026-02-13T09:07:43Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1769508463859,Management command implementation for GitLab integration,Sprint,sprint-1769504239258,Integration,21,High,Done,1.0,0.00071759,,,"2026-01-27","This task involves implementing a cloud scanner management command for GitLab integration.
+The command will handle GitLab scans dynamically using a cron-based flow, similar to the existing Bitbucket implementation.
+It includes triggering scans, handling scan execution, and reporting pass/fail status based on defined checks.",,0,"2026-01-29T07:35:53Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1769506530202,Implementation of Management Command,Sprint,sprint-1769504239258,Integration,23,High,Done,1.0,0.40774307,,,"2026-01-27","Implement a Django management command to handle backend operations that need to be executed via the command line. The command should encapsulate the required business logic, support configurable arguments, and integrate cleanly with existing models and services.
+
+This command will be used for controlled execution of backend processes such as data processing, background operations, or administrative tasks without manual database intervention.",,0,"2026-01-29T07:39:14Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-007,code review for the github Integration,Sprint,sprint-1769504239258,Integration,24,Medium,Done,0.5,0.16998842,,,"2026-01-29","",,0,"2026-01-29T11:36:49Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-014,Bug Discussion,Sprint,sprint-1769677972065,"",30,Medium,Done,0.5,0.0,,,"2026-01-29","",,0,"2026-01-29T09:20:45Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-030,implementing the sample project for docer,Sprint,sprint-1769504239258,General,24,High,Done,1.0,1.1296991,,,"2026-02-02","",,0,"2026-02-03T13:09:46Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-017,Artefact - Mandatory Policy Categorization,Sprint,sprint-1769677972065,"",30,Medium,Done,1.0,0.9961343,,,"2026-01-29",For AI verifier we need to segregate the Artefact that can be satisfied with Policy/Trackers/Logs,,0,"2026-01-30T10:09:54Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-022,Training profile save issue,Sprint,sprint-1769504239258,Training Module,19,Medium,Done,0.5,0.00072917,,,"2026-01-29","When there are more than 200 employees, training created with all users are getting saved.",,0,"2026-01-29T11:40:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-074,On-prem settings design implementation,Sprint,sprint-1770615073846,Settings,18,High,Done,2.0,1.0,,,"2026-02-06","",,0,"2026-02-09T07:17:46Z",,0.0,Ready to Test,,0.0,,0.0,
+ADD-002,Login Page Dashboard API Issue,Additional,sprint-1769504239258,General,22,High,Done,2.0,0.12909722,,,"2026-01-29","",,0,"2026-01-29T10:28:19Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-036,Issue in Integration fields.,Bug,,Integration,22,High,Fixed,0.0,1.0041319,,,"2026-02-17","1. when user clicks any integration in that access key and secret key fields are user name password vaule is sittings by default.","",0,"2026-02-25T04:57:40Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-063,create CI/CD for sprint flow,Sprint,sprint-1769504239258,"",20,High,Done,0.5,0.0018055555,,,"2026-02-05",Create a pipeline where to deploy the sprintflow automatically.,,0,"2026-02-05T10:05:59Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-051,Making the System One-Command Deployable with Docker can run the entire application,Sprint,sprint-1769504239258,General,24,High,Done,2.0,5.484132,,,"2026-02-04","",,0,"2026-02-06T05:33:44Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-035,source file link,Sprint,sprint-1769504239258,Questionnare,25,High,Done,1.5,1.8856713,,,"2026-02-02",add a downloadble link in answers for the source file,,0,"2026-02-04T04:42:36Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-021,Change the Questionnaire page design.,Sprint,sprint-1769504239258,Questionnaire,18,High,Done,1.5,1.1733912,,,"2026-01-29",Need to add the new questionnaire page design with the same functionality.,,0,"2026-01-30T15:42:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-023,On-Premises docker container flow,Sprint,sprint-1769504239258,General,24,Medium,Done,1.0,1.6848611,,,"2026-01-29","",,0,"2026-02-02T04:58:53Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-028,On-Prem product flow discussion,Sprint,sprint-1769504239258,"",19,Medium,Done,0.5,0.00008102,,,"2026-02-02","",,0,"2026-02-02T05:50:18Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-027,Training save issue for more than 200 people,Sprint,sprint-1769504239258,Training,19,Medium,Done,0.5,0.00010417,,,"2026-02-02",Training save issue for more than 200 people,,0,"2026-02-02T05:49:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-020,AI Design Share,Sprint,sprint-1769677972065,"",30,Medium,Done,0.0,0.00005787,,,"2026-01-29",Got Approval from Vignesh,,0,"2026-02-02T05:40:00Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-015,WhizzC - Cytrust Product Comparion,Sprint,sprint-1769677972065,"",30,Medium,Done,1.0,1.8525232,,,"2026-01-29","",,0,"2026-02-02T05:50:42Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-031,Leadership meeting,Sprint,sprint-1769504239258,"",19,Medium,Done,0.5,0.00009259,,,"2026-02-02","",,0,"2026-02-02T05:56:18Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-029,On-Prem production settings page API creation,Sprint,sprint-1769504239258,Settings,19,Medium,Done,1.0,1.9623958,,,"2026-02-02","",,0,"2026-02-04T04:56:59Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-026,"Implement the error handling, loading states, snackbar in Questionnaire.",Sprint,sprint-1769504239258,Questionnaire,18,High,Done,0.5,0.34104165,,,"2026-02-02","",,0,"2026-02-02T13:40:01Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-024,Chatbot frontend design analysis,Sprint,sprint-1769504239258,ChatBot,21,Medium,Done,1.0,1.1088889,,,"2026-01-30","Analyze the chatbot frontend requirements, user flow, and UI expectations.
+Review existing references and define the design approach to be used
+for the chatbot interface implementation.",,0,"2026-02-02T08:10:45Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-016,Assessment Module Flow and FRD,Sprint,sprint-1769677972065,"",30,Medium,Done,2.0,2.9802084,,,"2026-01-29","",,0,"2026-02-03T08:55:31Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-032,Functionality corrections and code review.,Sprint,sprint-1769504239258,Questionnaire,18,Medium,Done,0.5,0.26644677,,,"2026-02-02","",,0,"2026-02-03T12:08:20Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-050,"creating a single docker-compose to run frontend,backend and db",Sprint,sprint-1769504239258,General,24,High,Done,1.0,0.35260418,,,"2026-02-04","",,0,"2026-02-04T13:31:29Z",,0.0,Ready to Test,,0.0,,0.0,
+ADD-003,Testing the whizz AI chat,Additional,sprint-1769504239258,whizz AI,26,High,Done,4.0,2.5162153,,,"2026-01-30","",,0,"2026-02-05T06:29:54Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-033,Training Module – Folder Structure Issue Fix,Sprint,sprint-1769504239258,Integration,23,Medium,Done,0.5,0.030231481,,,"2026-02-02",Investigate and resolve issues related to the folder structure and file organization within the Training Module.,,0,"2026-02-02T06:44:11Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-043,People Page Excel Upload Normalization,Sprint,sprint-1769504239258,People,22,Medium,Done,2.0,0.84028935,,,"2026-02-02","",,0,"2026-02-03T05:36:50Z",,0.0,Ready to Stage,,1.0,,0.0,sprint-1770615073846
+SP-042,Chatbot frontend UI review and final polish,Sprint,sprint-1769504239258,ChatBot,21,Medium,Done,1.0,0.0,,,"2026-02-02","Review the chatbot UI, fix UI/UX issues,
+and finalize the frontend design for handoff.",,0,"2026-02-06T05:19:15Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-049,Presentation Deck,Sprint,sprint-1769677972065,"",30,Medium,Done,0.25,3.494132,,,"2026-02-04","",,0,"2026-02-05T09:29:32Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-041,"Add chatbot loading, empty states, and UX enhancements",Sprint,sprint-1769504239258,ChatBot,21,Medium,Done,0.5,2.24125,,,"2026-02-02","Add loading indicators, empty chat state,
+and basic UX improvements for better interaction.",,0,"2026-02-06T05:19:04Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-040,Implement chatbot message UI and interaction flow,Sprint,sprint-1769504239258,General,21,Medium,Done,1.0,3.0269444,,,"2026-02-02","Implement UI handling for user messages and bot responses,
+including message alignment, timestamps, and scroll behavior.",,0,"2026-02-06T05:19:22Z",,0.0,Ready to Test,,0.0,,0.0,
+CHG-012,Multiple selection and download of selected items.,Change,,Artifact,22,Medium,To Do,0.0,0.0,,,"2026-02-03",Users are not able to select and download specific files or folders which are present in the drive.,"1. Go to drive and select the multiple evidence and download the selected evidence.",0,,,0.0,,,0.0,,0.0,
+CHG-013,Multiple selection in Drive Folders,Change,,Artifact,22,Low,To Do,0.0,0.0,,,"2026-02-03",Selecting and downloading multiple folders is not possible. Rather they need to download individual folders one by one,"1. Go to the artifact drive.
+2.Users can't select multiple folders and download them in Drive.",0,,,0.0,,,0.0,,0.0,
+CHG-014,Other category,Change,,TPRM,22,High,To Do,0.0,0.0,,,"2026-02-03","While adding vendor in the TPRM module, if the customer having any vendor that doesn't fall under our category list, the customer doesn't have the option to choose OTHER category and proceed. They are forced to choose from our given options.","1. create the add vendor.
+2. click the vendor category.",0,,,0.0,,,0.0,,0.0,
+SP-025,Microsoft Integration – Overview & Workflow,Sprint,sprint-1769504239258,Integration,23,High,Done,1.0,0.05528935,,,"2026-01-30","This task focuses on providing a high-level overview of the Microsoft integration and how it connects securely with the platform to fetch and manage organizational data.
+
+The integration uses Microsoft OAuth 2.0 for secure authentication and authorization, allowing users to grant limited, permission-based access to their Microsoft tenant. Once authorized, the system establishes a trusted connection and retrieves relevant data from Microsoft services such as Microsoft Entra ID (Azure AD) and Microsoft 365 APIs.",,0,"2026-02-02T08:03:59Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-146,Implement Microsoft SSO connection.,Sprint,sprint-1770615073846,Authentication,18,High,Done,0.5,0.8037153,,,"2026-02-18",Need to implement Microsoft SSO connection authentication.,,0,"2026-02-19T05:26:06Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-044,Marketing Training Blog,Sprint,sprint-1770615834256,"",30,Medium,Done,0.0,0.36145833,,,"2026-02-03","",,0,"2026-02-10T12:53:30Z",,0.0,Ready to Test,,0.0,,0.0,
+CHG-009,Drive Infinite scrolling,Change,,Artifact,22,Low,Fixed,0.0,1.0356597,,,"2026-02-03","1. drive,  uploaded files are shown in a list format which goes forever
+2.The user needs to keep on scrolling to reach the page end.","1. Artifact drive scroll.",0,"2026-02-09T10:17:07Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-037,Chatbot frontend UI wireframe and user flow design,Sprint,sprint-1769504239258,ChatBot,21,High,Done,0.5,0.35127315,,,"2026-02-02","Design the chatbot UI wireframe and define user flow including
+message layout, input section, actions, and screen states.
+",,0,"2026-02-02T17:34:45Z",,0.0,Ready to Test,,0.0,,0.0,
+CHG-010,No Folder upload option in Drive,Change,,Artifact,22,Low,To Do,0.0,0.0,,,"2026-02-03","1. Users cannot upload a folder as a whole
+2. While uploading a folder in drive, users can only select the files in a folder and upload them. If they need all evidences in a folder, they need to create a seperate folder and again upload all the files in it. Some users find it dragging instead of simple folder upload.","",0,,,0.0,,,0.0,,0.0,
+BUG-002,Address fields no validation.,Bug,,Settings,22,High,Done,0.0,0.11297454,,,"2026-01-22","1. there is no backend validation on county and state and city fields.","1. select all the fields and capture the request using burp suite.
+2. And then change the county and get the response it getting successfull.",0,"2026-02-06",,0.0,Ready to Test,,0.0,,0.0,
+SP-045,Dashboard Optimization,Sprint,sprint-1769504239258,Dashboard,22,High,Done,1.0,0.13398148,,,"2026-02-03",Need to Optimize the dashboard so that i won't take much time to load data,,0,"2026-02-03T09:33:13Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-047,address page bugs re-testing,Sprint,sprint-1769504239258,settings,26,High,Done,0.5,0.8934144,,,"2026-02-03","",,0,"2026-02-04T10:21:01Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-039,Chatbot frontend base layout and UI setup,Sprint,sprint-1769504239258,ChatBot,21,Medium,Done,1.0,2.0070486,,,"2026-02-02","Implement the base chatbot UI layout including chat container,
+header, message area, and input section.",,0,"2026-02-05T05:06:14Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-048,On-prem product code setup and settings flow analysis.,Sprint,sprint-1769504239258,Settings,18,Medium,Done,1.0,1.7064352,,,"2026-02-03","",,0,"2026-02-05T05:03:51Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-066,Assessment Module design and PRD,Sprint,,"",30,Medium,To Do,0.0,0.0,,,"2026-02-06","",,0,,,0.0,,,0.0,,0.0,
+SP-038,AI Auto Mapping deployment,Sprint,sprint-1769504239258,"",20,High,Done,0.5,0.00023148,,,"2026-02-02",Small security updated and patch fixes will be moved to prod in this deployment.,,0,"2026-02-04T05:28:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-046,Approval Page Filter Bug,Sprint,sprint-1769504239258,Approvals,22,Medium,Done,1.5,0.70282406,,,"2026-02-03",The Approval Page Filter should show only Purchased Frameworks.,,0,"2026-02-04T06:17:45Z",,0.0,Ready to Stage,,0.0,,0.0,
+BUG-016,Typographical error,Bug,,settings,22,Low,Done,0.0,0.008958333,,,"2026-02-04",add address and select the country Åland Islands and select the state and below state view the state typo.,"1. add address and select the country Åland Islands and select the state and below state view the state typo.",0,"2026-02-05",,0.0,Ready to Test,,0.0,,0.0,
+BUG-015,Add user in people,Bug,,People,22,High,To Do,0.0,0.0,,,"2026-02-04","1. when user provide single digit on employe id and click on save button. system through an error like staff name with this id already exists.",Add user choose single digit on employee id and provide proper creadentials on other fields. and click on save button.,0,,,0.0,,,0.0,,0.0,
+CHG-011,Navigation flow,Change,,Approvals,22,Low,Fixed,0.0,2.5725348,,,"2026-02-03","When there are multiple evidence against single artifact in approver module, after approving one evidence the tab closes and once again we are forced to go to the artifact and approve the pending evidence","1. upload the multiple evidence against into single artifact.
+2. send it all the evidence into approval.
+3.Go to the approval module select the artifact and approve the evidence note after approved the pop up page closed, we need to click again the artifact and approve.",0,"2026-02-05T09:06:58Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-055,Diff between old and new flow,Sprint,sprint-1769504239258,TPRM,20,High,Done,0.5,2.9252777,,,"2026-02-04","",,0,"2026-02-05T09:30:32Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-054,New FRD doc flow analysis,Sprint,sprint-1769504239258,TPRM,20,High,Done,0.5,2.9910765,,,"2026-02-04","",,0,"2026-02-05T10:02:05Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-080,Assessment and TPRM Simple Flow,Sprint,sprint-1769677972065,"",30,Medium,Done,0.25,0.05111111,,,"2026-02-06","",,0,"2026-02-06T06:32:33Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-069,UIDAI Review,Sprint,sprint-1770615834256,"",30,High,Done,0.5,5.803021,,,"2026-02-06","",,0,"2026-02-17T11:41:01Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-056,Flow Discussion with Kaviranjini,Sprint,sprint-1769504239258,TPRM,20,High,Done,0.5,2.9911458,,,"2026-02-04","",,0,"2026-02-05T10:02:11Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-053,Old flow analysis,Sprint,sprint-1769504239258,TPRM,20,High,Done,0.5,0.00083333,,,"2026-02-04","",,0,"2026-02-04T10:07:32Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-017,Framework filter,Bug,,Approvals,22,High,Done,0.0,0.0,,,"2026-02-06",The Approval Page Filter should show only Purchased Frameworks.,"",0,"2026-02-06",,0.0,Ready to Test,,0.0,,0.0,
+SP-052,Settings API testing,Sprint,sprint-1769504239258,Settings,19,Medium,Done,1.0,0.7874537,,,"2026-02-04","",,0,"2026-02-05T04:44:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-068,CSCRF - Tables,Sprint,sprint-1771825655592,"",30,Medium,Done,0.0,3.387014,,,"2026-02-06","",,0,"2026-02-25T09:47:00Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-058,On-Prem Settings page design and authentication flow,Sprint,sprint-1769504239258,Settings,18,High,Done,2.0,3.0586805,,,"2026-02-05","",,0,"2026-02-06T05:33:18Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-070,FRD document review and flow discussion,Sprint,sprint-1769504239258,Audit Module,19,Medium,Done,1.0,2.9183333,,,"2026-02-06","",,0,"2026-02-09T05:22:19Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-065,TPRM Design and PRD,Sprint,sprint-1770615834256,"",30,Medium,Done,0.0,0.0,,,"2026-02-06","Dhanusha is working on it if shared need to share final document with team
+DEsign has been shared (6/2)",,0,"2026-02-13T05:08:50Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-019,AI Evidence Verification,Sprint,sprint-1771825655592,"",30,Medium,Blocked,0.5,11.97997,Working on other modules will pick the task after that,"2026-02-06T05:40:32.241Z","2026-01-29","",,0,,,0.0,,,0.0,,0.0,
+SP-084,Whizz AI Testing,Sprint,sprint-1770615073846,Whizz AI,26,High,Done,1.0,1.0,,,"2026-02-09","",,0,"2026-02-11T06:27:06Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-067,Dashboard and Trust Center,Sprint,sprint-1771825655592,"",30,Medium,Blocked,0.0,0.0,"On hold. Due to Assessment, TPRM and mapping priority","2026-02-06T05:41:40.875Z","2026-02-06","",,0,,,0.0,,,0.0,,0.0,
+task-1769510649539,Automation on approvals,Sprint,sprint-1771825706501,Approvals,26,Medium,To Do,3.0,0.0,,,"2026-01-27","1. Artifact approve and reject & rework.
+2. approval percentage.
+3. approvals by, date submission, owner assigned.",,0,,,0.0,,,0.0,,0.0,
+SP-057,Re-testing,Sprint,sprint-1769504239258,General,26,Medium,Done,1.0,4.037049,,,"2026-02-05","1. Dashboard navigation.
+2. bulk upload file in people.
+3. loading timeing increases.
+4. approval module framework filter correction.
+5. bug - 002
+6. bug - 003
+7. bug - 005
+8. bug - 006
+9. bug - 007
+10. chg - 001 ",,0,"2026-02-06T13:17:20Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-006,Testing the AI evidence verification,Sprint,sprint-1770615073846,Artifact,26,High,Done,10.0,4.809963,,,"2026-01-30","",,0,"2026-02-10T06:46:37Z",,6.364269732013889,Ready to Test,,0.0,,0.0,
+SP-071,ISNP,Sprint,,"",30,Medium,To Do,0.0,0.0,,,"2026-02-06","",,0,,,0.0,,,0.0,,0.0,
+SP-079,Policy acknowledgement module code analysis,Sprint,sprint-1770615073846,settingsPolicy,21,High,Done,1.0,2.0,,,"2026-02-06","Analyze the policy acknowledgement module code to understand the
+current flow, data handling, and user interactions.
+This analysis will help align future UI or integration changes
+with the existing implementation.
+",,0,"2026-02-09T07:24:34Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-076,docker containers all services running properly ,Sprint,sprint-1770615073846,General,24,High,Done,1.0,2.0,,,"2026-02-06","",,0,"2026-02-10T04:56:10Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-018,approvals module filter issue.,Bug,,Approvals,22,High,To Do,0.0,0.0,,,"2026-02-09","1. unwanted frameworks are listing in status and department filters.","1. Go to the approvals module.
+2. select the status filter and department filter.",0,,,0.0,,,0.0,,0.0,
+BUG-019,promting issue in whizz AI,Bug,,Whizz AI,25,High,Done,0.0,0.0,,,"2026-02-09","1. AI response was wrong.","1. promt a number or special character.
+2. then promt about whizzc there is no response",0,"2026-02-12",,0.0,Ready to Test,,0.0,,0.0,
+SP-085,Ms365 integration checks analysing,Sprint,sprint-1770615073846,Integration,23,High,Done,0.5,0.0,,,"2026-02-09","Separate checklist tables for:
+
+MS365 applicable checks
+
+Intune applicable checks
+
+Purview applicable checks
+
+Defender applicable checks
+
+Structured data ready for compliance analysis and monitoring integration.",,0,"2026-02-10T05:01:34Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-089,On-Prem product FRD document clarification,Sprint,sprint-1770615073846,"",19,Medium,Done,0.25,0.00041667,,,"2026-02-09","",,0,"2026-02-09T10:03:56Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-090,Sprint meeting & production deployment plan,Sprint,sprint-1770615073846,"",19,Medium,Done,0.25,0.00020833,,,"2026-02-09","",,0,"2026-02-09T10:05:04Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-020,Need edit and delete.,Bug,,Whizz AI,25,High,Done,0.0,0.0,,,"2026-02-09",Need edit and delete option for promting the question.,"1. Need edit and delete option for promting the question.",0,"2026-02-12",,0.0,Ready to Test,,0.0,,0.0,
+SP-097,chatbot-changes,Sprint,sprint-1770615073846,AI-Chatbot,25,Medium,Done,1.0,0.45184028,,,"2026-02-10","edit and copy option in chat bot
+query with attachment 
+",,0,"2026-02-10T13:36:53Z",,0.0,Ready to Stage,,1.3396180555555555,,0.0,sprint-1770615073846
+SP-087,Login page design corrections,Sprint,sprint-1770615073846,Login,18,Medium,Done,0.25,0.44086805,,,"2026-02-09","",,0,"2026-02-09T13:31:37Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-021,Need feedback and improvement.,Bug,,Whizz AI,25,High,Done,0.0,0.0,,,"2026-02-10","1. Need like and dislike for the reponse 
+For like:
+It tells the AI system: “This answer was helpful.”
+Helps improve future responses
+For dislike:
+It signals: “This answer is wrong or not helpful.”
+Helps developers find mistakes","",0,"2026-02-12",,0.0,Ready to Test,,0.0,,0.0,
+SP-096,Ms365 Checks Implementation in Database,Sprint,sprint-1770615073846,Integration,23,High,Done,1.0,1.0,,,"2026-02-10",Implemented database structure for storing MS365 compliance checks and mapped checks based on applicable services.,,0,"2026-02-11T05:22:52Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-092,Policy Acknowledgement Status - Change,Sprint,sprint-1770615073846,People,22,High,Done,1.0,1.1684722,,,"2026-02-09","",,0,"2026-02-10T12:32:13Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-022,Format file sample from AI,Bug,,Whizz AI,25,High,To Do,0.0,0.0,,,"2026-02-10","1. when user ask any sample document or provide me a sample excel file the ai does not providing the sample file.","",0,,,0.0,,,0.0,,0.0,
+SP-095,docker container deploy a live server,Sprint,sprint-1770615073846,General,24,High,Done,2.0,1.3718402,,,"2026-02-10","",,0,"2026-02-11T12:58:29Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-012,Session expiry is not effectively reflected in production,Bug,,QA,22,High,To Do,0.0,0.0,,,"2026-01-28","Whenever a session is expired or idle, it does not redirect to login page or session expiry error page directly whenever the user interacts with an expired session. Instead it shows inaccurate data belonging to expired session.
+2. After manual refresh the page gets logged out, after user logged in the side menu module not displaying.","1. After logging into the artifact module, stay on the page for a specific period of time, then start uploading and searching for items.",0,,,0.0,,,0.0,,0.0,
+BUG-024,File with comments.,Bug,,Whizz AI,25,High,Done,0.0,0.0,,,"2026-02-10","1. when user promt using file with comments the AI only validates the file not the comments.","",0,"2026-02-12",,0.0,Ready to Test,,0.0,,0.0,
+SP-098,Testing the Questionarie module,Sprint,sprint-1770615073846,Questionarie,26,High,Done,2.0,2.0,,,"2026-02-10","",,0,"2026-02-12T09:38:39Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-088,Assessment page table and api creation,Sprint,sprint-1770615073846,Assessment,19,Medium,Done,4.0,5.306701,,,"2026-02-09",API creation done for assessment page,,0,"2026-02-16T12:35:17Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-086,Implement on-prem settings- Location entity and Domain sub-module.,Sprint,sprint-1770615073846,Settings,18,High,Done,1.0,1.0,,,"2026-02-09","Need to add GET, PUT and POST and DELETE functionlity.",,0,"2026-02-12T04:55:34Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-023,Page not found.,Bug,,Whizz AI,25,High,Done,0.0,1.775868,,,"2026-02-10","1. AI provides the sample and example link when user clicks that link the page redirect and getting error page not found.","",0,"2026-02-12",,0.0,Ready to Test,,0.0,,0.0,
+SP-102,Policy acknowledgement UI and behavior fine tuning,Sprint,sprint-1770615073846,Policy,21,Medium,Done,1.0,0.89947915,,,"2026-02-11","Fine tune the policy acknowledgement UI and user behavior
+based on new project setup and usability review.",,0,"2026-02-12T13:30:17Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-118,BUG-027,Sprint,sprint-1770615073846,AI-Chatbot,25,Medium,Done,0.1,0.0,,,"2026-02-12",Remove whizzai module from the side menu bar,,0,"2026-02-15T18:54:00Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-091,Questionnare changes,Sprint,sprint-1770615073846,Questionnare,25,Medium,Done,1.0,0.9796181,,,"2026-02-09",Suggestion changes in questionnare,,0,"2026-02-10T06:15:18Z",,0.0,Ready to Stage,,1.3406597222222223,,0.0,sprint-1770615073846
+SP-135,WhizzC Product Feature Documentation,Sprint,,WhizzC,30,Medium,To Do,0.0,0.0,,,"2026-02-17","Need to create a document detailing WhizzC Features, how to work around and things in roadmap",,0,,,0.0,,,0.0,,0.0,
+BUG-025,improper error message.,Bug,,Approvals,22,High,To Do,0.0,0.0,,,"2026-02-10","1. when user approve the policy, the unwanted error message is displaying.","1. approve the policy",0,,,0.0,,,0.0,,0.0,
+ADD-005,adding,Additional,,ding ,40,Medium,Done,0.25,0.0,,,"2026-02-10","",,0,"2026-02-12T09:07:47Z",,0.0,,,0.0,,0.0,
+BUG-001,change start date mandatory to non-mandatory,Bug,,People,22,High,Fixed,0.0,0.44538194,,,"2026-02-11","1. people module while adding the employee start is mandatory field change to non-mandotory field.","",0,"2026-02-11T13:33:47Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-094,Implement policy acknowledgement flow updates,Sprint,sprint-1770615073846,Policy,21,Medium,Done,1.0,0.7842014,,,"2026-02-10","Implement required updates to the policy acknowledgement flow
+based on the completed code analysis.
+This includes updating the frontend behavior, handling acknowledgement
+states, and ensuring proper integration with existing logic.",,0,"2026-02-10T13:36:45Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-101,Policy acknowledgement setup adjustments in new project,Sprint,sprint-1770615073846,Policy,21,Medium,Done,1.0,1.0,,,"2026-02-11","Apply required adjustments to the policy acknowledgement flow
+after setting it up in the new project environment.
+Includes configuration updates and minor behavior changes.",,0,"2026-02-11T21:10:25Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-108,Implementation of on-prem SSO creation.,Sprint,sprint-1770615073846,General,18,High,Done,1.0,2.170382,,,"2026-02-12","For SSO added a List, POST, GET, UPDATE, DELETE",,0,"2026-02-16T06:04:56Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-137,Analysing the authentication flow of on prem product,Sprint,sprint-1770615073846,on-prem,23,High,Done,1.0,1.5126736,,,"2026-02-17",Analysing the authentication flow of on prem product,,0,"2026-02-18T09:32:34Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-027,remove Whizz AI in side menu module,Bug,,Whizz AI,25,High,Done,0.0,0.0,,,"2026-02-11",Remove the whizzc ai module in side menu bar,"",0,"2026-02-18T11:54:06Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-104,People Page Training Status - Change,Sprint,sprint-1771825706501,People,22,High,To Do,1.0,0.0,,,"2026-02-11",Another High Priority bug has been assigned so puttin this bug to hold.,,0,,,0.0,,,0.0,,0.0,
+BUG-034,evidence upload in production,Bug,,Artifact,22,High,To Do,0.0,0.0,,,"2026-02-16","1. when user uploads the evidence for offer letter artifact after few more seconds the evidence does not uploading.","1. upload the evidence in Offer Letter - Acknowledged.",0,,,0.0,,,0.0,,0.0,
+BUG-026,Notification overlapping,Bug,,Notification,22,High,To Do,0.0,0.0,,,"2026-02-11","1. Artifact-approved notification are overlapping.","",0,,,0.0,,,0.0,,0.0,
+SP-113,ms defender connection setup,Sprint,sprint-1770615073846,Integration,23,High,Done,0.5,0.4438889,,,"2026-02-12","To implement and configure a secure connection between the application and Microsoft defender using Microsoft Graph APIs, enabling automated security, compliance, and data governance checks.",,0,"2026-02-13T05:32:01Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-103,Ms Intune integration connection set-up,Sprint,sprint-1770615073846,Integration,23,High,Done,1.5,1.0,,,"2026-02-11","The objective of this task is to implement a secure connection between the application and Microsoft Intune using Microsoft Graph API. This integration enables the system to authenticate with Microsoft services, retrieve device management and compliance data, and perform security and configuration checks related to Microsoft Intune.
+The connection will use Azure Active Directory (Microsoft Entra ID) application authentication with Client ID, Client Secret, and Tenant ID.",,0,"2026-02-12T05:10:44Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-117,BUG-028,Sprint,sprint-1770615073846,AI VERIFICATION,25,Medium,Done,0.5,0.20878473,,,"2026-02-12",AI displays deleted or unapproved artifact evidence in Questionnaire source links,,0,"2026-02-15T18:53:57Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-115,"Adding Approved By, Acknowledgement Required, Policy Status and Framework Filters in Policy Organization Page - Change",Sprint,sprint-1770615073846,Policy,22,High,Done,1.0,1.1061805,,,"2026-02-12","",,0,"2026-02-16T04:46:36Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-110,Ms purview integration connection setup,Sprint,sprint-1770615073846,Integration,23,High,Done,0.5,0.9101736,,,"2026-02-12","To implement and configure a secure connection between the application and Microsoft Purview using Microsoft Graph APIs, enabling automated security, compliance, and data governance checks.",,0,"2026-02-12T12:59:31Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-106,chatbot - changes,Sprint,sprint-1770615073846,AI-Chatbot,25,Medium,Done,1.0,0.9251389,,,"2026-02-11",UI and answer changes,,0,"2026-02-12T12:59:34Z",,0.0,Ready to Stage,,0.1815625,,0.0,sprint-1770615073846
+SP-114,Microsoft Intune Integration – Check Implementation,Sprint,sprint-1770615073846,Integration,23,High,Done,0.5,0.4379861,,,"2026-02-12","To implement Microsoft Intune security and compliance checks by integrating with Microsoft Graph APIs and retrieving device management, application, and compliance-related data for monitoring and assessment.",,0,"2026-02-13T05:32:13Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-112,Adding a Framework Filter in Policy Library Page - Change,Sprint,sprint-1770615073846,Policy,22,High,Done,0.75,0.20503472,,,"2026-02-12","",,0,"2026-02-12T11:38:25Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-109,Vector db research,Sprint,sprint-1770615073846,AI-Chatbot,25,Medium,Done,0.5,0.9175,,,"2026-02-12",research to change the jsonl files to vector db,,0,"2026-02-12T12:58:46Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-107,Deploying a live server in DigitalOcean,Sprint,sprint-1770615073846,General,24,High,Done,1.0,0.93958336,,,"2026-02-12","",,0,"2026-02-12T13:23:04Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-111,Roles & Permission implementation for Questionnaire and Chatbot,Sprint,sprint-1770615073846,Roles,18,High,Done,0.5,0.72100693,,,"2026-02-12","",,0,"2026-02-12T12:57:26Z",,0.0,Ready to Stage,,0.1896875,,0.0,sprint-1770615073846
+SP-105,BUG-001 People Page Bug,Sprint,sprint-1770615073846,People,22,High,Done,0.75,0.43649307,,,"2026-02-11","",,0,"2026-02-11T13:29:31Z",,0.0,Ready to Stage,,0.18586805555555555,,0.0,sprint-1770615073846
+SP-127,Analysing the on prem code,Sprint,sprint-1770615073846,on-prem,23,High,Done,0.8,0.91260415,,,"2026-02-16",Code Analysing the on prem code,,0,"2026-02-17T05:20:53Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-030,Improper error message in user&role in production,Bug,,User & Role,22,High,To Do,0.0,0.0,,,"2026-02-12","1. while hard deleting the user in the user&roles there is no proper error message.
+2. Change to--> This user is assigned in some other module or this user is assigned in artifact module.","1. create the user in user&role.
+2. assign in some artifacts.
+3. hard delete the user.",0,,,0.0,,,0.0,,0.0,
+SP-093,Monthly Production Release Notes,Sprint,sprint-1770615834256,"",30,Medium,Done,0.0,0.122777775,,,"2026-02-09","",,0,"2026-02-16T06:14:55Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-131,On-prem user creation,Sprint,sprint-1770615073846,Settings,18,High,Done,1.0,1.1050347,,,"2026-02-16","POST, DELETE. GET, LIST and UPDATE functionality.",,0,"2026-02-17T10:07:28Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-031,AI identification mark missing,Bug,,Artifact,22,High,To Do,0.0,0.0,,,"2026-02-13","1. when user upload the evidence in the artifact after AI verified.
+2. AI verification mark is missing.","",0,,,0.0,,,0.0,,0.0,
+SP-036,Microsoft Integration – Connection Setup,Sprint,sprint-1770615073846,Integration,23,High,Done,2.05,14.657809,,,"2026-02-02","stablish a secure connection between the application and Microsoft services to enable seamless data synchronization and API communication. Implement OAuth-based authentication, configure permissions, and ensure reliable token handling for accessing Microsoft APIs such as users, emails, calendar, and files.",,0,"2026-02-09T05:34:30Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-120,Implementing Management Commands for microsoft Integration,Sprint,sprint-1770615073846,Integration,23,High,Done,1.0,0.60270834,,,"2026-02-13","To implement backend management commands for executing automated cloud integration checks (Microsoft 365, Intune, Defender, Purview) through scheduled or manual execution without requiring API triggers.",,0,"2026-02-13T09:53:25Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-136,WhizzC - Onprem Product FRD,Sprint,,Whizz-Onprem,30,Medium,To Do,0.0,0.0,,,"2026-02-17",Need to work on FRD document for WhizzC On prem product,,0,,,0.0,,,0.0,,0.0,
+SP-128,Google SSO implementation,Sprint,sprint-1770615073846,Authentication,18,High,Done,1.0,0.31368056,,,"2026-02-16",Need to implement google sso connection for the on-prem sign-in page.,,0,"2026-02-18T04:39:09Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-116,BUG-029,Sprint,sprint-1770615073846,AI-QUESTIONNARE,25,Medium,Done,0.5,0.698993,,,"2026-02-12","When user uploads and gets the generated answer suddenly user navigates to check the evidence to the artifact module. When user come back to the questionnaire module, there is no data remains every answer will get removed when we go other modules or pages.",,0,"2026-02-13T10:49:40Z",,0.0,Ready to Stage,,0.18916666666666665,,0.0,sprint-1770615073846
+BUG-032,Multiple times address saving.,Bug,,Settings,22,High,To Do,0.0,0.0,,,"2026-02-13","1. when user clicks multiple times on address save button the address is saving multiple times.","1. add address and provide all the credentials.
+2. click the save button and again click the save button click twice.",0,,,0.0,,,0.0,,0.0,
+SP-122,Master and Mapping table creation,Sprint,sprint-1770615073846,Assessment Module,19,Medium,Done,0.5,0.18059027,,,"2026-02-13","",,0,"2026-02-13T07:27:55Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-121,Verify policy acknowledgement flow in new project setup,Sprint,sprint-1770615073846,policy,21,Medium,Done,1.0,0.9160069,,,"2026-02-13","Verify the policy acknowledgement flow end-to-end
+in the new project setup.",,0,"2026-02-14T22:51:24Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-123,BUG-025 Improper Error Message,Sprint,sprint-1770615073846,Approvals,22,High,Done,0.25,0.13989583,,,"2026-02-13","",,0,"2026-02-13T07:10:17Z",,0.0,Ready to Stage,,0.19822916666666668,,0.0,sprint-1770615073846
+SP-124,Unplanned - Office task(visiting hotels),Sprint,sprint-1770615073846,"",19,Medium,Done,0.75,0.0003125,,,"2026-02-16","",,0,"2026-02-16T05:13:57Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-154,Soc 2 Report Preparation,Sprint,sprint-1771310676523,SiteRecon,40,Medium,In Progress,0.35,0.0,,,"2026-02-18",Prepare the SOC 2 Type 2 Report for SiteRecon,,0,,"2026-02-19T13:03:31Z",0.0,,,0.0,,0.0,
+SP-125,Fix issues found during policy acknowledgement verification,Sprint,sprint-1770615073846,Policy,21,Medium,Done,1.0,0.95361114,,,"2026-02-16","Fix any issues identified during the verification of the
+policy acknowledgement flow in the new project setup.
+Includes functional fixes and minor UI or behavior adjustments.",,0,"2026-02-17T05:21:12Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-119,using a railway cloud monitoring deploying a live server,Sprint,sprint-1770615073846,General,24,Medium,Done,1.0,1.2649653,,,"2026-02-12","",,0,"2026-02-16T07:36:26Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-126,post-deployment sanity testing in production environment,Sprint,sprint-1770615073846,General,26,High,Done,1.0,1.0612848,,,"2026-02-16","1. post-deployment sanity testing in production environment
+2. Production Smoke Testing",,0,"2026-02-17T06:24:31Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-129,Report generation tool research and flow ,Sprint,sprint-1770615073846,AI-Report generation,25,Medium,Done,2.0,3.0908334,,,"2026-02-16",Plan and architecture Report generation international tool ,,0,"2026-02-19T09:57:18Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-134,"Master, Mapping table data migration to DB",Sprint,sprint-1770615073846,Master,19,Medium,Done,4.0,4.0569096,,,"2026-02-16",Migrate master and mapping table data to DB,,0,"2026-02-23T04:57:19Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-033,service add button is missing.,Bug,,Settings,22,High,To Do,0.0,0.0,,,"2026-02-16","1. The service add button is missing in the settings module.
+2. Remove the service column.","",0,,,0.0,,,0.0,,0.0,
+SP-132,Adding the policy ack status filter in people change,Sprint,sprint-1770615073846,People,22,Medium,Done,0.25,0.08013889,,,"2026-02-16","",,0,"2026-02-16T09:58:31Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-133,Adding Filter for Policy Status in People Page,Sprint,sprint-1770615073846,People,22,Medium,Done,0.5,0.17697917,,,"2026-02-16","Adding filter on People page
+",,0,"2026-02-16T12:57:20Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-130,Analyze the complete product flow of aliceblue,Sprint,sprint-1770615073846,General,24,Medium,Done,1.0,0.81309026,,,"2026-02-16","Login Flow
+Dashboard Flow
+Darkweb monitoring flow",,0,"2026-02-17T06:20:05Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-140,Analyze policy acknowledgement flow with OTP requirement,Sprint,sprint-1770615073846,policy,21,Medium,Done,1.0,0.8015278,,,"2026-02-17","Analyze the existing policy acknowledgement flow and understand
+where and how OTP verification needs to be integrated.
+Review the current implementation, OTP triggering points,
+and validation flow before starting development.
+",,0,"2026-02-18T05:00:53Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-040,artifact name in lowercase,Bug,,Artifact,22,Low,To Do,0.0,0.0,,,"2026-02-18","1. acceptance records for delivered software in first letter need to be capitalization.","",0,,,0.0,,,0.0,,0.0,
+SP-139,Testing the GitHub integration.,Sprint,sprint-1770615073846,integration,26,High,Done,2.0,1.0509027,,,"2026-02-17","",,0,"2026-02-18T06:50:14Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-138,Analyze the flow for an cyberxtron integration setup,Sprint,sprint-1770615073846,Integration,24,High,Done,1.0,0.7900347,,,"2026-02-17",Integrate CyberXTron threat intelligence into our product to fetch and display security alerts.,,0,"2026-02-18T05:18:55Z",,0.0,Ready to Test,,0.0,,0.0,
+ADD-007,Sprint Flow KT to team members,Additional,sprint-1771310676523,WhizzC,40,Medium,Done,0.05,0.006875,,,"2026-02-17", KT and walkthrough about Sprint and Sprintflow app to GRC Team members,,0,"2026-02-17T07:30:07Z",,0.0,,,0.0,,0.0,
+SP-141,Scope Document for JazzHQ,Sprint,sprint-1771310676523,Jazz HQ,42,Medium,Done,0.25,0.001978888,,,"2026-02-17","Created the Scope Statement for ISMS, GDPR and SOC2 Type 2",,0,"2026-02-17T07:08:57Z",,0.006145381944444445,,,0.0,,0.0,
+CHG-015,Evidence automatic navigation,Change,,Artifact,22,High,To Do,0.0,0.0,,,"2026-02-18","1. When user uploads multiple evidence against single artifact.
+2. After AI verifies the evidence, the user needs to force upload the evidence. When one evidence is force uploaded, it is done. After the page not navigating to the another evidence user needs to click the another page.","1. Upload 2 or 3 evidence against a single artifact.
+2. After AI verification, click the force upload.
+3. the page list remains same verified evidence.",0,,,0.0,,,0.0,,0.0,
+SP-142,Release Notes Share,Sprint,sprint-1770615834256,Product,30,Medium,Done,0.0,0.059930556,,,"2026-02-17",Release notes to be shared with customer. Need to get the email list of customers then update,,0,"2026-02-17T07:34:29Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-155,CMMI - reply mail,Sprint,sprint-1771310676523,Starlight,38,High,Done,0.05,0.0146875,,,"2026-02-18","Biswajit mailed regarding the next steps in the CMMI project. 
+Sent reply mail for his availability to work on the next steps",,0,"2026-02-18T06:30:14Z",,0.0,,,0.0,,0.0,
+SP-159,Fill project update sheet for chitra mam,Sprint,sprint-1771310676523,Other,38,High,Done,0.15,0.3876276,,,"2026-02-18",need to update the sheet ,,0,"2026-02-18T13:21:38Z",,0.3343643055555555,,,0.0,,0.0,
+SP-148,Policies generation,Sprint,sprint-1771310676523,Jazz HQ,42,Medium,Done,0.1,0.0,,,"2026-02-18",Need to complete Generation of policies and follow up with team once and get verified with SPOC and proceed further,,0,"2026-02-18T06:33:41Z",,0.0,,,0.0,,0.0,
+SP-167,Geaminds Web VAPT call,Sprint,sprint-1771310676523,Geaminds,44,Low,Done,0.05,0.0,,,"2026-02-18","4o clock call to discuss the reported web & clooud vulnerabilities",,0,"2026-02-18T11:08:54Z",,0.0,,,0.0,,0.0,
+BUG-037,result data is missing,Bug,,cloud scanning,22,High,Fixed,0.0,0.0,,,"2026-02-18","1. there is no region, descrription, risk and remediation.","1. microsoft 365 check the results in cloud scanning.",0,"2026-02-19T09:07:16Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-153,Requirement Sheet,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.13444445,,,"2026-02-18",Need to prepare a requirement sheet what needs to be done from vealthx team and whizzc team,,0,"2026-02-18T07:08:40Z",,0.0,,,0.0,,0.0,
+SP-165,Standup & followup clients,Sprint,sprint-1771310676523,General,44,Medium,Done,0.1,0.0,,,"2026-02-18","Followup call & mail sent to Fluid, Pickyourtrial, MKagrotech(Botree,Beeapp & Cloud) & Terzo Phishing Campaign(10-11)",,0,"2026-02-18T07:11:50Z",,0.0,,,0.0,,0.0,
+SP-162,jazzhq call for application walthrough,Sprint,sprint-1771310676523,jazzhq,44,Medium,Done,0.05,0.0765625,,,"2026-02-18",VAPT Application Walthrogh,,0,"2026-02-18T07:12:00Z",,0.0,,,0.0,,0.0,
+SP-163,Salespanda,Sprint,sprint-1771310676523,General,44,High,In Progress,0.0,0.0,,,"2026-02-18",Mobile Applcation testing,,0,,"2026-02-20T13:20:12Z",0.0,,,0.0,,0.0,
+BUG-039,Evidence not storing in drive in production,Bug,,Artifact,22,High,To Do,0.0,0.0,,,"2026-02-18","1. when user uploads any image file or excel file or pdf after force upload the file is not storing in drive.","1. upload the any excel or image or pdf file in artifact.
+2. force upload the evidence and check into the drive.",0,,,0.0,,,0.0,,0.0,
+SP-166,VEALTHX Progress Call,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.05392361,,,"2026-02-18",To close the evidence (12:30-1:30pm),,0,"2026-02-18T07:57:41Z",,0.0,,,0.0,,0.0,
+BUG-041,artifact status.,Bug,,Artifact,22,High,To Do,0.0,0.0,,,"2026-02-18","1. When the user uploads evidence manually instead of using the default template and sends it for approval, the status does not change to Pass after approval, and the dashboard count is not increased.
+However, after de-linking the default template, the status changes to Pass and the dashboard count is updated correctly.","1. upload the evidence manually.
+2. approve the evidence check the status list and dashboard copunt.",0,,,0.0,,,0.0,,0.0,
+SP-164,Testing the microsoft integration,Sprint,sprint-1770615073846,Integration,26,High,Done,2.0,1.0873611,,,"2026-02-18",Testing the microsoft 365 integration testing,,0,"2026-02-19T07:33:25Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-168,Internal Audit,Sprint,sprint-1771310676523,Klamp Inc,41,High,Done,0.1,0.20795138,,,"2026-02-18",Connect with Shiza to complete the internal audit (3:00 -4:00pm),,0,"2026-02-18T11:21:16Z",,0.0,,,0.0,,0.0,
+SP-143,test,Sprint,sprint-1770615073846,test,25,Medium,Done,1.0,2.2384722,,,"2026-02-17",testtesttesttesttesttest,,0,"2026-02-19T09:57:05Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-160,JazzHq call at 12:00,Sprint,sprint-1771310676523,JazzHq,38,Low,Done,0.05,0.24243055,,,"2026-02-18",VAPT walkthrough for Jazzhq product. Joining to have context of the product,,0,"2026-02-18T08:26:41Z",,0.0,,,0.0,,0.0,
+SP-161,vealthx call at 12:30 ,Sprint,sprint-1771310676523,VealthX,38,High,Done,0.05,0.0015972222,,,"2026-02-18",Call suhasini for escalation,,0,"2026-02-18T08:27:31Z",,0.0,,,0.0,,0.0,
+SP-151,Evidence Uploading,Sprint,sprint-1771310676523,TATA 1mg,39,Medium,Done,0.25,0.39902776,,,"2026-02-18",Uploading sample evidence of whizzc for TATA 1mg,,0,"2026-02-18T08:36:53Z",,0.0,,,0.0,,0.0,
+BUG-042,connect button is displaying,Bug,,cloud scanning,24,High,Fixed,0.0,0.0,,,"2026-02-18","1. without clicking the testconnection button the connect button is displaying.
+2. when user clicks the connect button before the unwanted error message is displaying.","1. Go to cloud scanning module.
+2. Create the account and provide the credentials and click the connect button.",0,"2026-02-18T11:47:24Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-035,Improper error message.,Bug,,Integration,24,High,To Do,0.0,0.0,,,"2026-02-17","1. when user provide another GitHub APP ID saves the account error message was wrong.
+2. same in private key another key submitted and clicks on create error message was wrong.","1. provide improper GitHub app id.
+2. Provide other account private key.",0,,,0.0,,,0.0,,0.0,
+SP-174,WhizzC Template Share,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.05,0.030972222,,,"2026-02-18",Need to download applicable templates from WhizzC portal and share it with Vealthx Spoc,,0,"2026-02-18T11:57:39Z",,0.0,,,0.0,,0.0,
+SP-170,Client Updates for Chitra Mam,Sprint,sprint-1771310676523,Client Sheet Update,41,High,Done,0.05,0.05378472,,,"2026-02-18",Client Sheet Update for Chitra Mam,,0,"2026-02-18T09:29:52Z",,0.0,,,0.0,,0.0,
+SP-169,Client Updates for Chitra Mam,Sprint,sprint-1771310676523,Client details update,39,High,Done,0.05,0.055208333,,,"2026-02-18",Client Updates for Chitra Mam,,0,"2026-02-18T09:30:13Z",,0.0,,,0.0,,0.0,
+SP-152,Summarized Sheet Methodology Document - For AI auto mapping,Sprint,sprint-1770615834256,AI Auto Mapping,30,Medium,Done,0.0,1.0644791,,,"2026-02-18",Need to work on methodology document on how we work on summarized sheet for AI Auto mapping,,0,"2026-02-20T05:00:57Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-157,CCPA report to marketboats ,Sprint,sprint-1771310676523,Marketboats,38,Low,Done,0.15,0.06552083,,,"2026-02-18",Need to send CCPA report to marketboats ,,0,"2026-02-19T05:01:27Z",,0.0,,,0.0,,0.0,
+SP-172,Internal Audit - Klamp.ai,Sprint,sprint-1771310676523,Others,39,Medium,Done,0.05,0.12284722,,,"2026-02-18",Klamp.ai Internal audit,,0,"2026-02-18T11:07:28Z",,0.0,,,0.0,,0.0,
+ADD-008,WhizzC Product KT,Additional,sprint-1771310676523,Whizzc Product,39,Medium,Done,0.0,0.039340276,,,"2026-02-18",WhizzC Product Knowledge Transfer,,0,"2026-02-18T11:31:09Z",,0.0,,,0.0,,0.0,
+SP-173,Product KT session,Sprint,sprint-1771310676523,Tata1MG Vendor,42,Medium,Done,0.05,0.0,,,"2026-02-18","attended KT session regarding a Priority task
+Request to Complete Vendor Risk Assessment Questionnaire",,0,"2026-02-18T11:31:15Z",,0.0,,,0.0,,0.0,
+SP-158,Internal audit for klamp  ,Sprint,sprint-1771310676523,Klamp,38,Low,Done,0.05,0.29815972,,,"2026-02-18",Shadow for Internal audit to klamp  ,,0,"2026-02-18T12:12:43Z",,0.0,,,0.0,,0.0,
+SP-150,Setup a onprem product for docker ,Sprint,sprint-1770615073846,Integration,24,High,Done,1.0,1.02125,,,"2026-02-18",setup a frontend backend and db for a onprem product,,0,"2026-02-19T05:29:15Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-208,OnPrem docker container implementing in the other system ,Sprint,sprint-1770615073846,Policy,24,High,Done,1.5,1.1557986,,,"2026-02-19",onprem container setup in other system to verify functionalities is working,,0,"2026-02-20T13:09:12Z",,0.0,Ready to Test,,0.0,,0.0,
+ADD-009,Terzo CMMC Evidence Review,Additional,sprint-1770615834256,Customer Support,30,Medium,Done,0.25,1.0646528,,,"2026-02-18",Worked on CMMC Evidence list,,0,"2026-02-20T05:01:02Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-181,onprem product for docker container,Sprint,sprint-1770615073846,General,24,High,Done,1.0,0.709375,,,"2026-02-19",container a frontend backend and db in single command,,0,"2026-02-19T11:11:20Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-178,Terzo CMMC Checklist Preparation,Sprint,sprint-1771310676523,Terzo,40,Medium,Done,0.25,0.7587847,,,"2026-02-18",Worked along with Kaviranjani in Terzo's CMMC checklist,,0,"2026-02-19T10:34:13Z",,0.0,,,0.0,,0.0,
+SP-176,Evidence Upload,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.1,0.0,,,"2026-02-18",need to review and validate the evidence and upload in the WhizzC portal,,0,"2026-02-18T13:43:52Z",,0.0,,,0.0,,0.0,
+SP-177,Vendor Risk Assessment Questionnaire,Sprint,sprint-1771310676523,Tata1MG,42,Medium,Done,0.25,0.0,,,"2026-02-18","As part of ongoing efforts to ensure robust governance and compliance, a Third-Party Risk Assessment is being conducted for all our key vendors and partners.
+
+completed the attached questionnaire to help clients understand and validate their security, compliance, and operational practices.",,0,"2026-02-18T13:43:53Z",,0.0,,,0.0,,0.0,
+SP-228,Gosense Document Preparation,Sprint,sprint-1771310676523,Gosense,44,Medium,Done,0.25,0.0,,,"2026-02-20",Working with Harish for the Gosense testing methodologies & audit plan document,,0,"2026-02-20T13:18:53Z",,0.0,,,0.0,,0.0,
+SP-180,Stand Up,Sprint,sprint-1771310676523,Main and internal Standup,41,Medium,Done,0.1,0.0003125,,,"2026-02-19","Main standup 10:15 to 10:35
+internal stand up 10:40 - 10:50 
+also connected with Sumiya for timesheet",,0,"2026-02-19T05:30:49Z",,0.0,,,0.0,,0.0,
+SP-147,Add OTP verification to policy acknowledgement flow,Sprint,sprint-1770615073846,Policy,21,Medium,Done,1.0,1.0544097,,,"2026-02-18","- OTP is successfully generated and sent during policy acknowledgement
+- OTP is validated before completing the acknowledgement
+- Policy acknowledgement completes only after successful OTP verification
+- Failure and retry scenarios are handled gracefully
+- No regression in the existing policy acknowledgement flow",,0,"2026-02-19T05:32:12Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-179,Meeting with New CMMC Vendor,Sprint,sprint-1771310676523,Terzo,40,Medium,Done,0.05,0.7586111,,,"2026-02-18",Meeting with Santosh and Akanksha from gcaicert for Terzo's CMMC discussion,,0,"2026-02-19T10:34:08Z",,0.0,,,0.0,,0.0,
+SP-175,Initiating Security Awareness training,Sprint,sprint-1771310676523,Mk Agrotech,39,Medium,Done,0.05,4.021806,,,"2026-02-18",Initiating Security Awareness training for Arun (Mk Agrotech),,0,"2026-02-24T12:20:30Z",,0.0,,,0.0,,0.0,
+SP-197,Progress Call,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.06614583,,,"2026-02-19",Connect with Vealthx SPOC to close evidence,,0,"2026-02-19T07:34:58Z",,0.0,,,0.0,,0.0,
+SP-226,Masoom C4c CLoud,Sprint,sprint-1771310676523,MKAgrotech,44,High,Done,0.05,0.0,,,"2026-02-20",Call connect with Masoom team to share the pre-requisities and testing methodologies for their C4C Cloud,,0,"2026-02-20T13:16:53Z",,0.0,,,0.0,,0.0,
+SP-184,Stand up,Sprint,sprint-1771310676523,Main Standup and GRC intern standup,42,Medium,Done,0.1,0.00083333,,,"2026-02-19","10:15 to 10:35 main stand-up meeting
+10:40 to 11 internal grc stand up meeting",,0,"2026-02-19T05:38:44Z",,0.0,,,0.0,,0.0,
+SP-189,Implement training module flow in current project,Sprint,sprint-1771825706501,Training,21,Medium,Done,2.0,1.9895834,,,"2026-02-19","Implement the training module flow in the current project
+based on the finalized integration approach.
+Ensure compatibility with existing modules and flows.",,0,"2026-02-26T04:53:48Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-182,Authentication issue in the Refresh token.,Sprint,sprint-1770615073846,Authentication,18,High,Done,0.5,0.11381944,,,"2026-02-19","When the acess token is expired, the refresh token is not validating or invoking the access token, which causes the page to move to the sign in page after few minutes. 
+But the actual process should invoke the access token when it is expired using the refresh token.",,0,"2026-02-19T06:28:31Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-191,Morning Stand up,Sprint,sprint-1771310676523,GRC Team,38,Low,Done,0.05,0.00003472,,,"2026-02-19",Conducted internal morning stand up ,,0,"2026-02-19T06:25:06Z",,0.0,,,0.0,,0.0,
+SP-183,Evidence Validation,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.1,0.1190625,,,"2026-02-19",GSS tea m posted evidence needs to review and approve,,0,"2026-02-19T06:33:11Z",,0.0,,,0.0,,0.0,
+SP-195,Follow up with biswajit,Sprint,sprint-1771310676523,Starlight,38,High,Done,0.05,0.0018055555,,,"2026-02-19","follow up with biswajit for CMMI
+",,0,"2026-02-19T06:27:36Z",,0.0,,,0.0,,0.0,
+SP-194,VAPT walkthrough call,Sprint,sprint-1771310676523,Jazz HQ,42,Medium,Done,0.1,0.06493056,,,"2026-02-19",requested access to VAPT walkthrough recording with Jazzhq team to understand procedure,,0,"2026-02-19T06:44:06Z",,0.0,,,0.0,,0.0,
+SP-196,GDPR Policies KT,Sprint,sprint-1771310676523,Jass HQ,41,Medium,Done,0.05,0.031597223,,,"2026-02-19",KT provided for sangeetha in GDPR policies,,0,"2026-02-19T07:02:07Z",,0.0,,,0.0,,0.0,
+SP-193, marketboats for the pims ,Sprint,sprint-1771310676523,Marketboats,38,Low,Done,0.0,0.08239584,,,"2026-02-19",Need to follow up Anirudh of the pims and ccpa,,0,"2026-02-19T07:07:15Z",,0.0,,,0.0,,0.0,
+SP-199,Policy review and approval,Sprint,sprint-1771310676523,Vealthx,41,High,Done,0.1,0.22239584,,,"2026-02-19",Need to upload policies for vealthx team and make changes in version history & need to approve the policies,,0,"2026-02-19T09:24:03Z",,0.0,,,0.0,,0.0,
+SP-202,MKAgrotech AWS Fixing Discussion,Sprint,sprint-1771310676523,MkAgrotech,44,Medium,Done,0.15,0.0,,,"2026-02-19","1hr call to discuss the cloud open issue",,0,"2026-02-19T08:13:42Z",,0.0,,,0.0,,0.0,
+SP-192,Documents maganti risk register ,Sprint,sprint-1771310676523,Maganti IT,38,Medium,Done,0.1,0.25604168,,,"2026-02-19",Work on the manganti IT risk register,,0,"2026-02-19T09:10:19Z",,0.0,,,0.0,,0.0,
+SP-185,Test and verify OTP verification in policy acknowledgement flow,Sprint,sprint-1770615073846,Policy,21,Medium,Done,0.5,0.42128474,,,"2026-02-19","Test the OTP verification flow added to the policy acknowledgement process.
+Verify OTP generation, validation, retry and failure scenarios,
+and ensure policy acknowledgement completes only after successful OTP verification
+without any regression in the existing flow.
+and next design changes in policy acknowledgement",,0,"2026-02-19T09:02:23Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-200,BUG-037 - Cloud Scan,Sprint,sprint-1770615073846,Cloud Scanning,22,High,Done,0.3,0.17083333,,,"2026-02-19",Fixing empty fields bug in cloud scan result view,,0,"2026-02-19T09:06:05Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-205,WIZ-634 - Cloud Scan Account segregation,Sprint,sprint-1770615073846,Cloud Scanning,22,High,Done,0.3,0.36548612,,,"2026-02-19",Need to segregate Cloud Scan Report with respect to user account,,0,"2026-02-19T13:33:54Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-203,KT session RISK Resgister,Sprint,sprint-1771310676523,Maganti,42,Low,Done,0.2,0.12833333,,,"2026-02-19","KT session on Risk register for Maganti Project
+by from Aravind",,0,"2026-02-19T10:15:20Z",,0.0,,,0.0,,0.0,
+SP-204,Client Visit - Lucas-TVS -,Sprint,sprint-1771310676523,LUCAS-TVS,45,Medium,Done,0.3,0.0014583333,,,"2026-02-19",Went for clarification discussion on Firewall Review Report,,0,"2026-02-19T09:25:08Z",,0.0,,,0.0,,0.0,
+SP-198,preparing testcases for GitHub integration,Sprint,sprint-1770615073846,Integration,26,Medium,Done,1.0,0.92496526,,,"2026-02-19",Writing down the both negative and positive testcases for the Git integration,,0,"2026-02-20T06:59:14Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-186,Generation of remaining Policies,Sprint,sprint-1771310676523,Jazz HQ,42,Low,Done,0.25,0.463555,,,"2026-02-19","Need to get KT from Team and complete the remaining Policy generation for GDPR framework
+dependency",,0,"2026-02-23T12:35:54Z",,1.9853091587847222,,,0.0,,0.0,
+SP-206,GDPR Report,Sprint,sprint-1771310676523,Klamp Inc,41,High,Done,0.2,1.0247178,,,"2026-02-19",Need to complete the GDPR Draft Report and close it,,0,"2026-02-27T06:06:17Z",,4.513153392951389,,,0.0,,0.0,
+SP-187,Analyze training module flow for reuse in current project,Sprint,sprint-1770615073846,Training,21,Medium,Done,0.5,0.47722223,,,"2026-02-19","Analyze the existing training module to understand its flow,
+business logic, and reusable components that need to be
+adapted for the current project.",,0,"2026-02-23T04:51:57Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-190,Verify training module integration in current project,Sprint,sprint-1771825706501,Training,21,Medium,Done,0.5,0.40871528,,,"2026-02-19","Verify the training module functionality after integration
+and ensure there are no regressions in the current project.",,0,"2026-02-26T13:28:25Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-201,Study about HR department policies for Collection of Evidence,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.2,0.075555556,,,"2026-02-19",Need to study about polices available in HR team for collection of evidence - need to connect with HR team member for inputs and updates,,0,"2026-02-19T10:52:47Z",,0.0,,,0.0,,0.0,
+SP-209,Jazzhq Cloud VAPT,Sprint,sprint-1771310676523,Jazzhq,44,Low,Done,0.5,0.119479164,,,"2026-02-19",AWS CLoud Assessment has been initiated,,0,"2026-02-19T12:26:57Z",,0.0,,,0.0,,0.0,
+SP-217,TPRM Blog,Sprint,,Marketing Blog,30,Medium,To Do,0.0,0.0,,,"2026-02-20",Need TPRM Blog by march 2nd week,,0,,,0.0,,,0.0,,0.0,
+SP-207,SOC 2 and ISO 27001 SA Meeting,Sprint,sprint-1771310676523,Terzo,40,Medium,Done,0.05,0.0,,,"2026-02-19",Meeting with Terzo Divya to discuss on the Evidences for ISO SA and SOC 2 Type 2,,0,"2026-02-19T13:03:20Z",,0.0,,,0.0,,0.0,
+SP-171,assessment module design,Sprint,sprint-1770615073846,on-prem-assessment module,23,High,Done,2.0,1.3647223,,,"2026-02-18","The Assessment Module is used to evaluate, measure, and record the performance, compliance level, or risk status of an organization, vendor, process, or system based on predefined criteria. This module helps organizations conduct structured assessments and maintain proper records for analysis and decision-making.",,0,"2026-02-19T13:20:37Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-210,KT session SOC2 report genration,Sprint,sprint-1771310676523,Internal,42,Low,Done,0.25,0.0,,,"2026-02-19",Learn how soc2 report will be generated using cloudfront,,0,"2026-02-19T13:26:51Z",,0.0,,,0.0,,0.0,
+SP-211,Team huddle GRC,Sprint,sprint-1771310676523,Internal,42,Medium,Done,0.1,0.0,,,"2026-02-20","Team meeting 
+discussed today priority tasks
+current project status
+whizzc & jazzhq",,0,"2026-02-20T05:11:03Z",,0.0,,,0.0,,0.0,
+SP-212,Terzo Timesheet,Sprint,sprint-1771310676523,Terzo,40,Medium,Done,0.05,0.025243055,,,"2026-02-20",Create the Monthly Timesheet and Share it with Sumaiya,,0,"2026-02-20T05:20:49Z",,0.0,,,0.0,,0.0,
+SP-222,ai auto mapping changes,Sprint,sprint-1770615073846,AI AUTO-MAPPING,25,Medium,Done,1.0,0.00065972,,,"2026-02-20",Unable to extract indian based compliance need to change the algorithm to extract that too,,0,"2026-02-20T08:15:33Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-215,Scope statement review,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.1,0.0,,,"2026-02-20","Need to get whizzc scope statement reviewed by Narren
+ISMS and PIMS|
+Take key notes for feedback",,0,"2026-02-20T06:03:52Z",,0.0,,,0.0,,0.0,
+SP-214,"Implement Error Handling, Validation and Alert On-prem settings.",Sprint,sprint-1770615073846,Settings,18,Medium,Done,0.5,1.0304861,,,"2026-02-20","Need to implement Error handling, field level validations and snackbar alert and some design corrections.",,0,"2026-02-23T05:47:32Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-216,Uploading Policies for Masoom Group,Sprint,sprint-1771310676523,Masoom Group,39,Medium,Done,0.05,0.1584375,,,"2026-02-20",Uploading Policies for Masoom Group,,0,"2026-02-20T07:03:00Z",,0.0,,,0.0,,0.0,
+SP-221,WIZ-629 - Cloud Scanning,Sprint,sprint-1771825706501,Cloud Scanning,22,Medium,Done,0.5,1.5969098,,,"2026-02-20",The Scan header name acronyms is showing in camel case letters have to fix it,,0,"2026-02-23T12:34:44Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-218,Mail to biswajit,Sprint,sprint-1771310676523,Starlight,38,High,Done,0.1,0.25413194,,,"2026-02-20",assisting their HR for vendor assessment ,,0,"2026-02-20T08:50:00Z",,0.0,,,0.0,,0.0,
+SP-213,Collection of evidence/artefacts from HR and DEV Team,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.4,0.0,,,"2026-02-20","Need to check with remaining evidence with HR dept study DEV artefacts/policies and connect with Dev Team for artefacts and evidence
+
+For asset management also get available evidence",,0,"2026-02-20T08:31:07Z",,0.0,,,0.0,,0.0,
+SP-223,build and deploy,Sprint,sprint-1770615073846,AI-Report generation,25,Medium,Done,1.0,0.00017361,,,"2026-02-20",Now need to build and deploy the ai report generation for both internal and external tool,,0,"2026-02-20T08:15:25Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-029,Page navigation in questionarie,Bug,,Questionarie,25,High,Done,0.0,0.0,,,"2026-02-12","1. When user uploads and gets the generated answer suddenly user navigates to check the evidence to the artifact module. When user come back to the questionnaire module, there is no data remains every answer will get removed when we go other modules or pages.","1. upload the questions.
+2. generate the answers.
+3. redirect to the other module and again come to questionarie module.",0,"2026-02-20",,0.0,Ready to Test,,0.0,,0.0,
+BUG-028,AI displays deleted or unapproved artifact evidence in Questionnaire source links,Bug,,Questionarie,25,High,Done,0.0,0.0,,,"2026-02-12","The Questionnaire module retrieves AI-generated answers using approved evidence from the Artifact module. However, when evidence is deleted, modified, or marked as not approved in the Artifact module, the AI continues to display outdated evidence in the source link section of the Questionnaire module.","",0,"2026-02-20",,0.0,Ready to Test,,0.0,,0.0,
+BUG-038,Filter state maintain,Bug,,cloud scanning,22,High,Done,0.0,0.0,,,"2026-02-18","1. Select the filter in cloud scanning.
+2. And click any checks to view the status, and back again. The user needs to click the filter again.","1. Go to the cloud scanning module.
+2. Select the filter in cloud scanning.
+3. And click any checks to view the status.
+4. Back again, the user needs to click the filter again.",0,"2026-02-20",,0.0,Ready to Test,,0.0,,0.0,
+BUG-043,D-link issue,Bug,,Artifact,22,High,Done,0.0,0.0,,,"2026-02-20","1. The file is updated twice in the artifact. 
+2. When the user d-links the evidence is not working.","",0,"2026-02-20",,0.0,Ready to Test,,0.0,,0.0,
+SP-224,BUG-038 : Filter State Bug,Sprint,sprint-1770615073846,Cloud Scanning,22,Medium,Done,0.35,0.1675,,,"2026-02-20",Filter value should remain still even if we navigate to a particular scan and came back,,0,"2026-02-20T11:24:38Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-227,VealthX VAPT Discussion,Sprint,sprint-1771310676523,VealthX,44,Medium,Done,0.1,0.0,,,"2026-02-20",Connected with Client to discuss the open issue & the securiy fixes,,0,"2026-02-20T13:17:47Z",,0.0,,,0.0,,0.0,
+SP-220,Testing the bitbucket,Sprint,sprint-1770615073846,Integration,26,High,Done,0.5,0.70815974,,,"2026-02-20",Testing the Bitbucket integration.,,0,"2026-02-23T04:40:24Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-229,Phishing Simulation,Sprint,sprint-1771310676523,Terzo,44,High,Done,0.05,0.0,,,"2026-02-20","After getting confirmation with Terzo team, the phishing simulation has been initiated.",,0,"2026-02-20T13:19:32Z",,0.0,,,0.0,,0.0,
+SP-149,OAuth method integration issue in the redirect url.,Sprint,sprint-1770615073846,Integration,18,High,Done,0.5,0.94777775,,,"2026-02-18","OAuth redirect URL is mismatched for Bitbucket, Google Workspace, GitLab, and Zoho People in the cloud product.",,0,"2026-02-23T04:56:48Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-242,Follow Up Mail's,Sprint,sprint-1771310676523,"Fluid, Bugbuster Labs",41,Medium,Done,0.05,0.0,,,"2026-02-23",Followed up reg availability for both clients and scheduled call for fluid,,0,"2026-02-23T06:43:21Z",,0.0,,,0.0,,0.0,
+SP-230,Team huddle GRC,Sprint,sprint-1771310676523,Internal,42,Medium,Done,0.1,0.0,,,"2026-02-23","Discussed today priority tasks
+important updates",,0,"2026-02-23T05:38:45Z",,0.0,,,0.0,,0.0,
+SP-064,Table diff and its column,Sprint,sprint-1771825706501,TPRM,20,High,In Progress,1.0,0.0,,,"2026-02-05","",,0,,"2026-02-05T10:05:09Z",0.0,,,0.0,,0.0,
+SP-241,Sales Panda - iOS Assessment,Sprint,sprint-1771310676523,SalesPanda,45,Medium,Blocked,0.3,0.023399407,Task Overlap - Resolute Corp AWS Cloud Retest,"2026-02-23T06:56:59.601Z","2026-02-23",Sales Panda - iOS Assessment,,0,,,0.0075225284375,,,0.0,,0.0,
+SP-234,Testing the Gitlab integration,Sprint,sprint-1771825706501,Integration,26,High,Done,1.0,0.9565625,,,"2026-02-23",Testing the Gitlab integration,,0,"2026-02-24T12:38:07Z",,0.0,Ready to Test,,0.0,,0.0,
+task-1768374412204,Application Containerization Kickoff Call,Sprint,sprint-1771825706501,"",20,Medium,Blocked,0.5,10.910933,Gani team said to wait a week till they prepare for the document,"2026-01-29T04:58:55.111Z","2026-01-14","This call had the discussion of all the services we use for deploying WhizzC product.
+Told about all the flow and the config we had the services we use.",,0,,,0.0,,,0.0,,0.0,
+SP-233,Testing the Gitlab integration,Sprint,sprint-1770615073846,Integration,26,High,To Do,1.0,0.0,,,"2026-02-23",Testing the Gitlab integration,,0,,,0.0,,,0.0,,0.0,
+SP-225,on Prem cloud policy functionalities migrations,Sprint,sprint-1771825706501,General,24,High,Done,1.5,1.810139,,,"2026-02-20",Cloud product policy table and API's should be implemented in the On Prem product,,0,"2026-02-24T11:44:26Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-238,Testing the on-prim product,Sprint,sprint-1771825706501,Whizzc-2,26,High,To Do,2.0,0.0,,,"2026-02-23",Testing the on-prim product,,0,,,0.0,,,0.0,,0.0,
+SP-244,Progress call,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.0,,,"2026-02-23",Needs to collect the evidence and close the reqirements,,0,"2026-02-23T13:40:31Z",,0.0,,,0.0,,0.0,
+SP-246,Whilter AI - Source Code Review,Sprint,sprint-1771310676523,General,45,Low,Blocked,0.0,1.0938318,Task Overlap - Zceppa,"2026-02-24T09:53:55.779Z","2026-02-23",Quartely Cyclic Assessment,,0,,,0.0,,,0.0,,0.0,
+SP-240,Resolute Corp - AWS Cloud Retest,Sprint,sprint-1771310676523,Resolute Corp,45,Medium,Done,0.1,0.1521541,,,"2026-02-23",RC AWS Cloud Retest and Call with Client regarding Network & Azure Retest Status,,0,"2026-02-24T13:15:17Z",,1.5415537499999998,,,0.0,,0.0,
+SP-236,Testing the Microsoft Azure integration,Sprint,sprint-1771825706501,Integration,26,High,To Do,0.65,0.0,,,"2026-02-23",Testing the Microsoft Azure integration,,0,,,0.0,,,0.0,,0.0,
+SP-243,Evidence Upload,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.29118055,,,"2026-02-23",Shared evidence in Mail and shared folder uploaded in whizzc product also reviewed and approved,,0,"2026-02-23T09:04:52Z",,0.0,,,0.0,,0.0,
+SP-231,collection of evidence,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.35,0.0,,,"2026-02-23",need to collect evidence for IT department and upload on whizzc portal,,0,"2026-02-23T06:52:29Z",,0.0,,,0.0,,0.0,
+SP-245,artefacts link,Sprint,sprint-1771310676523,Masoom Group,42,Medium,Done,0.35,0.04517361,,,"2026-02-23",upload the policy documents using the links in the Artifacts tab,,0,"2026-02-23T08:23:17Z",,0.0,,,0.0,,0.0,
+SP-248,KT session with Chitra MAM,Sprint,sprint-1771310676523,Internal,42,Medium,Done,0.1,0.0,,,"2026-02-23","Attended session with Chitra Mam and noted key takeaway on how to address any projects from now on
+made note of new updates",,0,"2026-02-23T09:12:18Z",,0.0,,,0.0,,0.0,
+SP-252,Evidence Upload,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.05,0.10850695,,,"2026-02-23",Uploading submitted evidence into WhizzC product,,0,"2026-02-23T11:37:09Z",,0.0,,,0.0,,0.0,
+SP-251,IT evidence collection,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.25,0.07003472,,,"2026-02-23","Connected with DEV team Gladwin for requested artefacts for Information Technology department
+received updated docs",,0,"2026-02-23T10:38:25Z",,0.0,,,0.0,,0.0,
+SP-250,Chitra Mam,Sprint,sprint-1771310676523,WhizzC,41,Medium,Done,0.05,0.05920139,,,"2026-02-23",Reg the Project discussion,,0,"2026-02-23T10:10:00Z",,0.0,,,0.0,,0.0,
+SP-239,Correction and Changes in the On-prem product.,Sprint,sprint-1771825706501,Settings,18,Medium,Done,0.5,0.80222225,,,"2026-02-23",Design and functionality changes in the on prem product.,,0,"2026-02-23T12:40:55Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-232,Bitbucket intesting and wrinting down the testcases,Sprint,sprint-1771825706501,Integration,26,High,Done,1.0,0.5245139,,,"2026-02-23",Writing the test cases and testing the bitbucket,,0,"2026-02-24T04:50:00Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-188,Design integration approach for training module in current project,Sprint,sprint-1771825706501,Training,21,Medium,Done,1.0,1.0117362,,,"2026-02-19","Define how the training module logic will be integrated into
+the current project, including required changes, dependencies,
+and flow alignment.",,0,"2026-02-24T04:58:34Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-237,Testing the ZOHO people integration,Sprint,sprint-1771825706501,Integration,26,High,To Do,1.0,0.0,,,"2026-02-23",Testing the ZOHO people integration,,0,,,0.0,,,0.0,,0.0,
+SP-235,Testing the Google Cloud Platform integration,Sprint,sprint-1771825706501,Integration,26,High,To Do,0.9,0.0,,,"2026-02-23",Testing the Google Cloud Platform integration,,0,,,0.0,,,0.0,,0.0,
+SP-249,GDPR KT,Sprint,sprint-1771310676523,WhizzC,41,Medium,Done,0.1,0.3009375,,,"2026-02-23",KT provided to Sangeetha in GDPR policies and Documentation,,0,"2026-02-23T11:37:05Z",,0.0,,,0.0,,0.0,
+SP-254,meeting with Jazzhq,Sprint,sprint-1771310676523,Jazz HQ,42,Medium,Done,0.1,0.050555557,,,"2026-02-23",Meeting with Barry/vijay from Jazz Hq to discuss weekly progress and requirements to proceed with next steps of audit,,0,"2026-02-23T12:03:47Z",,0.0,,,0.0,,0.0,
+SP-271,creating API functionalities for policy module,Sprint,sprint-1771825706501,Policy,24,High,Done,1.0,1.0919098,,,"2026-02-24",creating a api functionalities and design,,0,"2026-02-25T20:40:58Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-253,Progess Call,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.1,0.06694444,,,"2026-02-23",Connected with SPOC and collected pending evidence,,0,"2026-02-23T12:09:10Z",,0.0,,,0.0,,0.0,
+SP-247,Queries in regard to IT artefacts,Sprint,sprint-1771310676523,WhizzC,42,Low,Blocked,0.4,0.0,"Need further verification for few artefacts and understand few policies within IT Department to acquire evidence
+will connect with SPOC as per scheduled availability KT needed to proceed further","2026-02-23T12:54:23.697Z","2026-02-23","Session for clarification of doubts in regard to WhizzC product IT dept artefacts/evidence update 
+SPOC - aravind",,0,,,0.0,,,0.0,,0.0,
+BUG-045,Notification count,Bug,,Notification,22,High,To Do,0.0,0.0,,,"2026-02-24","1. When the user viewed the notification and clicked on ""Clear All,"" after clearing the notification, the count was displayed. After a manual refresh, the count was removed.","1. Go to the notification feature.
+2. Click on the clear all.",0,,,0.0,,,0.0,,0.0,
+SP-265,BUG-044 : Acknowledgment mailing Bug,Sprint,sprint-1771825706501,Policy,22,High,To Do,0.5,0.0,,,"2026-02-24",Individual policy should be able to send for ack,,0,,,0.0,,,0.0,,0.0,
+SP-256,Evidence Validation,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.05,0.049965277,,,"2026-02-24",Needs to validate the evidence and approve it,,0,"2026-02-24T05:02:07Z",,0.0,,,0.0,,0.0,
+SP-259,Daily stand up,Sprint,sprint-1771310676523,WhizzC,42,Medium,Done,0.1,0.0,,,"2026-02-24","Team meeting with Chitra Mam
+GRC",,0,"2026-02-24T05:30:23Z",,0.0,,,0.0,,0.0,
+SP-257,Daily Standup,Sprint,sprint-1771310676523,WhizzC,41,Medium,Done,0.05,0.082465276,,,"2026-02-24",Connect with Chitra ma'am reg the day priority,,0,"2026-02-24T05:42:12Z",,0.0,,,0.0,,0.0,
+SP-267,External Audit Call,Sprint,sprint-1771310676523,Klamp Inc.,41,Medium,Done,0.15,0.19496527,,,"2026-02-24",External Audit Call - SOC2 Type2,,0,"2026-02-24T11:40:10Z",,0.0,,,0.0,,0.0,
+SP-270,People page design and functionalities migration,Sprint,sprint-1771825706501,People,18,High,Done,1.0,1.0960417,,,"2026-02-24",Need to implement People page frontend and backend migration on the On-prem product.,,0,"2026-02-25T20:31:21Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-266,Zceppa - Web VAPT,Sprint,sprint-1771310676523,General,45,Medium,In Progress,56.0,0.0,,,"2026-02-24",Started Zceppa WEB Assessment,,0,,"2026-02-24T09:56:01Z",0.0,,,0.0,,0.0,
+SP-263,PlantNext PPT and Scope DOC prep - Kick off call,Sprint,sprint-1771310676523,Plantnxt,42,Medium,Done,0.5,0.17951389,,,"2026-02-24","Preparing for Kick off call 
+
+On-boarding Plantnext - ISO27001 certification
+
+call 3-4:00 pm",,0,"2026-02-24T10:00:06Z",,0.0,,,0.0,,0.0,
+SP-261,KT,Sprint,sprint-1771310676523,Whizzc,41,Medium,Done,0.05,0.5406597,,,"2026-02-24",KT reg the Kickoff to sangeetha,,0,"2026-02-24T10:06:40Z",,0.0,,,0.0,,0.0,
+SP-264,Call Preparation,Sprint,sprint-1771310676523,Fluid,41,Medium,Done,0.05,0.08541667,,,"2026-02-24",For next process to collect evidence,,0,"2026-02-24T10:06:44Z",,0.0,,,0.0,,0.0,
+SP-255,Progress Call,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.7454514,,,"2026-02-23",Need to close the requirements by collecting over call,,0,"2026-02-24T10:06:50Z",,0.0,,,0.0,,0.0,
+SP-268,MOM and scope statement creation for Plantnxt,Sprint,sprint-1771310676523,PlantNxt,42,Medium,Done,0.4,0.0,,,"2026-02-24",Crate MOM and scope statement for Plantnxt and verify with spoc and share to Client EOD,,0,"2026-02-24T13:31:46Z",,0.0,,,0.0,,0.0,
+SP-272,Resolute Corp - Web - Sharesquare Retest,Sprint,sprint-1771310676523,General,45,High,Done,0.1,0.0,,,"2026-02-24",Resolute Corp - Web - Sharesquare Retest,,0,"2026-02-24T13:16:14Z",,0.0,,,0.0,,0.0,
+SP-258,create assessment module,Sprint,sprint-1771825706501,Assessment -on_prem,23,High,Done,1.0,2.9744098,,,"2026-02-24",create assessment module,,0,"2026-02-26T12:44:56Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-260,BUG-036 - Integration field Issue,Sprint,sprint-1771825706501,Integration,22,Medium,Done,0.25,0.990625,,,"2026-02-24",Previously saved email id and passwords are being auto filled.,,0,"2026-02-25T04:56:54Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-276,Evidence Validation,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.10690972,,,"2026-02-25",Vealthx team shared few evidence needs to review and upload in WhizzC portal,,0,"2026-02-25T05:59:47Z",,0.0,,,0.0,,0.0,
+SP-274,Resolute Corp - Network Mitigation Discussion Call,Sprint,sprint-1771310676523,Resolute Corp,45,High,Done,0.1,0.0,,,"2026-02-24",Connected with RC for Network VAPT Mitigation Query support. Meeting held for 51mins,,0,"2026-02-24T13:19:41Z",,0.0,,,0.0,,0.0,
+SP-262,Mapping changes,Sprint,sprint-1771825706501,AI AUTO-MAPPING,25,Medium,Done,1.0,0.741043,,,"2026-02-24",Need to update mapping algorithm for indian based compliance,,0,"2026-02-24T13:20:19Z",,0.0003022486111111,Ready to Test,,0.0,,0.0,
+SP-275,Daily Stand Up,Sprint,sprint-1771310676523,whizzC,41,Medium,Done,0.05,0.0,,,"2026-02-25",Attended daily stand up 10:00-10:25,,0,"2026-02-25T05:07:15Z",,0.0,,,0.0,,0.0,
+SP-269,Implementation of Approval module design.,Sprint,sprint-1771825706501,Approval,18,High,Done,0.5,1.1036111,,,"2026-02-24",Implementation of Approval module design on the on-prem product.,,0,"2026-02-25T20:31:14Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-273,WIZ-781 : Bulk send for approval,Sprint,sprint-1771825706501,Policy,22,Medium,Done,0.5,0.18197916,,,"2026-02-24",Need to add a bulk button for send for approval,,0,"2026-02-25T05:57:21Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-044,Acknowledgment mailing,Bug,,Policy,22,High,To Do,0.0,0.0,,,"2026-02-24","1. When the user selects the particular policy, the user is not able to send an acknowledgement mail for the particular user.","1. select the policy.
+2. send for ack.",0,,,0.0,,,0.0,,0.0,
+SP-279,Scope Documentation,Sprint,sprint-1771310676523,GSS TVL,41,Medium,Done,0.05,0.056805555,,,"2026-02-25",Needs to prepare a scope document and finalize with GSS team,,0,"2026-02-25T06:27:05Z",,0.0,,,0.0,,0.0,
+SP-280,Evidence review,Sprint,sprint-1771310676523,GSS TVL,41,Medium,Done,0.05,0.057152778,,,"2026-02-25",Need to upload the evidence and approve,,0,"2026-02-25T06:56:01Z",,0.0,,,0.0,,0.0,
+SP-277,WIZ-780 : Policy Re-Approval,Sprint,sprint-1771825706501,Policy,22,Medium,Done,0.0,0.35805556,,,"2026-02-25",Policy should be eligible for re-approval after editing,,0,"2026-02-25T08:00:53Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-288,Daily Standup,Sprint,sprint-1771310676523,Whizzc,41,Medium,Done,0.05,0.01795139,,,"2026-02-26",Connected with Chitra ma'am for day priority and task need to de done,,0,"2026-02-26T05:06:36Z",,0.0,,,0.0,,0.0,
+SP-295,Artifact send for approval functionality implementation.,Sprint,sprint-1771825706501,Assessment,18,Medium,In Progress,0.5,0.0,,,"2026-02-26",Artifact send for approval functionality implementation.,,0,,"2026-02-26T08:35:24Z",0.0,,,0.0,,0.0,
+SP-289,Evidence Collection,Sprint,sprint-1771310676523,WhizzC,41,Medium,Done,0.1,0.1053125,,,"2026-02-26",Connect with SPOC for pending evidence collection,,0,"2026-02-26T05:57:17Z",,0.0,,,0.0,,0.0,
+SP-284,Progress Call,Sprint,sprint-1771310676523,GSS,41,Medium,Done,0.1,0.079479165,,,"2026-02-25",Collected the pending Evidence also validated over the call and approved,,0,"2026-02-25T11:56:12Z",,0.0,,,0.0,,0.0,
+SP-296,Risk Assessment design and functionality migration.,Sprint,sprint-1771825706501,Risk Assessment,18,Medium,In Progress,1.0,0.0,,,"2026-02-26",Risk Assessment design and functionality migration.,,0,,"2026-02-26T08:37:20Z",0.0,,,0.0,,0.0,
+SP-285,WIZ-820 : Policy Name Bug,Sprint,sprint-1771825706501,Policy,22,Medium,Done,0.5,0.089375,,,"2026-02-25",multiple policies can be created using same name by changing case and adding space,,0,"2026-02-25T12:50:55Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-278,Progress Call,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.1,0.05621528,,,"2026-02-25",Connect with SPOC to collect the pending evidence and rectify doubts.,,0,"2026-02-25T12:53:31Z",,0.0,,,0.0,,0.0,
+SP-299,Design integration approach for TPRM module in current project,Sprint,sprint-1771825706501,TPRM,21,Medium,In Progress,0.5,0.0,,,"2026-02-27","Define how the TPRM module logic will be integrated into
+the current project, including required changes,
+dependencies, and flow alignment.",,0,,"2026-02-27T08:49:05Z",0.0,,,0.0,,0.0,
+SP-282,DPDPA Draft Report,Additional,sprint-1771825655592,general,30,Medium,Done,0.1,0.3369097,,,"2026-02-25",DPDPA Draft Report redacted,,0,"2026-02-25T13:25:59Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-301,Verify TPRM module integration in current project,Sprint,sprint-1771825706501,TPRM,21,Medium,To Do,0.5,0.0,,,"2026-02-27","Verify the TPRM module functionality after integration
+and ensure there are no regressions in the current project.",,0,,,0.0,,,0.0,,0.0,
+SP-283,SEBI CSCRF Policies,Sprint,sprint-1771825655592,OnPrem Policy,30,Medium,Blocked,0.0,0.3858593,Once DPDPA and UIDAI Mapping Over need to work on this,"2026-02-26T04:54:16.394Z","2026-02-25",Work on SEBI CSCRF Policies,,0,,,0.0,,,0.0,,0.0,
+SP-286,Evidence Validation,Sprint,sprint-1771310676523,Vealthx,41,Medium,Done,0.05,0.05607639,,,"2026-02-25",SPOC submitted few evidence need to upload and share the updated requirement sheet,,0,"2026-02-26T04:56:55Z",,0.0,,,0.0,,0.0,
+SP-291,Approval module backend functionalites.,Sprint,sprint-1771825706501,Approval,18,Medium,In Progress,0.5,0.0,,,"2026-02-26",Approval module backend functionalites for the design we have added.,,0,,"2026-02-26T08:11:00Z",0.0,,,0.0,,0.0,
+SP-292,Assessment page table creations and migrations.,Sprint,sprint-1771825706501,Assessment,18,High,In Progress,1.0,0.0,,,"2026-02-26",Assessment page table creations and migrations.,,0,,"2026-02-26T08:11:46Z",0.0,,,0.0,,0.0,
+SP-293,training module design creation,Sprint,sprint-1771825706501,Training module on-prem,23,High,Done,1.0,0.7677778,,,"2026-02-26",To implement the training module design creation,,0,"2026-02-27T06:21:08Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-294,Assessmnet requirement and artifact list implemmentation.,Sprint,sprint-1771825706501,Assessment,18,High,In Progress,0.5,0.0,,,"2026-02-26",Assessmnet requirement and artifact list implemmentation.,,0,,"2026-02-26T08:34:13Z",0.0,,,0.0,,0.0,
+SP-304,Add training profile and edit training profile,Sprint,sprint-1771825706501,Training module on-prem,23,High,Done,1.0,0.7620486,,,"2026-02-27",to implement the creation of training and update the training profiles,,0,"2026-02-27T13:19:29Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-287,DPDPA - On Prem mapping,Sprint,sprint-1771825655592,Assessment,30,High,In Progress,0.0,0.51390034,,,"2026-02-26",Work on DPDPA Mapping for On Prem ,,0,,"2026-02-27T11:44:51Z",1.3438945616666667,,,0.0,,0.0,
+SP-300,Implement TPRM module flow in current project,Sprint,sprint-1771825706501,TPRM,21,Medium,To Do,1.0,0.0,,,"2026-02-27","Implement the TPRM module flow in the current project
+based on the finalized integration approach,
+ensuring compatibility with existing modules.",,0,,,0.0,,,0.0,,0.0,
+SP-297,SEBI Sample Evidence (For Demo),Sprint,sprint-1771825655592,General,30,High,Done,0.0,1.3421875,,,"2026-02-26",Need to work on sample evidence for sebi ,,0,"2026-02-27T11:44:41Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-302,Evidence Collection,Sprint,sprint-1771310676523,Vealthx,41,Medium,To Do,0.1,0.0,,,"2026-02-27",Connected with SPOC for pending evidence,,0,,,0.0,,,0.0,,0.0,
+SP-281,SOA KT,Sprint,sprint-1771310676523,WhizzC,41,Medium,Done,0.05,0.12701389,,,"2026-02-25",Taken SOA KT from Narren,,0,"2026-02-27T05:57:04Z",,0.0,,,0.0,,0.0,
+SP-303,Evidence collection,Sprint,sprint-1771310676523,GSS,41,Medium,To Do,0.1,0.0,,,"2026-02-27",Connected with SPOC to collect the remaining requirements,,0,,,0.0,,,0.0,,0.0,
+SP-290,WIZ-753 : Adding comment box,Sprint,sprint-1771825706501,Approvals,22,High,Done,0.6,0.9503125,,,"2026-02-26",Adding comment box for policy approve rework,,0,"2026-02-27T06:39:54Z",,0.0,Ready to Test,,0.0,,0.0,
+SP-298,Analyze TPRM module flow for reuse in current project,Sprint,sprint-1771825706501,TPRM,21,Medium,Done,0.5,0.49715278,,,"2026-02-27","Analyze the existing TPRM module to understand the flow,
+business logic, and reusable components that need to be
+adapted for the current project.",,0,"2026-02-27T08:48:47Z",,0.0,Ready to Test,,0.0,,0.0,
+BUG-046,Zoho provider missing in dropdown,Bug,,Cloud scanning,22,High,To Do,0.0,0.0,,,"2026-02-27",Zoho provider missing in dropdown.,"1. Test connection in integration module.
+2. After connecting run the scan.
+3. After scanning, Go to the cloud scanning module.
+4. click the cloud provider dropdown.
+5. select the zoho integration.",0,,,0.0,,,0.0,,0.0,
+SP-305,BUG-046 : Filter Bug,Sprint,sprint-1771825706501,Cloud Scanning,22,Medium,Done,0.05,0.08291667,,,"2026-02-27",Need to add zoho in provider dropdown filter,,0,"2026-02-27T11:09:26Z",,0.0,Ready to Test,,0.0,,0.0,
