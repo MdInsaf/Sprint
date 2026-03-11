@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { apiGetJson } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { AuditLog } from '@/types';
 import { useSmartPolling } from './use-smart-polling';
@@ -16,14 +16,14 @@ export function useAuditLogsPage(page: number, pageSize = 50) {
   return useQuery({
     queryKey: auditLogKeys.page(page, pageSize),
     queryFn: async (): Promise<PaginatedResponse<AuditLog>> => {
-      const response = await apiGetJson<PaginatedResponse<AuditLog> | AuditLog[]>('/audit-logs', {
-        page,
-        page_size: pageSize,
-      });
-      if (Array.isArray(response)) {
-        return toPagedResponse<AuditLog>(response, response.length, page, pageSize);
-      }
-      return response;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('audit_logs')
+        .select('*, user:team_members(id,name,username,email,role,avatar,team,leave_dates)', { count: 'exact' })
+        .order('created_date', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AuditLog>(data as AuditLog[], count, page, pageSize);
     },
     refetchInterval,
   });
@@ -35,14 +35,14 @@ export function useAuditLogsInfinite(pageSize = 50) {
     queryKey: auditLogKeys.infinite(pageSize),
     queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<AuditLog>> => {
       const page = pageParam as number;
-      const response = await apiGetJson<PaginatedResponse<AuditLog> | AuditLog[]>('/audit-logs', {
-        page,
-        page_size: pageSize,
-      });
-      if (Array.isArray(response)) {
-        return toPagedResponse<AuditLog>(response, response.length, page, pageSize);
-      }
-      return response;
+      const offset = (page - 1) * pageSize;
+      const { data, count, error } = await supabase
+        .from('audit_logs')
+        .select('*, user:team_members(id,name,username,email,role,avatar,team,leave_dates)', { count: 'exact' })
+        .order('created_date', { ascending: false })
+        .range(offset, offset + pageSize - 1);
+      if (error) throw error;
+      return toPagedResponse<AuditLog>(data as AuditLog[], count, page, pageSize);
     },
     initialPageParam: 1,
     getNextPageParam,

@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { writeAuditLog } from '@/lib/audit-log';
+import { queryClient } from '@/lib/query-client';
 import { TeamMember, Sprint, Task, TaskType, AdditionalWorkApproval, SprintSummary, TaskComment, TaskAttachment } from '@/types';
 
 const slugify = (value: string) =>
@@ -301,6 +303,18 @@ export async function updateLeaveDates(memberId: string, leaveDates: string[]) {
     currentUser = normalized;
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(normalized));
   }
+  await writeAuditLog({
+    action: 'update',
+    entityType: 'team_members',
+    entityId: memberId,
+    path: `/team-members/${memberId}`,
+    method: 'PUT',
+    statusCode: 200,
+    metadata: {
+      leave_dates: normalized.leave_dates || [],
+    },
+  });
+  void queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
   return normalized;
 }
 
@@ -527,6 +541,20 @@ export async function deleteAttachment(taskId: string, attachmentId: string) {
     if (t.id !== taskId) return t;
     return { ...t, attachments: (t.attachments || []).filter((a) => a.id !== attachmentId) };
   });
+
+  await writeAuditLog({
+    action: 'delete',
+    entityType: 'task_attachments',
+    entityId: attachmentId,
+    path: `/task-attachments/${attachmentId}`,
+    method: 'DELETE',
+    statusCode: 200,
+    metadata: {
+      task_id: taskId,
+      file_name: attachment?.file_name || null,
+    },
+  });
+  void queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
 }
 
 export function deleteTask(taskId: string) {

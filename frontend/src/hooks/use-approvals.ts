@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { writeAuditLog } from '@/lib/audit-log';
 import { supabase } from '@/lib/supabase';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { AdditionalWorkApproval } from '@/types';
@@ -84,16 +85,41 @@ export function useCreateOrUpdateApproval() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (approval: AdditionalWorkApproval) => {
+      const { data: existing, error: existingError } = await supabase
+        .from('approvals')
+        .select('task_id')
+        .eq('task_id', approval.task_id)
+        .maybeSingle();
+      if (existingError) throw existingError;
+
       const { data, error } = await supabase
         .from('approvals')
         .upsert(approval, { onConflict: 'task_id' })
         .select('*')
         .single();
       if (error) throw error;
-      return data as AdditionalWorkApproval;
+      return {
+        approval: data as AdditionalWorkApproval,
+        action: existing ? 'update' : 'create',
+      } as const;
     },
-    onSuccess: () => {
+    onSuccess: async ({ approval, action }) => {
+      await writeAuditLog({
+        action,
+        entityType: 'approvals',
+        entityId: approval.task_id,
+        path: `/approvals/${approval.task_id}`,
+        method: action === 'create' ? 'POST' : 'PUT',
+        statusCode: action === 'create' ? 201 : 200,
+        metadata: {
+          approved: approval.approved,
+          impact: approval.impact,
+          approved_by: approval.approved_by,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: approvalKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: approvalKeys.byTask(approval.task_id) });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Approval saved successfully');
     },
     onError: (error: Error) => {

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { writeAuditLog } from '@/lib/audit-log';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { Sprint } from '@/types';
@@ -107,9 +108,23 @@ export function useCreateSprint() {
       }
       return data as Sprint;
     },
-    onSuccess: () => {
+    onSuccess: async (createdSprint) => {
+      await writeAuditLog({
+        action: 'create',
+        entityType: 'sprints',
+        entityId: createdSprint.id,
+        path: '/sprints',
+        method: 'POST',
+        statusCode: 201,
+        metadata: {
+          sprint_name: createdSprint.sprint_name,
+          team: createdSprint.team,
+          is_active: createdSprint.is_active,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
       queryClient.invalidateQueries({ queryKey: sprintKeys.active() });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Sprint created successfully');
     },
     onError: (error: unknown) => {
@@ -137,12 +152,26 @@ export function useUpdateSprint() {
       }
       return data as Sprint;
     },
-    onSuccess: (updatedSprint) => {
+    onSuccess: async (updatedSprint) => {
+      await writeAuditLog({
+        action: 'update',
+        entityType: 'sprints',
+        entityId: updatedSprint.id,
+        path: `/sprints/${updatedSprint.id}`,
+        method: 'PUT',
+        statusCode: 200,
+        metadata: {
+          sprint_name: updatedSprint.sprint_name,
+          team: updatedSprint.team,
+          is_active: updatedSprint.is_active,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: sprintKeys.lists() });
       queryClient.invalidateQueries({ queryKey: sprintKeys.detail(updatedSprint.id) });
       if (updatedSprint.is_active) {
         queryClient.invalidateQueries({ queryKey: sprintKeys.active() });
       }
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Sprint updated successfully');
     },
     onError: (error: unknown) => {

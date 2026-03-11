@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { writeAuditLog } from '@/lib/audit-log';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { TeamMember } from '@/types';
@@ -94,8 +95,23 @@ export function useCreateTeamMember() {
       if (error) throw error;
       return data as TeamMember;
     },
-    onSuccess: () => {
+    onSuccess: async (createdMember) => {
+      await writeAuditLog({
+        action: 'create',
+        entityType: 'team_members',
+        entityId: createdMember.id,
+        path: '/team-members',
+        method: 'POST',
+        statusCode: 201,
+        metadata: {
+          name: createdMember.name,
+          email: createdMember.email,
+          role: createdMember.role,
+          team: createdMember.team,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Team member added successfully');
     },
     onError: (error: unknown) => {
@@ -121,9 +137,24 @@ export function useUpdateTeamMember() {
       if (error) throw error;
       return data as TeamMember;
     },
-    onSuccess: (updatedMember) => {
+    onSuccess: async (updatedMember) => {
+      await writeAuditLog({
+        action: 'update',
+        entityType: 'team_members',
+        entityId: updatedMember.id,
+        path: `/team-members/${updatedMember.id}`,
+        method: 'PUT',
+        statusCode: 200,
+        metadata: {
+          name: updatedMember.name,
+          email: updatedMember.email,
+          role: updatedMember.role,
+          team: updatedMember.team,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.lists() });
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.detail(updatedMember.id) });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Team member updated successfully');
     },
     onError: (error: unknown) => {
@@ -138,9 +169,20 @@ export function useDeleteTeamMember() {
     mutationFn: async (memberId: string) => {
       const { error } = await supabase.from('team_members').delete().eq('id', memberId);
       if (error) throw error;
+      return memberId;
     },
-    onSuccess: () => {
+    onSuccess: async (memberId) => {
+      await writeAuditLog({
+        action: 'delete',
+        entityType: 'team_members',
+        entityId: memberId,
+        path: `/team-members/${memberId}`,
+        method: 'DELETE',
+        statusCode: 200,
+      });
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: teamMemberKeys.detail(memberId) });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Team member removed successfully');
     },
     onError: (error: Error) => {

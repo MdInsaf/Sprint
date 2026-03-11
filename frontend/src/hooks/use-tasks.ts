@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { writeAuditLog } from '@/lib/audit-log';
 import { supabase } from '@/lib/supabase';
 import { extractResults, getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
 import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
@@ -233,11 +234,26 @@ export function useCreateTask() {
 
       throw new Error('Failed to create task. Please try again.');
     },
-    onSuccess: (newTask) => {
+    onSuccess: async (newTask) => {
+      await writeAuditLog({
+        action: 'create',
+        entityType: 'tasks',
+        entityId: newTask.id,
+        path: '/tasks',
+        method: 'POST',
+        statusCode: 201,
+        metadata: {
+          title: newTask.title,
+          type: newTask.type,
+          sprint_id: newTask.sprint_id,
+          status: newTask.status,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
       if (newTask.sprint_id) {
         queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(newTask.sprint_id) });
       }
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task created successfully');
     },
     onError: (error: unknown) => {
@@ -305,7 +321,21 @@ export function useUpdateTask() {
       }
       toast.error(error.message || 'Failed to update task');
     },
-    onSuccess: (serverTask) => {
+    onSuccess: async (serverTask) => {
+      await writeAuditLog({
+        action: 'update',
+        entityType: 'tasks',
+        entityId: serverTask.id,
+        path: `/tasks/${serverTask.id}`,
+        method: 'PUT',
+        statusCode: 200,
+        metadata: {
+          title: serverTask.title,
+          sprint_id: serverTask.sprint_id,
+          status: serverTask.status,
+          qa_status: serverTask.qa_status,
+        },
+      });
       queryClient.setQueryData(taskKeys.detail(serverTask.id), serverTask);
       const rawList = queryClient.getQueryData<Task[]>(taskKeys.lists());
       if (rawList) {
@@ -315,6 +345,7 @@ export function useUpdateTask() {
       if (serverTask.sprint_id) {
         queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(serverTask.sprint_id) });
       }
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task updated successfully');
     },
     onSettled: (_data, _error, variables, context) => {
@@ -335,9 +366,20 @@ export function useDeleteTask() {
     mutationFn: async (taskId: string) => {
       const { error } = await supabase.from('tasks').delete().eq('id', taskId);
       if (error) throw error;
+      return taskId;
     },
-    onSuccess: () => {
+    onSuccess: async (taskId) => {
+      await writeAuditLog({
+        action: 'delete',
+        entityType: 'tasks',
+        entityId: taskId,
+        path: `/tasks/${taskId}`,
+        method: 'DELETE',
+        statusCode: 200,
+      });
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: taskKeys.detail(taskId) });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task deleted successfully');
     },
     onError: (error: Error) => {

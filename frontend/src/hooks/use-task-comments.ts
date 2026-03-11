@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { writeAuditLog } from '@/lib/audit-log';
 import { supabase } from '@/lib/supabase';
 import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { TaskComment } from '@/types';
@@ -42,8 +43,21 @@ export function useCreateTaskComment() {
       if (error) throw error;
       return data as TaskComment;
     },
-    onSuccess: (comment) => {
+    onSuccess: async (comment) => {
+      await writeAuditLog({
+        action: 'create',
+        entityType: 'task_comments',
+        entityId: comment.id,
+        path: `/tasks/${comment.task_id}/comments`,
+        method: 'POST',
+        statusCode: 201,
+        metadata: {
+          task_id: comment.task_id,
+          author_id: comment.author_id,
+        },
+      });
       queryClient.invalidateQueries({ queryKey: taskCommentKeys.byTask(comment.task_id) });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Comment added successfully');
     },
     onError: (error: unknown) => {
