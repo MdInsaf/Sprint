@@ -17,7 +17,7 @@ export default function AuditLogs() {
   const debouncedSearch = useDebounce(searchQuery, 250);
 
   const pageSizeValue = Number.parseInt(pageSize, 10) || 20;
-  const { data, isLoading } = useAuditLogsPage(currentPage, pageSizeValue);
+  const { data, isLoading, isError, error } = useAuditLogsPage(currentPage, pageSizeValue);
 
   const logs = data?.results ?? [];
   const totalCount = data?.count ?? logs.length;
@@ -128,7 +128,7 @@ export default function AuditLogs() {
               {!isLoading && filteredLogs.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                    No audit logs found.
+                    {isError ? (error as Error)?.message || 'Failed to load audit logs.' : 'No audit logs found.'}
                   </TableCell>
                 </TableRow>
               )}

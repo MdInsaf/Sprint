@@ -28,12 +28,28 @@ export async function apiGetJson<T>(path: string, params?: Record<string, string
     },
   });
 
+  if (response.status === 204) {
+    return null as T;
+  }
+
+  const contentType = (response.headers.get('content-type') || '').toLowerCase();
+  if (!contentType.includes('application/json')) {
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    throw new Error('API returned a non-JSON response. Check VITE_API_URL or the Vite API proxy.');
+  }
+
   const data = await response.json().catch(() => null);
   if (!response.ok) {
     const message = (data && typeof data === 'object' && 'message' in data && typeof data.message === 'string')
       ? data.message
       : `Request failed with status ${response.status}`;
     throw new Error(message);
+  }
+
+  if (data == null) {
+    throw new Error('API returned an empty JSON response.');
   }
 
   return data as T;
