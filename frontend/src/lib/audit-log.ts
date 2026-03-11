@@ -24,6 +24,13 @@ export async function writeAuditLog({
 }: AuditLogInput): Promise<void> {
   try {
     const currentUser = getCurrentUser();
+    const baseMetadata: Record<string, unknown> = {
+      user_name: currentUser?.name || null,
+      username: currentUser?.username || null,
+      user_email: currentUser?.email || null,
+      user_role: currentUser?.role || null,
+      user_team: currentUser?.team || null,
+    };
     const { error } = await supabase.from('audit_logs').insert({
       id: `audit-${crypto.randomUUID()}`,
       user_id: currentUser?.id ?? null,
@@ -35,7 +42,10 @@ export async function writeAuditLog({
       status_code: statusCode,
       ip_address: null,
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-      metadata,
+      metadata: {
+        ...baseMetadata,
+        ...metadata,
+      },
       created_date: new Date().toISOString(),
     });
 

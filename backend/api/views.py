@@ -617,6 +617,23 @@ def sanitize_task(task, include_attachments=True, include_attachment_urls=True):
 
 
 def serialize_audit_log(log_entry):
+    fallback_user = None
+    metadata = log_entry.metadata or {}
+    if not log_entry.user:
+        fallback_name = metadata.get("user_name") or metadata.get("username")
+        fallback_email = metadata.get("user_email")
+        if fallback_name or fallback_email:
+            fallback_user = {
+                "id": str(log_entry.user_id) if getattr(log_entry, "user_id", None) is not None else "",
+                "name": fallback_name or "System",
+                "username": metadata.get("username") or "",
+                "email": fallback_email or "",
+                "role": metadata.get("user_role") or "Developer",
+                "avatar": None,
+                "team": metadata.get("user_team") or "Developers",
+                "leave_dates": [],
+            }
+
     return {
         "id": log_entry.id,
         "action": log_entry.action,
@@ -627,9 +644,9 @@ def serialize_audit_log(log_entry):
         "status_code": log_entry.status_code,
         "ip_address": log_entry.ip_address,
         "user_agent": log_entry.user_agent,
-        "metadata": log_entry.metadata or {},
+        "metadata": metadata,
         "created_date": log_entry.created_date,
-        "user": sanitize_user(log_entry.user) if log_entry.user else None,
+        "user": sanitize_user(log_entry.user) if log_entry.user else fallback_user,
     }
 
 

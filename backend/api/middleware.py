@@ -23,6 +23,24 @@ def _audit_now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _audit_user_metadata(user):
+    if not user or not getattr(user, "is_authenticated", False):
+        return {}
+
+    profile = getattr(user, "profile", None)
+    full_name = ""
+    if hasattr(user, "get_full_name"):
+        full_name = (user.get_full_name() or "").strip()
+
+    return {
+        "user_name": full_name or getattr(user, "username", "") or None,
+        "username": getattr(user, "username", None),
+        "user_email": getattr(user, "email", None),
+        "user_role": getattr(profile, "role", None) if profile else None,
+        "user_team": getattr(profile, "team", None) if profile else None,
+    }
+
+
 def _audit_parse_entity(path):
     parts = path.split("?")[0].strip("/").split("/")
     if len(parts) < 3:
@@ -110,6 +128,7 @@ class AuditLogMiddleware(MiddlewareMixin):
 
             forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
             ip_address = forwarded_for.split(",")[0].strip() if forwarded_for else request.META.get("REMOTE_ADDR")
+            metadata = {k: v for k, v in _audit_user_metadata(user_value).items() if v not in (None, "")}
 
             AuditLog.objects.create(
                 id=f"audit-{uuid.uuid4().hex[:12]}",
@@ -122,7 +141,7 @@ class AuditLogMiddleware(MiddlewareMixin):
                 status_code=getattr(response, "status_code", 200),
                 ip_address=ip_address,
                 user_agent=request.META.get("HTTP_USER_AGENT"),
-                metadata={},
+                metadata=metadata,
                 created_date=_audit_now_iso(),
             )
         except Exception:

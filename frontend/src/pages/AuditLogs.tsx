@@ -9,6 +9,10 @@ import { Button } from '@/components/ui/button';
 
 const actionOptions = ['all', 'create', 'update', 'delete'] as const;
 
+function getMetadataText(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
 export default function AuditLogs() {
   const [pageSize, setPageSize] = useState('20');
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +38,8 @@ export default function AuditLogs() {
     if (debouncedSearch.trim()) {
       const term = debouncedSearch.toLowerCase();
       items = items.filter((log) => {
-        const userText = `${log.user?.name || ''} ${log.user?.email || ''}`.toLowerCase();
+        const metadata = log.metadata || {};
+        const userText = `${log.user?.name || getMetadataText(metadata.user_name) || getMetadataText(metadata.username)} ${log.user?.email || getMetadataText(metadata.user_email)}`.toLowerCase();
         return (
           log.action.toLowerCase().includes(term) ||
           (log.entity_type || '').toLowerCase().includes(term) ||
@@ -69,6 +74,14 @@ export default function AuditLogs() {
     if (statusCode >= 400) return 'destructive';
     if (statusCode >= 300) return 'warning';
     return 'secondary';
+  };
+
+  const getDisplayUser = (log: typeof logs[number]) => {
+    const metadata = log.metadata || {};
+    return {
+      name: log.user?.name || getMetadataText(metadata.user_name) || getMetadataText(metadata.username) || 'System',
+      email: log.user?.email || getMetadataText(metadata.user_email) || '-',
+    };
   };
 
   return (
@@ -138,8 +151,8 @@ export default function AuditLogs() {
                     {formatDate(log.created_date)}
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm font-medium">{log.user?.name || 'System'}</div>
-                    <div className="text-xs text-muted-foreground">{log.user?.email || '-'}</div>
+                    <div className="text-sm font-medium">{getDisplayUser(log).name}</div>
+                    <div className="text-xs text-muted-foreground">{getDisplayUser(log).email}</div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={actionVariant(log.action)}>{log.action}</Badge>
