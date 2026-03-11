@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { extractResults, getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
+import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { Task } from '@/types';
 import { toast } from 'sonner';
 import { useSmartPolling } from './use-smart-polling';
@@ -172,8 +173,8 @@ export function useCreateTask() {
       }
       toast.success('Task created successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create task');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to create task'));
     },
   });
 }

@@ -65,7 +65,7 @@ export function TaskCommentsDialog({ task, onCommentAdded, open, onOpenChange, s
     if (!newComment.trim() || !user) return;
 
     const comment: TaskComment = {
-      id: `comment-${Date.now()}`,
+      id: `comment-${crypto.randomUUID()}`,
       task_id: task.id,
       author_id: user.id,
       content: newComment.trim(),

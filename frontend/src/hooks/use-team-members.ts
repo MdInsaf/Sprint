@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
+import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { TeamMember } from '@/types';
 import { toast } from 'sonner';
 
@@ -97,8 +98,8 @@ export function useCreateTeamMember() {
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.lists() });
       toast.success('Team member added successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to add team member');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to add team member'));
     },
   });
 }
@@ -125,8 +126,8 @@ export function useUpdateTeamMember() {
       queryClient.invalidateQueries({ queryKey: teamMemberKeys.detail(updatedMember.id) });
       toast.success('Team member updated successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update team member');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to update team member'));
     },
   });
 }

@@ -133,7 +133,7 @@ export default function Users() {
     }
 
     const member: TeamMember = {
-      id: `member-${Date.now()}`,
+      id: `member-${crypto.randomUUID()}`,
       name: trimmed,
       username: trimmedUsername,
       email: trimmedEmail,

@@ -89,7 +89,7 @@ export function CreateSprintDialog({ onSprintCreated }: CreateSprintDialogProps)
     ).sort();
 
     const newSprint: Sprint = {
-      id: `sprint-${Date.now()}`,
+      id: `sprint-${crypto.randomUUID()}`,
       sprint_name: sprintName.trim(),
       start_date: format(startDate, 'yyyy-MM-dd'),
       end_date: format(endDate, 'yyyy-MM-dd'),

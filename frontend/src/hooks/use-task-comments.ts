@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { TaskComment } from '@/types';
 import { toast } from 'sonner';
 
@@ -29,9 +30,13 @@ export function useCreateTaskComment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (comment: TaskComment) => {
+      const commentRow = {
+        ...comment,
+        id: comment.id || `comment-${crypto.randomUUID()}`,
+      };
       const { data, error } = await supabase
         .from('task_comments')
-        .insert(comment)
+        .insert(commentRow)
         .select('*')
         .single();
       if (error) throw error;
@@ -41,8 +46,8 @@ export function useCreateTaskComment() {
       queryClient.invalidateQueries({ queryKey: taskCommentKeys.byTask(comment.task_id) });
       toast.success('Comment added successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to add comment');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to add comment'));
     },
   });
 }

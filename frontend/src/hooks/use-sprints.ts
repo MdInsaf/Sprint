@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
+import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
 import { Sprint } from '@/types';
 import { toast } from 'sonner';
 
@@ -92,12 +93,16 @@ export function useCreateSprint() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (sprint: Sprint) => {
-      const { data, error } = await supabase.from('sprints').insert(sprint).select('*').single();
+      const sprintRow = {
+        ...sprint,
+        id: sprint.id || `sprint-${crypto.randomUUID()}`,
+      };
+      const { data, error } = await supabase.from('sprints').insert(sprintRow).select('*').single();
       if (error) throw error;
       if (sprint.is_active) {
         await supabase.rpc('set_active_sprint', {
-          p_sprint_id: sprint.id,
-          p_team: sprint.team || 'Developers',
+          p_sprint_id: sprintRow.id,
+          p_team: sprintRow.team || 'Developers',
         });
       }
       return data as Sprint;
@@ -107,8 +112,8 @@ export function useCreateSprint() {
       queryClient.invalidateQueries({ queryKey: sprintKeys.active() });
       toast.success('Sprint created successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create sprint');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to create sprint'));
     },
   });
 }
@@ -140,8 +145,8 @@ export function useUpdateSprint() {
       }
       toast.success('Sprint updated successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update sprint');
+    onError: (error: unknown) => {
+      toast.error(getSupabaseErrorMessage(error, 'Failed to update sprint'));
     },
   });
 }
