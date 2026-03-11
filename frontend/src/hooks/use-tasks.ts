@@ -6,6 +6,14 @@ import { Task } from '@/types';
 import { toast } from 'sonner';
 import { useSmartPolling } from './use-smart-polling';
 
+const TASK_ID_PREFIXES: Record<string, string> = {
+  Sprint: 'SP',
+  Additional: 'ADD',
+  Backlog: 'BLG',
+  Bug: 'BUG',
+  Change: 'CHG',
+};
+
 export const taskKeys = {
   all: ['tasks'] as const,
   lists: () => [...taskKeys.all, 'list'] as const,
@@ -23,6 +31,37 @@ async function fetchAllTasks(): Promise<Task[]> {
     .select('*, attachments:task_attachments(*)');
   if (error) throw error;
   return data as Task[];
+}
+
+function parseTaskNumber(taskId: string, prefix: string): number | null {
+  const match = String(taskId || '').match(new RegExp(`^${prefix}-(\\d+)$`, 'i'));
+  if (!match) return null;
+  const value = Number.parseInt(match[1], 10);
+  return Number.isNaN(value) ? null : value;
+}
+
+async function buildFallbackTaskId(taskType: Task['type']): Promise<string> {
+  const prefix = TASK_ID_PREFIXES[taskType] || 'TASK';
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('id')
+    .ilike('id', `${prefix}-%`);
+
+  if (error) {
+    throw error;
+  }
+
+  let maxNum = 0;
+  (data || []).forEach((row) => {
+    const next = parseTaskNumber((row as { id?: string }).id || '', prefix);
+    if (next != null && next > maxNum) {
+      maxNum = next;
+    }
+  });
+
+  const nextNum = maxNum + 1;
+  const digits = Math.max(3, String(nextNum).length);
+  return `${prefix}-${String(nextNum).padStart(digits, '0')}`;
 }
 
 export function useTasks() {
@@ -159,12 +198,40 @@ export function useCreateTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (task: Task) => {
-      const { data: generatedId, error: idError } = await supabase.rpc('generate_task_id', { p_type: task.type });
-      const taskId = idError ? task.id : (generatedId as string);
-      const { attachments: _att, ...taskRow } = { ...task, id: taskId } as Task & { attachments?: unknown };
-      const { data, error } = await supabase.from('tasks').insert(taskRow).select('*').single();
-      if (error) throw error;
-      return data as Task;
+      let rpcAvailable = true;
+
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        let taskId = task.id;
+
+        if (rpcAvailable) {
+          const { data: generatedId, error: idError } = await supabase.rpc('generate_task_id', { p_type: task.type });
+          if (idError || !generatedId) {
+            rpcAvailable = false;
+          } else {
+            taskId = generatedId as string;
+          }
+        }
+
+        if (!rpcAvailable) {
+          taskId = await buildFallbackTaskId(task.type);
+        }
+
+        const { attachments: _att, ...taskRow } = { ...task, id: taskId } as Task & { attachments?: unknown };
+        const { data, error } = await supabase.from('tasks').insert(taskRow).select('*').single();
+
+        if (!error) {
+          return data as Task;
+        }
+
+        if (error.code === '23505' && attempt < 2) {
+          rpcAvailable = false;
+          continue;
+        }
+
+        throw error;
+      }
+
+      throw new Error('Failed to create task. Please try again.');
     },
     onSuccess: (newTask) => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
@@ -176,6 +243,7 @@ export function useCreateTask() {
     onError: (error: unknown) => {
       toast.error(getSupabaseErrorMessage(error, 'Failed to create task'));
     },
+    retry: 0,
   });
 }
 

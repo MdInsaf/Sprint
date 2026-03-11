@@ -181,8 +181,14 @@ export default function BugBoard() {
     if (editingBug) {
       updateTaskMutation.mutate({ ...payload, attachments } as Task & { attachments?: File[] });
     } else {
-      createTaskMutation.mutate({ ...payload, attachments } as Task & { attachments?: File[] });
-      resetDialog();
+      createTaskMutation.mutate(
+        { ...payload, attachments } as Task & { attachments?: File[] },
+        {
+          onSuccess: () => {
+            resetDialog();
+          },
+        }
+      );
     }
   };
 

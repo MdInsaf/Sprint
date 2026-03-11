@@ -22,6 +22,10 @@ export function getSupabaseErrorMessage(error: unknown, fallback: string): strin
     return 'Email already exists';
   }
 
+  if (combined.includes('tasks_pkey')) {
+    return 'Task ID already exists. Please try again.';
+  }
+
   if (
     candidate.code === '23505'
     || combined.includes('duplicate key value')

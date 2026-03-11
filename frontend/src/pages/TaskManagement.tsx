@@ -148,8 +148,14 @@ export default function TaskManagement() {
       steps_to_reproduce: values.steps_to_reproduce,
     };
 
-    createTaskMutation.mutate({ ...newTask, attachments } as Task & { attachments?: File[] });
-    setIsDialogOpen(false);
+    createTaskMutation.mutate(
+      { ...newTask, attachments } as Task & { attachments?: File[] },
+      {
+        onSuccess: () => {
+          setIsDialogOpen(false);
+        },
+      }
+    );
   };
 
   const handleUpdateTask = (taskData: TaskFormData) => {

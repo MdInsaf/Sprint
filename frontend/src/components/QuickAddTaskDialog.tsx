@@ -110,11 +110,15 @@ export function QuickAddTaskDialog({ ownerId, team, onTaskCreated }: QuickAddTas
     };
 
     createTaskMutation.mutate(
-      { ...newTask, attachments: attachments.length > 0 ? attachments : undefined } as Task & { attachments?: File[] }
+      { ...newTask, attachments: attachments.length > 0 ? attachments : undefined } as Task & { attachments?: File[] },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          resetForm();
+          onTaskCreated?.();
+        },
+      }
     );
-    setOpen(false);
-    resetForm();
-    onTaskCreated?.();
   };
 
   return (
