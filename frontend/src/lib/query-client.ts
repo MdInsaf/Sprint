@@ -23,8 +23,11 @@ export const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _variables, _context, mutation) => {
       console.error('Mutation error:', error);
+      if (mutation.options.onError) {
+        return;
+      }
       toast.error('Failed to save changes. Please try again.');
     },
   }),

@@ -99,10 +99,13 @@ export function CreateSprintDialog({ onSprintCreated }: CreateSprintDialogProps)
       team: selectedTeam || DEFAULT_TEAM,
     };
 
-    createSprintMutation.mutate(newSprint);
-    setOpen(false);
-    resetForm();
-    onSprintCreated?.();
+    createSprintMutation.mutate(newSprint, {
+      onSuccess: () => {
+        setOpen(false);
+        resetForm();
+        onSprintCreated?.();
+      },
+    });
   };
 
   return (

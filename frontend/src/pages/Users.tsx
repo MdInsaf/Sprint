@@ -81,6 +81,14 @@ export default function Users() {
   const formatLeaveDates = (dates: Date[]) =>
     Array.from(new Set(dates.map((date) => format(date, 'yyyy-MM-dd')))).sort();
 
+  const resetNewMemberForm = () => {
+    setNewName('');
+    setNewEmail('');
+    setNewUsername('');
+    setNewPassword('');
+    setNewTeam(teamOptions[0] || DEFAULT_TEAM);
+  };
+
   const openLeaveEditor = (member: TeamMember) => {
     setLeaveMember(member);
     setLeaveDates(parseLeaveDates(member.leave_dates));
@@ -141,12 +149,14 @@ export default function Users() {
       team: newTeam || DEFAULT_TEAM,
     };
 
-    createMemberMutation.mutate({ ...member, password: trimmedPassword });
-    setNewName('');
-    setNewEmail('');
-    setNewUsername('');
-    setNewPassword('');
-    setNewTeam(teamOptions[0] || DEFAULT_TEAM);
+    createMemberMutation.mutate(
+      { ...member, password: trimmedPassword },
+      {
+        onSuccess: () => {
+          resetNewMemberForm();
+        },
+      }
+    );
   };
 
   const handleRoleChange = (memberId: string, role: UserRole) => {

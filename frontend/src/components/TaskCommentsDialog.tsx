@@ -72,9 +72,12 @@ export function TaskCommentsDialog({ task, onCommentAdded, open, onOpenChange, s
       created_date: new Date().toISOString(),
     };
 
-    createCommentMutation.mutate(comment);
-    setNewComment('');
-    onCommentAdded?.();
+    createCommentMutation.mutate(comment, {
+      onSuccess: () => {
+        setNewComment('');
+        onCommentAdded?.();
+      },
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
