@@ -101,8 +101,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return window.localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
   });
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 

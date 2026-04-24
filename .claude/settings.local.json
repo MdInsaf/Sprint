@@ -3,7 +3,6 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(grep -l \"import.*store\" /c/Users/HP/Documents/GitHub/Sprint/frontend/src/pages/*.tsx)",
-      "Bash(bun add @supabase/supabase-js)",
       "Bash(npm install --legacy-peer-deps)",
       "Bash(ls -la \"c:\\\\Users\\\\HP\\\\Documents\\\\GitHub\\\\Sprint\\\\frontend\\\\public\"\" 2>/dev/null || echo \"Directory not found \")",
       "Bash(npm install)"

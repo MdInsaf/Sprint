@@ -14,7 +14,8 @@ from pathlib import Path
 import os
 import boto3
 import json
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoCredentialsError
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,9 +56,12 @@ _load_env_file(BASE_DIR / ".env.local")
 
 
 def get_secret():
-    secret_name = "dev/SprintFlow"
-    region_name = "ap-south-1"
-    profile_name = "whizzc-dev"
+    secret_name = os.environ.get("AWS_SECRET_NAME", "dev/SprintFlow")
+    region_name = os.environ.get("AWS_REGION", "ap-south-1")
+    profile_name = os.environ.get("AWS_PROFILE")
+
+    if not secret_name:
+        return {}
 
     session_kwargs = {}
     # Only apply a named profile when running locally; Lambda uses its execution role
@@ -74,7 +78,11 @@ def get_secret():
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name)
 
-    except ClientError as e:
+    except (ClientError, NoCredentialsError) as e:
+        if os.environ.get("ALLOW_MISSING_AWS_SECRET", "").strip().lower() in {
+            "1", "true", "yes", "on",
+        }:
+            return {}
         raise e
 
     secret = get_secret_value_response["SecretString"]
@@ -83,24 +91,71 @@ def get_secret():
 
 secrets = get_secret()
 
+
+def _secret_value(key: str, default=None):
+    return secrets.get(key, default) if isinstance(secrets, dict) else default
+
+
+def _config_value(env_name: str, secret_key: str | None = None, default=None):
+    value = os.environ.get(env_name)
+    if value not in (None, ""):
+        return value
+
+    if secret_key is None:
+        secret_key = env_name
+    value = _secret_value(secret_key)
+    if value not in (None, ""):
+        return value
+    return default
+
+
+def _parse_bool(value, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "n", "off"}:
+        return False
+    return default
+
+
+def _config_flag(env_name: str, secret_key: str | None = None, default: bool = False) -> bool:
+    value = _config_value(env_name, secret_key=secret_key, default=None)
+    if value is None:
+        return default
+    return _parse_bool(value, default=default)
+
+
+def _host_from_origin(origin: str | None) -> str | None:
+    if not origin:
+        return None
+    parsed = urlparse(origin if "://" in origin else f"https://{origin}")
+    return parsed.hostname or None
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 ENVIRONMENT = os.environ.get("DJANGO_ENV", "production").lower()
 IS_PRODUCTION = ENVIRONMENT == "production"
-AWS_REGION = os.environ.get("AWS_REGION", "ap-south-1")
-AWS_PROFILE = os.environ.get("AWS_PROFILE") or (
-    None if os.environ.get("AWS_EXECUTION_ENV") else "whizzc-dev"
-)
-ATTACHMENTS_BUCKET = os.environ.get("ATTACHMENTS_BUCKET", "whizz-sprint-flow-attachments")
-ATTACHMENT_URL_EXPIRES = int(os.environ.get("ATTACHMENT_URL_EXPIRES", "3600"))  # seconds
-WORKDAY_HOURS = float(os.environ.get("WORKDAY_HOURS", "8"))
-WORKDAY_START_HOUR = float(os.environ.get("WORKDAY_START_HOUR", "10"))
-WORKDAY_END_HOUR = float(os.environ.get("WORKDAY_END_HOUR", "18"))
+AWS_REGION = _config_value("AWS_REGION", default="ap-south-1")
+AWS_PROFILE = os.environ.get("AWS_PROFILE") or None
+ATTACHMENTS_BUCKET = _config_value("ATTACHMENTS_BUCKET", default="whizz-sprint-flow-attachments")
+ATTACHMENT_URL_EXPIRES = int(str(_config_value("ATTACHMENT_URL_EXPIRES", default="3600")))  # seconds
+WORKDAY_HOURS = float(str(_config_value("WORKDAY_HOURS", default="8")))
+WORKDAY_START_HOUR = float(str(_config_value("WORKDAY_START_HOUR", default="10")))
+WORKDAY_END_HOUR = float(str(_config_value("WORKDAY_END_HOUR", default="18")))
 
 
 # Default domain: prefer env, then secret, fallback to localhost for local dev.
-DEFAULT_APP_DOMAIN = os.environ.get("DEFAULT_APP_DOMAIN") or secrets["APP_DOMAIN"]
+DEFAULT_APP_DOMAIN = (
+    os.environ.get("DEFAULT_APP_DOMAIN")
+    or _secret_value("APP_DOMAIN")
+    or "localhost"
+)
 APP_DOMAIN = os.environ.get("APP_DOMAIN") or DEFAULT_APP_DOMAIN
 
 def _split_env_list(value: str | None):
@@ -116,10 +171,7 @@ def _split_int_list(value: str | None):
     return result
 
 def _env_flag(name: str, default: bool = False) -> bool:
-    value = os.environ.get(name)
-    if value is None:
-        return default
-    return value.strip().lower() in ("1", "true", "yes", "y", "on")
+    return _parse_bool(os.environ.get(name), default=default)
 
 # Weekends/holidays for business-day calculations (e.g. "5,6" for Sat/Sun).
 WEEKEND_DAYS = _split_int_list(os.environ.get("WEEKEND_DAYS")) or [5, 6]
@@ -150,14 +202,19 @@ LOCAL_ORIGINS = [
 ]
 
 # Email notifications (SMTP in production, console backend by default in local dev).
-EMAIL_NOTIFICATIONS_ENABLED = True
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = secrets["EMAIL_HOST"]
-EMAIL_PORT = 587
-EMAIL_HOST_USER = secrets["EMAIL_HOST_USER"]
-EMAIL_HOST_PASSWORD = secrets["EMAIL_HOST_PASSWORD"]
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = secrets["DEFAULT_FROM_EMAIL"]
+EMAIL_HOST = _config_value("EMAIL_HOST", default="")
+EMAIL_PORT = int(str(_config_value("EMAIL_PORT", default="587")))
+EMAIL_HOST_USER = _config_value("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = _config_value("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = _config_flag("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = _config_flag("EMAIL_USE_SSL", default=False)
+DEFAULT_FROM_EMAIL = _config_value("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER or "noreply@localhost")
+EMAIL_NOTIFICATIONS_ENABLED = _config_flag("EMAIL_NOTIFICATIONS_ENABLED", default=bool(EMAIL_HOST))
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND") or (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_NOTIFICATIONS_ENABLED and EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend"
+)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
@@ -167,6 +224,13 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not IS_PRODUCTION
 
+BACKEND_ORIGIN = os.environ.get("BACKEND_ORIGIN")
+BACKEND_HOST = (
+    os.environ.get("BACKEND_HOST")
+    or _host_from_origin(BACKEND_ORIGIN)
+    or _secret_value("BACKEND_HOST")
+)
+
 ALLOWED_HOSTS = [
     host
     for host in [
@@ -174,7 +238,7 @@ ALLOWED_HOSTS = [
         "127.0.0.1",
         APP_DOMAIN,
         f".{APP_DOMAIN}",
-        secrets["BACKEND_HOST"],
+        BACKEND_HOST,
         ".execute-api.ap-south-1.amazonaws.com",
     ]
     if host
@@ -232,14 +296,36 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+DB_NAME = _config_value("DB_NAME", secret_key="dbname")
+DB_USER = _config_value("DB_USER", secret_key="username")
+DB_PASSWORD = _config_value("DB_PASSWORD", secret_key="password")
+DB_HOST = _config_value("DB_HOST", secret_key="host")
+DB_PORT = _config_value("DB_PORT", secret_key="port", default="5432")
+
+missing_db_settings = [
+    name for name, value in {
+        "DB_NAME": DB_NAME,
+        "DB_USER": DB_USER,
+        "DB_PASSWORD": DB_PASSWORD,
+        "DB_HOST": DB_HOST,
+        "DB_PORT": DB_PORT,
+    }.items() if not value
+]
+if missing_db_settings:
+    raise RuntimeError(
+        "Missing database configuration. Set "
+        + ", ".join(missing_db_settings)
+        + " directly or provide them through AWS Secrets Manager."
+    )
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': secrets['dbname'],
-        'USER': secrets['username'],
-        'PASSWORD': secrets['password'],
-        'HOST': secrets['host'],
-        'PORT': secrets['port'],
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'OPTIONS': {
             'connect_timeout': 30,
             'keepalives': 1,
@@ -309,7 +395,7 @@ CSRF_FAILURE_VIEW = "api.views.csrf_failure"
 # APP_DOMAIN is set to a non-local value. In production, scope cookies to the
 # configured app domain to allow subdomain access, but avoid setting Secure/None
 # for localhost so local HTTP testing keeps the session cookie.
-COOKIE_DOMAIN_OVERRIDE = secrets["COOKIE_DOMAIN"]
+COOKIE_DOMAIN_OVERRIDE = os.environ.get("COOKIE_DOMAIN") or _secret_value("COOKIE_DOMAIN")
 IS_LOCAL_DOMAIN = APP_DOMAIN in ("localhost", "127.0.0.1") or COOKIE_DOMAIN_OVERRIDE in (
     "localhost",
     "127.0.0.1",

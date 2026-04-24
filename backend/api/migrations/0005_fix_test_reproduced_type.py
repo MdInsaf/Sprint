@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
                 ALTER COLUMN test_reproduced
                 TYPE integer
                 USING CASE
-                    WHEN test_reproduced IS TRUE THEN 1
-                    WHEN test_reproduced IS FALSE THEN 0
+                    WHEN LOWER(COALESCE(test_reproduced::text, '')) IN ('t', 'true', '1') THEN 1
+                    WHEN LOWER(COALESCE(test_reproduced::text, '')) IN ('f', 'false', '0') THEN 0
                     ELSE 0
                 END;
                 ALTER TABLE tasks
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ALTER COLUMN test_reproduced
                 TYPE boolean
                 USING CASE
-                    WHEN test_reproduced::integer <> 0 THEN TRUE
+                    WHEN LOWER(COALESCE(test_reproduced::text, '')) IN ('1', 't', 'true') THEN TRUE
                     ELSE FALSE
                 END;
                 ALTER TABLE tasks

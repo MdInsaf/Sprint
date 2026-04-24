@@ -1,13 +1,34 @@
 {
-    "dev": {
+      "prod": {
       "aws_region": "ap-south-1",
       "django_settings": "core.settings",
       "app_function": "core.wsgi.application",
       "exclude": ["boto3", "dateutil", "botocore", "s3transfer", "concurrent"],
-      "profile_name": "whizzc-dev",
-      "project_name": "sprint-flow",
+      "project_name": "sprint-flow-prod",
       "runtime": "python3.12",
-      "s3_bucket": "zappa-z1cpgimsz",
-      "keep_warm": true
+      "s3_bucket": "sprint-flow-zappa-132334512551-ap-south-1",
+      "keep_warm": true,
+      "memory_size": 1024,
+      "timeout_seconds": 30,
+"extra_permissions": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "secretsmanager:GetSecretValue"
+          ],
+          "Resource": "arn:aws:secretsmanager:ap-south-1:*:secret:prod/SprintFlow*"
+        }
+      ],
+      "environment_variables": {
+        "DJANGO_ENV": "production",
+        "AWS_SECRET_NAME": "prod/SprintFlow",
+        "AWS_REGION": "ap-south-1",
+        "ATTACHMENTS_BUCKET": "sprint-flow-attachments-132334512551-ap-south-1",
+        "DB_HOST": "aws-1-ap-south-1.pooler.supabase.com",
+        "DB_NAME": "postgres",
+        "DB_USER": "postgres.wqmgreacinwsqldhtqts",
+        "DB_PASSWORD": "SnItCh@!@#321",
+        "DB_PORT": "5432"
+      }
     }
 }

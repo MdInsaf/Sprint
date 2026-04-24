@@ -167,3 +167,74 @@ IDs auto-expand beyond 3 digits (e.g., `SP-999` → `SP-1000`).
 ## Deployment Notes
 - Frontend can be built with `npm run build`.
 - Backend includes `backend/zappa_settings.json` for AWS Lambda via Zappa.
+- Frontend can also be deployed to S3 + CloudFront.
+
+## Backend Deployment To AWS
+This backend is set up for AWS Lambda + API Gateway using Zappa.
+
+1) Create AWS resources:
+- PostgreSQL database in RDS.
+- Secrets Manager secret for the environment, for example `prod/SprintFlow`.
+- An S3 bucket for Zappa deployment packages.
+- An S3 bucket for task attachments.
+
+2) Put these keys in Secrets Manager:
+- `dbname`, `username`, `password`, `host`, `port`
+- `APP_DOMAIN`
+- `BACKEND_HOST`
+- `COOKIE_DOMAIN`
+- `DEFAULT_CLOUD_FRONTEND`
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` (optional if email is enabled)
+- Optional mail flags: `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_NOTIFICATIONS_ENABLED`
+
+3) Update [backend/zappa_settings.json](/f:/Sprint/backend/zappa_settings.json):
+- Replace `REPLACE_WITH_ZAPPA_DEPLOY_BUCKET`
+- Replace `REPLACE_WITH_ATTACHMENTS_BUCKET`
+- If needed, change `AWS_SECRET_NAME`
+- If you use a named local AWS CLI profile, add `profile_name`
+
+4) Deploy:
+```sh
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+zappa deploy prod
+zappa manage prod migrate
+```
+
+5) For future releases:
+```sh
+zappa update prod
+zappa manage prod migrate
+```
+
+6) Point the frontend to the backend:
+- Production frontend: `https://snitch.ascendersservices.in`
+- Production backend: `https://sprint.ascendersservices.in`
+- Set `VITE_API_URL=https://sprint.ascendersservices.in/v1/api`
+
+## Frontend Deployment To AWS (S3 + CloudFront)
+This repo now includes an AWS frontend deployment workflow in
+[.github/workflows/deploy-frontend.yml](/f:/Sprint/.github/workflows/deploy-frontend.yml).
+
+Current production frontend AWS resources:
+- S3 bucket: `snitch-ascendersservices-in-frontend-132334512551`
+- CloudFront distribution ID: `EWIDSK6QIC2V9`
+- CloudFront domain: `d2olc5m2v97tk4.cloudfront.net`
+
+GitHub Actions secrets required:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+
+Optional:
+- `VITE_API_URL`
+
+The workflow:
+- builds the Vite app
+- syncs `dist/` to S3
+- invalidates CloudFront
+
+Notes:
+- `backend/core/settings.py` now supports both AWS Secrets Manager and direct env vars like `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`.
+- For browser auth to work cleanly, use a shared parent domain such as `app.example.com` for frontend and `api.example.com` for backend.

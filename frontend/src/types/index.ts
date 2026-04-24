@@ -48,7 +48,9 @@ export interface TaskAttachment {
   file_name: string;
   file_size: number;
   content_type?: string | null;
-  storage_path: string;
+  storage_path?: string;
+  s3_bucket?: string;
+  s3_key?: string;
   url?: string;
   created_date: string;
 }

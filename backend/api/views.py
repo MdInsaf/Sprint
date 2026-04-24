@@ -39,6 +39,7 @@ from .models import (
     AuditLog,
 )
 from .notifications import (
+    email_delivery_diagnostics,
     get_role_emails,
     get_user,
     send_assignment_email,
@@ -116,7 +117,7 @@ def _is_manager(user):
     return _normalized_role(profile) in {"manager", "super admin"}
 
 
-ASSOCIATE_TEAMS = {"R&D", "GRC"}
+ASSOCIATE_TEAMS = {"R&D", "GRC", "Ascenders"}
 SECURITY_TEAMS = {"GRC"}
 
 
@@ -815,7 +816,10 @@ def attachment_detail(request, attachment_id):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def health(request):
-    return Response({"status": "ok"})
+    payload = {"status": "ok"}
+    if settings.DEBUG or _is_manager(getattr(request, "user", None)):
+        payload["email"] = email_delivery_diagnostics()
+    return Response(payload)
 
 
 # Team members
@@ -862,7 +866,7 @@ def team_members(request):
             return Response({"message": "Only a Super Admin can grant Super Admin role"}, status=status.HTTP_403_FORBIDDEN)
     effective_team = data.get("team") or "Developers"
     if _is_associate(data.get("role")) and effective_team not in ASSOCIATE_TEAMS:
-        return Response({"message": "Associate role is only allowed for R&D or GRC teams"}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"message": "Associate role is only allowed for R&D, GRC, or Ascenders teams"}, status=status.HTTP_403_FORBIDDEN)
     if _is_security(data.get("role")) and effective_team not in SECURITY_TEAMS:
         return Response({"message": "Security role is only allowed for GRC team"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -937,7 +941,7 @@ def team_member_detail(request, member_id):
                     return Response({"message": "Only a Super Admin can grant Super Admin role"}, status=status.HTTP_403_FORBIDDEN)
 
         if _is_associate(requested_role) and requested_team not in ASSOCIATE_TEAMS:
-            return Response({"message": "Associate role is only allowed for R&D or GRC teams"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"message": "Associate role is only allowed for R&D, GRC, or Ascenders teams"}, status=status.HTTP_403_FORBIDDEN)
         if _is_security(requested_role) and requested_team not in SECURITY_TEAMS:
             return Response({"message": "Security role is only allowed for GRC team"}, status=status.HTTP_403_FORBIDDEN)
 

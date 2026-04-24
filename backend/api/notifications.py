@@ -36,21 +36,58 @@ def notifications_enabled() -> bool:
     return bool(getattr(settings, "EMAIL_NOTIFICATIONS_ENABLED", False))
 
 
+def email_delivery_diagnostics() -> dict[str, object]:
+    return {
+        "enabled": notifications_enabled(),
+        "backend": getattr(settings, "EMAIL_BACKEND", ""),
+        "host_configured": bool(getattr(settings, "EMAIL_HOST", "")),
+        "port": getattr(settings, "EMAIL_PORT", None),
+        "use_tls": bool(getattr(settings, "EMAIL_USE_TLS", False)),
+        "use_ssl": bool(getattr(settings, "EMAIL_USE_SSL", False)),
+        "from_email_configured": bool(_default_from_email()),
+    }
+
+
 def send_notification_email(subject: str, message: str, recipients: Iterable[str]) -> bool:
-    if not notifications_enabled():
-        return False
     to_emails = _normalize_emails(recipients)
+    diagnostics = email_delivery_diagnostics()
+    if not diagnostics["enabled"]:
+        logger.warning(
+            "Email skipped: notifications disabled | subject=%s recipients=%s backend=%s host_configured=%s",
+            subject,
+            to_emails,
+            diagnostics["backend"],
+            diagnostics["host_configured"],
+        )
+        return False
     if not to_emails:
+        logger.warning("Email skipped: no recipients | subject=%s", subject)
         return False
     from_email = _default_from_email()
     if not from_email:
-        logger.warning("Email skipped: DEFAULT_FROM_EMAIL/EMAIL_HOST_USER not configured")
+        logger.warning(
+            "Email skipped: DEFAULT_FROM_EMAIL/EMAIL_HOST_USER not configured | "
+            "subject=%s backend=%s host_configured=%s",
+            subject,
+            diagnostics["backend"],
+            diagnostics["host_configured"],
+        )
         return False
     try:
         send_mail(subject, message, from_email, to_emails, fail_silently=False)
         return True
     except Exception:
-        logger.exception("Failed to send email: %s -> %s", subject, to_emails)
+        logger.exception(
+            "Failed to send email | subject=%s recipients=%s backend=%s host_configured=%s "
+            "port=%s tls=%s ssl=%s",
+            subject,
+            to_emails,
+            diagnostics["backend"],
+            diagnostics["host_configured"],
+            diagnostics["port"],
+            diagnostics["use_tls"],
+            diagnostics["use_ssl"],
+        )
         return False
 
 

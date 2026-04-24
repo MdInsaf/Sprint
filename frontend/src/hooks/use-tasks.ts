@@ -1,19 +1,12 @@
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { writeAuditLog } from '@/lib/audit-log';
-import { supabase } from '@/lib/supabase';
-import { extractResults, getNextPageParam, PaginatedResponse, toPagedResponse } from '@/lib/pagination';
-import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
-import { Task } from '@/types';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiDeleteJson, apiGetJson, apiPostFormData, apiPostJson, apiPutFormData, apiPutJson } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/api-errors';
+import { extractResults, getNextPageParam, PaginatedResponse } from '@/lib/pagination';
+import { Task, TaskAttachment } from '@/types';
 import { toast } from 'sonner';
 import { useSmartPolling } from './use-smart-polling';
 
-const TASK_ID_PREFIXES: Record<string, string> = {
-  Sprint: 'SP',
-  Additional: 'ADD',
-  Backlog: 'BLG',
-  Bug: 'BUG',
-  Change: 'CHG',
-};
+type TaskMutationInput = Task & { attachments?: File[] | TaskAttachment[] };
 
 export const taskKeys = {
   all: ['tasks'] as const,
@@ -27,42 +20,76 @@ export const taskKeys = {
 };
 
 async function fetchAllTasks(): Promise<Task[]> {
-  const { data, error } = await supabase
-    .from('tasks')
-    .select('*, attachments:task_attachments(*)');
-  if (error) throw error;
-  return data as Task[];
+  return apiGetJson<Task[]>('/tasks');
 }
 
-function parseTaskNumber(taskId: string, prefix: string): number | null {
-  const match = String(taskId || '').match(new RegExp(`^${prefix}-(\\d+)$`, 'i'));
-  if (!match) return null;
-  const value = Number.parseInt(match[1], 10);
-  return Number.isNaN(value) ? null : value;
+function isPendingFile(value: unknown): value is File {
+  return typeof File !== 'undefined' && value instanceof File;
 }
 
-async function buildFallbackTaskId(taskType: Task['type']): Promise<string> {
-  const prefix = TASK_ID_PREFIXES[taskType] || 'TASK';
-  const { data, error } = await supabase
-    .from('tasks')
-    .select('id')
-    .ilike('id', `${prefix}-%`);
+function hasPendingFiles(attachments?: File[] | TaskAttachment[]): attachments is File[] {
+  return Array.isArray(attachments) && attachments.some(isPendingFile);
+}
 
-  if (error) {
-    throw error;
+function getStableAttachments(
+  attachments: TaskMutationInput['attachments'],
+  fallback?: TaskAttachment[]
+): TaskAttachment[] | undefined {
+  if (hasPendingFiles(attachments)) {
+    return fallback;
   }
+  return attachments as TaskAttachment[] | undefined;
+}
 
-  let maxNum = 0;
-  (data || []).forEach((row) => {
-    const next = parseTaskNumber((row as { id?: string }).id || '', prefix);
-    if (next != null && next > maxNum) {
-      maxNum = next;
+function appendFormValue(formData: FormData, key: string, value: unknown) {
+  if (value === undefined || value === null) {
+    formData.append(key, '');
+    return;
+  }
+  formData.append(key, String(value));
+}
+
+function buildTaskFormData(task: TaskMutationInput, includeId = false): FormData {
+  const formData = new FormData();
+
+  Object.entries(task).forEach(([key, value]) => {
+    if (key === 'attachments') {
+      return;
     }
+    if (key === 'id' && !includeId) {
+      return;
+    }
+    appendFormValue(formData, key, value);
   });
 
-  const nextNum = maxNum + 1;
-  const digits = Math.max(3, String(nextNum).length);
-  return `${prefix}-${String(nextNum).padStart(digits, '0')}`;
+  (task.attachments || []).filter(isPendingFile).forEach((file) => {
+    formData.append('attachments', file);
+  });
+
+  return formData;
+}
+
+function buildTaskJsonPayload(task: TaskMutationInput, includeId = false): Record<string, unknown> {
+  const { attachments: _attachments, ...taskRow } = task;
+  const payload = { ...taskRow } as Record<string, unknown>;
+  if (!includeId) {
+    delete payload.id;
+  }
+  return payload;
+}
+
+async function createTaskRequest(task: TaskMutationInput): Promise<Task> {
+  if (hasPendingFiles(task.attachments)) {
+    return apiPostFormData<Task>('/tasks', buildTaskFormData(task));
+  }
+  return apiPostJson<Task>('/tasks', buildTaskJsonPayload(task));
+}
+
+async function updateTaskRequest(task: TaskMutationInput): Promise<Task> {
+  if (hasPendingFiles(task.attachments)) {
+    return apiPutFormData<Task>(`/tasks/${task.id}`, buildTaskFormData(task, true));
+  }
+  return apiPutJson<Task>(`/tasks/${task.id}`, buildTaskJsonPayload(task, true));
 }
 
 export function useTasks() {
@@ -79,14 +106,7 @@ export function useTasksBySprint(sprintId: string | null) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: taskKeys.bySprint(sprintId || ''),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*, attachments:task_attachments(*)')
-        .eq('sprint_id', sprintId!);
-      if (error) throw error;
-      return data as Task[];
-    },
+    queryFn: async () => apiGetJson<Task[]>('/tasks', { sprint_id: sprintId! }),
     enabled: !!sprintId,
     refetchInterval,
   });
@@ -97,14 +117,8 @@ export function useTasksByQaSprint(sprintId: string | null) {
   return useQuery({
     queryKey: [...taskKeys.all, 'qa_sprint', sprintId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*, attachments:task_attachments(*)')
-        .eq('qa_sprint_id', sprintId!);
-      if (error) throw error;
-      return (data as Task[]).filter(
-        (t) => t.qa_sprint_id === sprintId && t.sprint_id !== sprintId
-      );
+      const tasks = await apiGetJson<Task[]>('/tasks', { qa_sprint_id: sprintId! });
+      return tasks.filter((task) => task.qa_sprint_id === sprintId && task.sprint_id !== sprintId);
     },
     enabled: !!sprintId,
     refetchInterval,
@@ -115,15 +129,11 @@ export function useTasksPage(page: number, pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useQuery({
     queryKey: taskKeys.page(page, pageSize),
-    queryFn: async (): Promise<PaginatedResponse<Task>> => {
-      const offset = (page - 1) * pageSize;
-      const { data, count, error } = await supabase
-        .from('tasks')
-        .select('*, attachments:task_attachments(*)', { count: 'exact' })
-        .range(offset, offset + pageSize - 1);
-      if (error) throw error;
-      return toPagedResponse<Task>(data as Task[], count, page, pageSize);
-    },
+    queryFn: async (): Promise<PaginatedResponse<Task>> =>
+      apiGetJson<PaginatedResponse<Task>>('/tasks', {
+        page,
+        page_size: pageSize,
+      }),
     refetchInterval,
   });
 }
@@ -132,16 +142,11 @@ export function useTasksInfinite(pageSize = 50) {
   const refetchInterval = useSmartPolling({ activeInterval: 15000, idleInterval: 60000, inactiveInterval: false });
   return useInfiniteQuery({
     queryKey: taskKeys.infinite(pageSize),
-    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<Task>> => {
-      const page = pageParam as number;
-      const offset = (page - 1) * pageSize;
-      const { data, count, error } = await supabase
-        .from('tasks')
-        .select('*', { count: 'exact' })
-        .range(offset, offset + pageSize - 1);
-      if (error) throw error;
-      return toPagedResponse<Task>(data as Task[], count, page, pageSize);
-    },
+    queryFn: async ({ pageParam = 1 }): Promise<PaginatedResponse<Task>> =>
+      apiGetJson<PaginatedResponse<Task>>('/tasks', {
+        page: pageParam as number,
+        page_size: pageSize,
+      }),
     initialPageParam: 1,
     getNextPageParam,
     refetchInterval,
@@ -151,113 +156,25 @@ export function useTasksInfinite(pageSize = 50) {
 export function useTask(taskId: string, enabled = true) {
   return useQuery({
     queryKey: taskKeys.detail(taskId),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*, attachments:task_attachments(*)')
-        .eq('id', taskId)
-        .single();
-      if (error) throw error;
-      return data as Task;
-    },
+    queryFn: async () => apiGetJson<Task>(`/tasks/${taskId}`),
     enabled: !!taskId && enabled,
   });
-}
-
-const DONE_STATUSES = new Set(['Done', 'Closed', 'Fixed']);
-const WORK_STATUSES = new Set(['In Progress', 'Reopen']);
-
-function applyStatusDates(next: Task, prev?: Task): Task {
-  const result = { ...next };
-  const oldStatus = prev?.status;
-  const newStatus = next.status;
-  if (newStatus && newStatus !== oldStatus) {
-    if (WORK_STATUSES.has(newStatus) && !result.in_progress_date) {
-      result.in_progress_date = new Date().toISOString();
-    }
-    if (DONE_STATUSES.has(newStatus) && !DONE_STATUSES.has(oldStatus || '')) {
-      result.closed_date = new Date().toISOString();
-    }
-    if (newStatus === 'Blocked' && oldStatus !== 'Blocked') {
-      result.blocker_date = new Date().toISOString();
-    }
-  }
-  const oldQa = prev?.qa_status;
-  const newQa = next.qa_status;
-  if (newQa && newQa !== oldQa) {
-    if ((newQa === 'Testing' || newQa === 'Rework') && !result.qa_in_progress_date) {
-      result.qa_in_progress_date = new Date().toISOString();
-    }
-    if (newQa === 'Fixing' && !result.qa_fixing_in_progress_date) {
-      result.qa_fixing_in_progress_date = new Date().toISOString();
-    }
-  }
-  return result;
 }
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (task: Task) => {
-      let rpcAvailable = true;
-
-      for (let attempt = 0; attempt < 3; attempt += 1) {
-        let taskId = task.id;
-
-        if (rpcAvailable) {
-          const { data: generatedId, error: idError } = await supabase.rpc('generate_task_id', { p_type: task.type });
-          if (idError || !generatedId) {
-            rpcAvailable = false;
-          } else {
-            taskId = generatedId as string;
-          }
-        }
-
-        if (!rpcAvailable) {
-          taskId = await buildFallbackTaskId(task.type);
-        }
-
-        const { attachments: _att, ...taskRow } = { ...task, id: taskId } as Task & { attachments?: unknown };
-        const { data, error } = await supabase.from('tasks').insert(taskRow).select('*').single();
-
-        if (!error) {
-          return data as Task;
-        }
-
-        if (error.code === '23505' && attempt < 2) {
-          rpcAvailable = false;
-          continue;
-        }
-
-        throw error;
-      }
-
-      throw new Error('Failed to create task. Please try again.');
-    },
+    mutationFn: createTaskRequest,
     onSuccess: async (newTask) => {
-      await writeAuditLog({
-        action: 'create',
-        entityType: 'tasks',
-        entityId: newTask.id,
-        path: '/tasks',
-        method: 'POST',
-        statusCode: 201,
-        metadata: {
-          title: newTask.title,
-          type: newTask.type,
-          sprint_id: newTask.sprint_id,
-          status: newTask.status,
-        },
-      });
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      await queryClient.invalidateQueries({ queryKey: taskKeys.all });
       if (newTask.sprint_id) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(newTask.sprint_id) });
+        await queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(newTask.sprint_id) });
       }
-      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task created successfully');
     },
     onError: (error: unknown) => {
-      toast.error(getSupabaseErrorMessage(error, 'Failed to create task'));
+      toast.error(getApiErrorMessage(error, 'Failed to create task'));
     },
     retry: 0,
   });
@@ -266,19 +183,7 @@ export function useCreateTask() {
 export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (task: Task) => {
-      const previousTask = queryClient.getQueryData<Task>(taskKeys.detail(task.id));
-      const updated = applyStatusDates(task, previousTask);
-      const { attachments: _att, ...taskRow } = updated as Task & { attachments?: unknown };
-      const { data, error } = await supabase
-        .from('tasks')
-        .update(taskRow)
-        .eq('id', task.id)
-        .select('*')
-        .single();
-      if (error) throw error;
-      return data as Task;
-    },
+    mutationFn: updateTaskRequest,
     onMutate: async (updatedTask) => {
       await queryClient.cancelQueries({ queryKey: taskKeys.all });
       const previousTask = queryClient.getQueryData<Task>(taskKeys.detail(updatedTask.id));
@@ -286,7 +191,7 @@ export function useUpdateTask() {
       const previousListItems = rawList ? extractResults(rawList) : undefined;
       const previousSprintId =
         previousTask?.sprint_id ??
-        previousListItems?.find((t) => t.id === updatedTask.id)?.sprint_id ??
+        previousListItems?.find((task) => task.id === updatedTask.id)?.sprint_id ??
         null;
       const rawPreviousBySprint = previousSprintId
         ? queryClient.getQueryData<Task[]>(taskKeys.bySprint(previousSprintId))
@@ -298,63 +203,56 @@ export function useUpdateTask() {
       const mergedTask: Task = {
         ...(previousTask || {}),
         ...updatedTask,
-        attachments: updatedTask.attachments ?? previousTask?.attachments,
-      };
+        attachments: getStableAttachments(updatedTask.attachments, previousTask?.attachments),
+      } as Task;
+
       queryClient.setQueryData(taskKeys.detail(updatedTask.id), mergedTask);
       if (rawList !== undefined) {
         const items = extractResults(rawList);
-        const updatedItems = items.some((t) => t.id === updatedTask.id)
-          ? items.map((t) => t.id === updatedTask.id ? mergedTask : t)
+        const updatedItems = items.some((task) => task.id === updatedTask.id)
+          ? items.map((task) => (task.id === updatedTask.id ? mergedTask : task))
           : [...items, mergedTask];
         queryClient.setQueryData(taskKeys.lists(), updatedItems);
       }
+
       return { previousTask, rawList, rawPreviousBySprint, previousSprintId, rawNextBySprint };
     },
     onError: (error, updatedTask, context) => {
-      if (context?.previousTask) queryClient.setQueryData(taskKeys.detail(updatedTask.id), context.previousTask);
-      if (context?.rawList !== undefined) queryClient.setQueryData(taskKeys.lists(), context.rawList);
+      if (context?.previousTask) {
+        queryClient.setQueryData(taskKeys.detail(updatedTask.id), context.previousTask);
+      }
+      if (context?.rawList !== undefined) {
+        queryClient.setQueryData(taskKeys.lists(), context.rawList);
+      }
       if (context?.previousSprintId && context?.rawPreviousBySprint !== undefined) {
         queryClient.setQueryData(taskKeys.bySprint(context.previousSprintId), context.rawPreviousBySprint);
       }
       if (updatedTask.sprint_id && context?.rawNextBySprint !== undefined) {
         queryClient.setQueryData(taskKeys.bySprint(updatedTask.sprint_id), context.rawNextBySprint);
       }
-      toast.error(error.message || 'Failed to update task');
+      toast.error(getApiErrorMessage(error, 'Failed to update task'));
     },
     onSuccess: async (serverTask) => {
-      await writeAuditLog({
-        action: 'update',
-        entityType: 'tasks',
-        entityId: serverTask.id,
-        path: `/tasks/${serverTask.id}`,
-        method: 'PUT',
-        statusCode: 200,
-        metadata: {
-          title: serverTask.title,
-          sprint_id: serverTask.sprint_id,
-          status: serverTask.status,
-          qa_status: serverTask.qa_status,
-        },
-      });
+      await queryClient.invalidateQueries({ queryKey: taskKeys.all, refetchType: 'none' });
       queryClient.setQueryData(taskKeys.detail(serverTask.id), serverTask);
       const rawList = queryClient.getQueryData<Task[]>(taskKeys.lists());
       if (rawList) {
-        const patched = extractResults(rawList).map((t) => t.id === serverTask.id ? { ...t, ...serverTask } : t);
+        const patched = extractResults(rawList).map((task) => (task.id === serverTask.id ? { ...task, ...serverTask } : task));
         queryClient.setQueryData(taskKeys.lists(), patched);
       }
       if (serverTask.sprint_id) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(serverTask.sprint_id) });
+        await queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(serverTask.sprint_id) });
       }
-      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task updated successfully');
     },
-    onSettled: (_data, _error, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists(), refetchType: 'none' });
+    onSettled: async (_data, _error, variables, context) => {
+      await queryClient.invalidateQueries({ queryKey: taskKeys.lists(), refetchType: 'none' });
       if (context?.previousSprintId) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(context.previousSprintId), refetchType: 'none' });
+        await queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(context.previousSprintId), refetchType: 'none' });
       }
       if (variables?.sprint_id && variables.sprint_id !== context?.previousSprintId) {
-        queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(variables.sprint_id), refetchType: 'none' });
+        await queryClient.invalidateQueries({ queryKey: taskKeys.bySprint(variables.sprint_id), refetchType: 'none' });
       }
     },
   });
@@ -364,26 +262,17 @@ export function useDeleteTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (taskId: string) => {
-      const { error } = await supabase.from('tasks').delete().eq('id', taskId);
-      if (error) throw error;
+      await apiDeleteJson(`/tasks/${taskId}`);
       return taskId;
     },
     onSuccess: async (taskId) => {
-      await writeAuditLog({
-        action: 'delete',
-        entityType: 'tasks',
-        entityId: taskId,
-        path: `/tasks/${taskId}`,
-        method: 'DELETE',
-        statusCode: 200,
-      });
-      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: taskKeys.detail(taskId) });
-      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      await queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      await queryClient.invalidateQueries({ queryKey: taskKeys.detail(taskId) });
+      await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Task deleted successfully');
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete task');
+    onError: (error: unknown) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete task'));
     },
   });
 }

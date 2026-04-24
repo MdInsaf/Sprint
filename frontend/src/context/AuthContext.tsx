@@ -23,7 +23,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const bootstrap = async () => {
       try {
         const me = await fetchCurrentUser();
-        if (me) setUser(me);
+        setUser(me);
+      } catch {
+        setUser(null);
       } finally {
         setReady(true);
       }
@@ -46,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     const me = await fetchCurrentUser();
-    if (me) setUser(me);
+    setUser(me);
   };
 
   const changeUserPassword = async (currentPassword: string, newPassword: string) => {

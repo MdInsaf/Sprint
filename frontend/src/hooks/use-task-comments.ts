@@ -1,7 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { writeAuditLog } from '@/lib/audit-log';
-import { supabase } from '@/lib/supabase';
-import { getSupabaseErrorMessage } from '@/lib/supabase-errors';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiGetJson, apiPostJson } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/api-errors';
 import { TaskComment } from '@/types';
 import { toast } from 'sonner';
 
@@ -14,15 +13,10 @@ export const taskCommentKeys = {
 export function useTaskComments(taskId: string) {
   return useQuery({
     queryKey: taskCommentKeys.byTask(taskId),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('task_comments')
-        .select('*')
-        .eq('task_id', taskId)
-        .order('created_date', { ascending: true });
-      if (error) throw error;
-      return data as TaskComment[];
-    },
+    queryFn: async () =>
+      apiGetJson<TaskComment[]>('/task-comments', {
+        taskId,
+      }),
     enabled: !!taskId,
   });
 }
@@ -30,38 +24,21 @@ export function useTaskComments(taskId: string) {
 export function useCreateTaskComment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (comment: TaskComment) => {
-      const commentRow = {
-        ...comment,
-        id: comment.id || `comment-${crypto.randomUUID()}`,
-      };
-      const { data, error } = await supabase
-        .from('task_comments')
-        .insert(commentRow)
-        .select('*')
-        .single();
-      if (error) throw error;
-      return data as TaskComment;
-    },
+    mutationFn: async (comment: TaskComment) =>
+      apiPostJson<TaskComment>('/task-comments', {
+        id: comment.id,
+        task_id: comment.task_id,
+        author_id: comment.author_id,
+        content: comment.content,
+        created_date: comment.created_date,
+      }),
     onSuccess: async (comment) => {
-      await writeAuditLog({
-        action: 'create',
-        entityType: 'task_comments',
-        entityId: comment.id,
-        path: `/tasks/${comment.task_id}/comments`,
-        method: 'POST',
-        statusCode: 201,
-        metadata: {
-          task_id: comment.task_id,
-          author_id: comment.author_id,
-        },
-      });
-      queryClient.invalidateQueries({ queryKey: taskCommentKeys.byTask(comment.task_id) });
-      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      await queryClient.invalidateQueries({ queryKey: taskCommentKeys.byTask(comment.task_id) });
+      await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Comment added successfully');
     },
     onError: (error: unknown) => {
-      toast.error(getSupabaseErrorMessage(error, 'Failed to add comment'));
+      toast.error(getApiErrorMessage(error, 'Failed to add comment'));
     },
   });
 }
