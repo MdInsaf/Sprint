@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 
 const CORE_TASK_STATUSES: TaskStatus[] = ['To Do', 'In Progress', 'Blocked', 'Done'];
 const BUG_TASK_STATUSES: TaskStatus[] = [...CORE_TASK_STATUSES, 'Fixed', 'Closed', 'Reopen'];
-type TaskFormData = Partial<Task> & { attachments?: File[] };
+type TaskFormData = Omit<Partial<Task>, 'attachments'> & { attachments?: File[] };
 
 export default function TaskManagement() {
   const { user, isManager } = useAuth();

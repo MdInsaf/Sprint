@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bug, CheckCircle2, AlertCircle, RefreshCcw } from 'lucide-react';
+import { formatLocalDate } from '@/lib/utils';
 
 export default function BugSummary() {
   const { data: teamMembers = [], isLoading: membersLoading } = useTeamMembers();
@@ -302,7 +303,7 @@ export default function BugSummary() {
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{bug.title}</p>
                   <p className="text-xs text-muted-foreground">
-                    {bug.module || 'Unspecified'} | {bug.created_date}
+                    {bug.module || 'Unspecified'} | {formatLocalDate(bug.created_date)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

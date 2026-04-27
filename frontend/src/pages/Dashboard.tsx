@@ -17,6 +17,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { SprintHealth } from '@/types';
+import { formatLocalDate } from '@/lib/utils';
 
 const isPlannedType = (type?: string) => type === 'Sprint' || type === 'Backlog';
 
@@ -147,7 +148,7 @@ export default function Dashboard() {
             <CardTitle className="text-lg">{sprint.sprint_name}</CardTitle>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              {sprint.start_date} — {sprint.end_date}
+              {formatLocalDate(sprint.start_date)} — {formatLocalDate(sprint.end_date)}
             </div>
           </div>
         </CardHeader>

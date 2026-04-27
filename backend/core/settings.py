@@ -338,10 +338,6 @@ DATABASES = {
 }
 
 # Django REST Framework configuration
-# Currently we use only SessionMemberAuthentication, which relies on Django's
-# session-based auth and is sufficient for our browser-based use cases.
-# If API clients requiring stateless or external auth are introduced, additional
-# authentication classes (e.g., token- or JWT-based) can be added here.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["api.authentication.SessionMemberAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
@@ -372,11 +368,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-in'
 
-TIME_ZONE = 'Asia/Kolkata'
-
+# Backend always stores datetimes in UTC — this is the best practice for
+# multi-timezone support. The frontend is responsible for converting UTC
+# timestamps to the user's local timezone for display.
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+# USE_TZ=True ensures all datetimes are stored as UTC-aware in the database.
+# Never set this to False — doing so breaks multi-timezone support entirely.
 USE_TZ = True
 
 

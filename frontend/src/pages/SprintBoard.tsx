@@ -27,7 +27,7 @@ const statusColumns: TaskStatus[] = ['To Do', 'In Progress', 'Blocked', 'Done'];
 const DONE_STATUSES: TaskStatus[] = ['Done', 'Closed', 'Fixed'];
 type SprintBoardColumn = TaskStatus | 'Backlog';
 
-const statusColors: Record<TaskStatus, string> = {
+const statusColors: Partial<Record<TaskStatus, string>> = {
   'To Do': 'border-status-todo',
   'In Progress': 'border-status-progress',
   'Blocked': 'border-status-blocked',
@@ -193,7 +193,7 @@ export default function SprintBoard() {
   }, [teamSprints, activeSprint?.id, selectedSprintId]);
 
   const tasksByStatus = useMemo(() => {
-    const grouped: Record<TaskStatus, Task[]> = {
+    const grouped: Partial<Record<TaskStatus, Task[]>> = {
       'To Do': [],
       'In Progress': [],
       'Blocked': [],
@@ -217,7 +217,7 @@ export default function SprintBoard() {
   const pageEnd = pageStart + pageSizeValue;
 
   const pagedTasksByStatus = useMemo(() => {
-    const paged: Record<TaskStatus, Task[]> = {
+    const paged: Partial<Record<TaskStatus, Task[]>> = {
       'To Do': [],
       'In Progress': [],
       'Blocked': [],

@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { TeamSelect } from '@/components/TeamSelect';
 import { useTeamSelection } from '@/hooks/use-team-selection';
 import { CheckCircle2, XCircle, ArrowRight, ClipboardPlus, TrendingUp, TrendingDown, Minus, History, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { formatLocalDate } from '@/lib/utils';
 
 const isPlannedType = (type?: string) => type === 'Sprint' || type === 'Backlog';
 
@@ -196,7 +197,7 @@ export default function SprintSummary() {
         <div>
           <h1 className="text-2xl font-semibold">Sprint Summary</h1>
           <p className="text-muted-foreground">
-            {selectedSprint?.sprint_name} • {selectedSprint?.start_date} — {selectedSprint?.end_date}
+            {selectedSprint?.sprint_name} • {formatLocalDate(selectedSprint?.start_date)} — {formatLocalDate(selectedSprint?.end_date)}
           </p>
         </div>
         
@@ -205,7 +206,8 @@ export default function SprintSummary() {
             <TeamSelect
               teams={teams}
               value={selectedTeam}
-              onChange={setSelectedTeam}
+              onChange={setSelectedTeam
+              }
               triggerClassName="w-40"
               placeholder="Team"
             />
@@ -288,7 +290,7 @@ export default function SprintSummary() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Sprint Success</CardTitle>
                 {stats.completedDate && (
-                  <Badge variant="secondary">Completed {stats.completedDate}</Badge>
+                  <Badge variant="secondary">Completed {formatLocalDate(stats.completedDate)}</Badge>
                 )}
               </div>
             </CardHeader>
@@ -481,7 +483,7 @@ export default function SprintSummary() {
                           <tr key={data.sprint_id} className="border-b last:border-0">
                             <td className="p-3 font-medium">{data.sprint.sprint_name}</td>
                             <td className="p-3 text-center text-muted-foreground">
-                              {data.sprint.start_date} - {data.sprint.end_date}
+                              {formatLocalDate(data.sprint.start_date)} - {formatLocalDate(data.sprint.end_date)}
                             </td>
                             <td className="p-3 text-center">
                               <Badge variant={

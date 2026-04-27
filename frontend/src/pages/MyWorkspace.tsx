@@ -16,6 +16,7 @@ import { WORKDAY_HOURS, roundHours, toHours } from '@/lib/time';
 import { AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { formatLocalDate } from '@/lib/utils';
 
 const OVERLOAD_THRESHOLD_HOURS = WORKDAY_HOURS * 5;
 
@@ -420,7 +421,7 @@ export default function MyWorkspace() {
               <SelectContent>
                 {teamSprints.map((item) => (
                   <SelectItem key={item.id} value={item.id}>
-                    {item.sprint_name} ({item.start_date} - {item.end_date})
+                    {item.sprint_name} ({formatLocalDate(item.start_date)} - {formatLocalDate(item.end_date)})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -628,7 +629,7 @@ export default function MyWorkspace() {
                   <div>
                     <p className="text-sm font-semibold">{sprintItem.sprint_name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {sprintItem.start_date} - {sprintItem.end_date}
+                      {formatLocalDate(sprintItem.start_date)} - {formatLocalDate(sprintItem.end_date)}
                     </p>
                   </div>
                   {sprintMember ? (

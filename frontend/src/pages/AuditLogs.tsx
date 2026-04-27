@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { formatLocalDateTime } from '@/lib/utils';
 
 const actionOptions = ['all', 'create', 'update', 'delete'] as const;
 
@@ -55,12 +56,6 @@ export default function AuditLogs() {
   useEffect(() => {
     setCurrentPage(1);
   }, [pageSize]);
-
-  const formatDate = (value: string) => {
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleString();
-  };
 
   const actionVariant = (action: string) => {
     if (action === 'delete') return 'destructive';
@@ -148,7 +143,7 @@ export default function AuditLogs() {
               {filteredLogs.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                    {formatDate(log.created_date)}
+                    {formatLocalDateTime(log.created_date)}
                   </TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">{getDisplayUser(log).name}</div>
