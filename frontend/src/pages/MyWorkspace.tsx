@@ -22,6 +22,11 @@ const OVERLOAD_THRESHOLD_HOURS = WORKDAY_HOURS * 5;
 
 type WorkloadSource = 'Assigned' | 'QA';
 
+type HalfDayPeriod = 'morning' | 'afternoon';
+type LeaveEntry =
+  | { date: Date; type: 'full' }
+  | { date: Date; type: 'half'; period: HalfDayPeriod };
+
 interface WorkloadTaskInfo {
   task: Task;
   source: WorkloadSource;
@@ -86,6 +91,41 @@ const isBugWithinSprint = (task: Task, sprint: Sprint) => {
   const endInclusive = end + DAY_MS - 1;
   return createdAt >= start && createdAt <= endInclusive;
 };
+
+// ── Leave helpers ──────────────────────────────────────────────────────────────
+
+const parseLeaveEntries = (dates?: string[]): LeaveEntry[] => {
+  const result: LeaveEntry[] = [];
+  for (const value of dates || []) {
+    const [datePart, modifier] = value.split(':');
+    const date = new Date(`${datePart}T00:00:00`);
+    if (Number.isNaN(date.getTime())) continue;
+    if (modifier === 'morning') {
+      result.push({ date, type: 'half', period: 'morning' });
+    } else if (modifier === 'afternoon') {
+      result.push({ date, type: 'half', period: 'afternoon' });
+    } else if (modifier === 'half') {
+      result.push({ date, type: 'half', period: 'morning' });
+    } else {
+      result.push({ date, type: 'full' });
+    }
+  }
+  return result;
+};
+
+const formatLeaveEntries = (entries: LeaveEntry[]): string[] =>
+  Array.from(
+    new Map(
+      entries.map((e) => {
+        const dateStr = format(e.date, 'yyyy-MM-dd');
+        const encoded =
+          e.type === 'half' ? `${dateStr}:${e.period}` : dateStr;
+        return [dateStr, encoded];
+      })
+    ).values()
+  ).sort();
+
+// ── Workload builder ───────────────────────────────────────────────────────────
 
 const buildWorkloadData = ({
   members,
@@ -252,13 +292,15 @@ const buildWorkloadData = ({
   });
 };
 
+// ── Main component ─────────────────────────────────────────────────────────────
+
 export default function MyWorkspace() {
   const { user, refreshUser } = useAuth();
   const { data: allSprints = [], isLoading: sprintsLoading } = useSprints();
   const { data: allTasksData = [], isLoading: tasksLoading } = useTasks();
   const { data: allTeamMembers = [], isLoading: membersLoading } = useTeamMembers();
   const [leaveOpen, setLeaveOpen] = useState(false);
-  const [leaveDates, setLeaveDates] = useState<Date[]>([]);
+  const [leaveEntries, setLeaveEntries] = useState<LeaveEntry[]>([]);
 
   if (!user) {
     return null;
@@ -266,17 +308,44 @@ export default function MyWorkspace() {
 
   const isLoading = sprintsLoading || tasksLoading || membersLoading;
 
-  const parseLeaveDates = (dates?: string[]) =>
-    (dates || [])
-      .map((value) => new Date(`${value}T00:00:00`))
-      .filter((date) => !Number.isNaN(date.getTime()));
+  useEffect(() => {
+    setLeaveEntries(parseLeaveEntries(user.leave_dates));
+  }, [user.leave_dates]);
 
-  const formatLeaveDates = (dates: Date[]) =>
-    Array.from(new Set(dates.map((date) => format(date, 'yyyy-MM-dd')))).sort();
+  const selectedDates = leaveEntries.map((e) => e.date);
+
+  const handleCalendarSelect = (dates: Date[] | undefined) => {
+    const next = (dates ?? []).map((date) => {
+      const existing = leaveEntries.find(
+        (e) => format(e.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+      );
+      return existing ?? ({ date, type: 'full' } as LeaveEntry);
+    });
+    setLeaveEntries(next);
+  };
+
+  const setLeaveType = (dateStr: string, type: 'full' | 'half') => {
+    setLeaveEntries((prev) =>
+      prev.map((e) => {
+        if (format(e.date, 'yyyy-MM-dd') !== dateStr) return e;
+        if (type === 'full') return { date: e.date, type: 'full' };
+        return { date: e.date, type: 'half', period: 'morning' };
+      })
+    );
+  };
+
+  const setHalfPeriod = (dateStr: string, period: HalfDayPeriod) => {
+    setLeaveEntries((prev) =>
+      prev.map((e) => {
+        if (format(e.date, 'yyyy-MM-dd') !== dateStr) return e;
+        return { date: e.date, type: 'half', period };
+      })
+    );
+  };
 
   const handleLeaveSave = async () => {
     try {
-      const formatted = formatLeaveDates(leaveDates);
+      const formatted = formatLeaveEntries(leaveEntries);
       await updateLeaveDates(user.id, formatted);
       await refreshUser();
       toast.success('Leave dates updated');
@@ -288,15 +357,14 @@ export default function MyWorkspace() {
 
   const team = user.team || DEFAULT_TEAM;
   const teamKey = normalizeTeam(team);
-  useEffect(() => {
-    setLeaveDates(parseLeaveDates(user.leave_dates));
-  }, [user.leave_dates]);
+
   const activeSprint = allSprints.find(s => s.is_active && (s.team || DEFAULT_TEAM) === team) || null;
   const teamSprints = useMemo(() => {
     return allSprints
       .filter((item) => normalizeTeam(item.team) === teamKey)
       .sort((a, b) => toDateValue(b.end_date || b.start_date) - toDateValue(a.end_date || a.start_date));
   }, [allSprints, teamKey]);
+
   const [selectedSprintId, setSelectedSprintId] = useState('');
   useEffect(() => {
     const fallback = activeSprint?.id || teamSprints[0]?.id || '';
@@ -304,16 +372,19 @@ export default function MyWorkspace() {
       prev && teamSprints.some((sprint) => sprint.id === prev) ? prev : fallback
     );
   }, [activeSprint?.id, teamSprints]);
+
   const selectedSprint =
     teamSprints.find((item) => item.id === selectedSprintId) ||
     activeSprint ||
     teamSprints[0] ||
     null;
+
   const teamMembers = allTeamMembers.filter((member) => normalizeTeam(member.team) === teamKey);
   const teamMemberIds = useMemo(
     () => new Set(teamMembers.map((member) => member.id)),
     [teamMembers]
   );
+
   const getWorkloadTasksForSprint = (sprint: Sprint | null) => {
     if (!sprint) return [];
     const coreSprintTasks = allTasksData.filter(
@@ -324,6 +395,7 @@ export default function MyWorkspace() {
       teamMemberIds.has(task.owner_id)
     );
   };
+
   const tasks = getWorkloadTasksForSprint(selectedSprint);
 
   const workloadMembers = teamMembers.filter(
@@ -513,6 +585,7 @@ export default function MyWorkspace() {
             </div>
           </CardContent>
         </Card>
+
         {previousWorkload?.member && (
           <Card className={previousWorkload.member.isOverloaded ? 'border-warning' : ''}>
             <CardHeader className="pb-3">
@@ -666,34 +739,99 @@ export default function MyWorkspace() {
         </CardContent>
       </Card>
 
+      {/* ── Leave Dialog ── */}
       <Dialog
         open={leaveOpen}
         onOpenChange={(open) => {
           setLeaveOpen(open);
-          if (!open) {
-            setLeaveDates(parseLeaveDates(user.leave_dates));
-          }
+          if (!open) setLeaveEntries(parseLeaveEntries(user.leave_dates));
         }}
       >
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="sm:max-w-[520px]" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>My Leave Dates</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <Calendar
               mode="multiple"
-              selected={leaveDates}
-              onSelect={(dates) => setLeaveDates(dates ?? [])}
+              selected={selectedDates}
+              onSelect={handleCalendarSelect}
               className="p-3 pointer-events-auto"
             />
-            {leaveDates.length > 0 ? (
-              <p className="text-xs text-muted-foreground">
-                {leaveDates
+            {leaveEntries.length > 0 ? (
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {leaveEntries
                   .slice()
-                  .sort((a, b) => a.getTime() - b.getTime())
-                  .map((date) => format(date, 'MMM d, yyyy'))
-                  .join(', ')}
-              </p>
+                  .sort((a, b) => a.date.getTime() - b.date.getTime())
+                  .map((entry) => {
+                    const dateStr = format(entry.date, 'yyyy-MM-dd');
+                    const isHalf = entry.type === 'half';
+                    return (
+                      <div
+                        key={dateStr}
+                        className="rounded-lg border bg-secondary/40 px-3 py-2 space-y-2"
+                      >
+                        {/* Date + Full/Half toggle */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            {format(entry.date, 'MMM d, yyyy')}
+                          </span>
+                          <div className="flex items-center gap-1 rounded-full border bg-background p-0.5 text-xs">
+                            <button
+                              onClick={() => setLeaveType(dateStr, 'full')}
+                              className={`px-3 py-1 rounded-full transition-colors ${
+                                !isHalf
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'text-muted-foreground hover:text-foreground'
+                              }`}
+                            >
+                              Full Day
+                            </button>
+                            <button
+                              onClick={() => setLeaveType(dateStr, 'half')}
+                              className={`px-3 py-1 rounded-full transition-colors ${
+                                isHalf
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'text-muted-foreground hover:text-foreground'
+                              }`}
+                            >
+                              Half Day
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Morning / Afternoon selector — only shown for half day */}
+                        {isHalf && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Period:</span>
+                            <div className="flex items-center gap-1 rounded-full border bg-background p-0.5 text-xs">
+                              <button
+                                onClick={() => setHalfPeriod(dateStr, 'morning')}
+                                className={`px-3 py-1 rounded-full transition-colors ${
+                                  entry.period === 'morning'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                🌅 Morning
+                              </button>
+                              <button
+                                onClick={() => setHalfPeriod(dateStr, 'afternoon')}
+                                className={`px-3 py-1 rounded-full transition-colors ${
+                                  entry.period === 'afternoon'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                🌇 Afternoon
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
             ) : (
               <p className="text-xs text-muted-foreground">No leave dates selected.</p>
             )}
@@ -709,6 +847,8 @@ export default function MyWorkspace() {
     </div>
   );
 }
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function DetailGroup({
   title,
@@ -867,6 +1007,7 @@ function WorkloadDetailsSection({ member }: { member: WorkloadMemberData }) {
           </ScrollArea>
         )}
       </div>
+
       {isQaMember && (
         <div className="space-y-2">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
