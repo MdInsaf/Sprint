@@ -18,7 +18,6 @@ export function useTeamMembers() {
   return useQuery({
     queryKey: teamMemberKeys.lists(),
     queryFn: async () => apiGetJson<TeamMember[]>('/team-members'),
-    staleTime: 60000,
   });
 }
 
