@@ -1,5 +1,6 @@
 import { apiDeleteJson, apiGetJson, apiPostJson, apiPutJson } from '@/lib/api';
 import { queryClient } from '@/lib/query-client';
+import { teamMemberKeys } from '@/hooks/use-team-members';
 import { TeamMember, TaskType } from '@/types';
 
 const TASK_ID_PREFIXES: Record<TaskType, string> = {
@@ -70,7 +71,17 @@ export async function updateLeaveDates(memberId: string, leaveDates: string[]): 
     currentUser = normalized;
   }
 
-  await queryClient.invalidateQueries({ queryKey: ['team-members'] });
+  queryClient.setQueryData(
+    teamMemberKeys.lists(),
+    (old: TeamMember[] | undefined) => {
+      if (!old) return old;
+      return old.map((m) =>
+        m.id === normalized.id ? { ...m, leave_dates: normalized.leave_dates } : m,
+      );
+    },
+  );
+
+  await queryClient.invalidateQueries({ queryKey: teamMemberKeys.all });
   return normalized;
 }
 

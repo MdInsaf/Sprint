@@ -1,3 +1,4 @@
+// src/pages/TeamWorkload.tsx
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { DEFAULT_TEAM } from '@/lib/store';
@@ -9,11 +10,13 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Task, TeamMember } from '@/types';
+import { Task, TeamMember, Sprint } from '@/types';
 import { WORKDAY_HOURS, roundHours, toHours } from '@/lib/time';
 import { TeamSelect } from '@/components/TeamSelect';
 import { useTeamSelection } from '@/hooks/use-team-selection';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CalendarDays } from 'lucide-react';
+import { formatLocalDate } from '@/lib/utils';
+import { EmployeeLeavePanel } from '@/components/EmployeeLeavePanel';
 
 const OVERLOAD_THRESHOLD_HOURS = WORKDAY_HOURS * 5;
 
@@ -65,7 +68,8 @@ interface WorkloadMemberData extends TeamMember {
 const isBug = (type?: string) => type === 'Bug';
 const isChange = (type?: string) => type === 'Change';
 const isBugType = (type?: string) => isBug(type) || isChange(type);
-const isCoreType = (type?: string) => type === 'Sprint' || type === 'Additional' || type === 'Backlog';
+const isCoreType = (type?: string) =>
+  type === 'Sprint' || type === 'Additional' || type === 'Backlog';
 const toDateValue = (value?: string) => {
   if (!value) return 0;
   const time = new Date(value).getTime();
@@ -76,47 +80,59 @@ export default function TeamWorkload() {
   const { user } = useAuth();
   const { teams, selectedTeam, setSelectedTeam } = useTeamSelection(user?.team);
 
-  // React Query hooks
   const { data: allSprints = [], isLoading: sprintsLoading } = useSprints();
   const { data: teamMembers = [], isLoading: membersLoading } = useTeamMembers();
 
-  const activeSprint = allSprints.find(s => s.is_active && (s.team || DEFAULT_TEAM) === selectedTeam) || null;
+  const activeSprint =
+    allSprints.find(
+      (s) => s.is_active && (s.team || DEFAULT_TEAM) === selectedTeam,
+    ) || null;
+
   const teamSprints = useMemo(() => {
     return allSprints
       .filter((item) => (item.team || DEFAULT_TEAM) === selectedTeam)
-      .sort((a, b) => toDateValue(b.end_date || b.start_date) - toDateValue(a.end_date || a.start_date));
+      .sort(
+        (a, b) =>
+          toDateValue(b.end_date || b.start_date) -
+          toDateValue(a.end_date || a.start_date),
+      );
   }, [allSprints, selectedTeam]);
+
   const [selectedSprintId, setSelectedSprintId] = useState('');
   useEffect(() => {
     const fallback = activeSprint?.id || teamSprints[0]?.id || '';
     setSelectedSprintId((prev) =>
-      prev && teamSprints.some((sprint) => sprint.id === prev) ? prev : fallback
+      prev && teamSprints.some((sprint) => sprint.id === prev) ? prev : fallback,
     );
   }, [activeSprint?.id, teamSprints]);
+
   const selectedSprint =
     teamSprints.find((item) => item.id === selectedSprintId) ||
     activeSprint ||
     teamSprints[0] ||
     null;
 
-  const { data: sprintTasksRaw = [], isLoading: tasksLoading } = useTasksBySprint(selectedSprint?.id || null);
-  // Tasks from other sprints where QA work was done during this sprint
-  const { data: qaSprintTasksRaw = [] } = useTasksByQaSprint(selectedSprint?.id || null);
+  const { data: sprintTasksRaw = [], isLoading: tasksLoading } =
+    useTasksBySprint(selectedSprint?.id || null);
+  const { data: qaSprintTasksRaw = [] } = useTasksByQaSprint(
+    selectedSprint?.id || null,
+  );
 
   const isLoading = sprintsLoading || membersLoading || tasksLoading;
 
   const teamMembersForTeam = teamMembers.filter(
-    (member) => (member.team || DEFAULT_TEAM) === selectedTeam
+    (member) => (member.team || DEFAULT_TEAM) === selectedTeam,
   );
   const teamMemberIds = new Set(teamMembersForTeam.map((member) => member.id));
-  // Only sprint-assigned tasks (no bug board pull by date range)
+
   const tasks = sprintTasksRaw.filter((task) => teamMemberIds.has(task.owner_id));
-  // Split: core tasks for workload, bugs/changes for counts only
   const workloadTasks = tasks.filter((task) => !isBugType(task.type));
   const bugChangeTasks = tasks.filter((task) => isBugType(task.type));
+
   const [detailMemberId, setDetailMemberId] = useState<string | null>(null);
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
-  const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
+  const hideTeamSelect =
+    ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
 
   const workloadMembers = teamMembersForTeam.filter(
     (member) =>
@@ -124,41 +140,37 @@ export default function TeamWorkload() {
       member.role === 'Associate' ||
       member.role === 'Security' ||
       member.role === 'Manager' ||
-      member.role === 'QA'
+      member.role === 'QA',
   );
 
   const workloadData: WorkloadMemberData[] = useMemo(() => {
-    // Calculate sprint days when available; fall back to a single work week for bug-only workload.
     let workingWeeks = 1;
     if (selectedSprint) {
       const start = new Date(selectedSprint.start_date);
       const end = new Date(selectedSprint.end_date);
-      const sprintDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-      const workingDays = Math.ceil(sprintDays * (5 / 7)); // Approximate working days
+      const sprintDays = Math.max(
+        1,
+        Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)),
+      );
+      const workingDays = Math.ceil(sprintDays * (5 / 7));
       workingWeeks = Math.max(1, workingDays / 5);
     }
 
-    // QA activity: tasks from this sprint + cross-sprint tasks where QA was done in this sprint
     const sprintQaTasks = workloadTasks.filter(
       (task) =>
-        // Tasks in this sprint that have QA work AND qa_sprint matches (or no qa_sprint set yet)
         ((task.qa_actual_hours || 0) > 0 ||
-        (task.qa_fixing_hours || 0) > 0 ||
-        Boolean(task.qa_status)) &&
-        // Only include if qa_sprint matches this sprint or isn't set (legacy)
-        (!task.qa_sprint_id || task.qa_sprint_id === selectedSprint?.id)
+          (task.qa_fixing_hours || 0) > 0 ||
+          Boolean(task.qa_status)) &&
+        (!task.qa_sprint_id || task.qa_sprint_id === selectedSprint?.id),
     );
-    // Cross-sprint QA tasks (from other sprints, tested during this sprint)
     const crossSprintQaTasks = qaSprintTasksRaw.filter(
-      (task) => !isBugType(task.type) && teamMemberIds.has(task.owner_id)
+      (task) => !isBugType(task.type) && teamMemberIds.has(task.owner_id),
     );
     const qaTasks = [...sprintQaTasks, ...crossSprintQaTasks];
 
     return workloadMembers.map((member) => {
       const isQaMember = member.role === 'QA';
-      // Workload uses only core tasks (Sprint/Additional/Backlog)
       const assignedCoreTasks = workloadTasks.filter((t) => t.owner_id === member.id);
-      // Bug/change counts from sprint (for display only, not workload hours)
       const assignedBugChanges = bugChangeTasks.filter((t) => t.owner_id === member.id);
       const qaScopeTasks = isQaMember ? qaTasks : [];
       const assignedDetailTaskMap = new Map<string, WorkloadTaskInfo>();
@@ -201,16 +213,25 @@ export default function TeamWorkload() {
       const completedCount = assignedCoreTasks.filter((t) => t.status === 'Done').length;
       const blockedCount = assignedCoreTasks.filter((t) => t.status === 'Blocked').length;
 
-      const estimatedDays = assignedCoreTasks.reduce((sum, t) => sum + t.estimated_hours, 0);
-      const actualDays = assignedCoreTasks.reduce((sum, task) => sum + (task.actual_hours || 0), 0);
-      const blockedDays = assignedCoreTasks.reduce((sum, t) => sum + (t.blocked_hours || 0), 0);
+      const estimatedDays = assignedCoreTasks.reduce(
+        (sum, t) => sum + t.estimated_hours,
+        0,
+      );
+      const actualDays = assignedCoreTasks.reduce(
+        (sum, task) => sum + (task.actual_hours || 0),
+        0,
+      );
+      const blockedDays = assignedCoreTasks.reduce(
+        (sum, t) => sum + (t.blocked_hours || 0),
+        0,
+      );
       const qaTestingDaysForMember = isQaMember
         ? qaDetailTasks.reduce((sum, item) => sum + item.effortDays, 0)
         : 0;
       const qaFixingDaysForMember = 0;
       const fixingDaysForMember = assignedCoreTasks.reduce(
         (sum, task) => sum + (task.qa_fixing_hours || 0),
-        0
+        0,
       );
       const workedDays = actualDays + qaTestingDaysForMember + fixingDaysForMember;
 
@@ -219,12 +240,17 @@ export default function TeamWorkload() {
       const blockedHours = toHours(blockedDays);
       const fixingHours = toHours(fixingDaysForMember);
 
-      const avgHoursPerWeek = workingWeeks > 0 ? (isQaMember ? workedHours : estimatedHours) / workingWeeks : 0;
+      const avgHoursPerWeek =
+        workingWeeks > 0
+          ? (isQaMember ? workedHours : estimatedHours) / workingWeeks
+          : 0;
       const isOverloaded = avgHoursPerWeek > OVERLOAD_THRESHOLD_HOURS;
       const utilizationBase = isQaMember ? workedDays : estimatedDays;
-      const utilizationPercent = Math.min(100, Math.round((workedDays / Math.max(1, utilizationBase)) * 100));
+      const utilizationPercent = Math.min(
+        100,
+        Math.round((workedDays / Math.max(1, utilizationBase)) * 100),
+      );
 
-      // Bug/change counts from sprint (display only, not included in workload hours)
       const bugCount = assignedBugChanges.filter((t) => isBug(t.type)).length;
       const changeCount = assignedBugChanges.filter((t) => isChange(t.type)).length;
 
@@ -236,12 +262,16 @@ export default function TeamWorkload() {
           }
           return acc;
         },
-        { taskCount: 0, taskDays: 0 }
+        { taskCount: 0, taskDays: 0 },
       );
 
-      const sortedByEffort = [...assignedDetailTasks].sort((a, b) => b.effortHours - a.effortHours);
+      const sortedByEffort = [...assignedDetailTasks].sort(
+        (a, b) => b.effortHours - a.effortHours,
+      );
       const longTasks = sortedByEffort.filter((item) => item.effortHours > 0).slice(0, 3);
-      const lowTasks = [...assignedDetailTasks].sort((a, b) => a.effortHours - b.effortHours).slice(0, 3);
+      const lowTasks = [...assignedDetailTasks]
+        .sort((a, b) => a.effortHours - b.effortHours)
+        .slice(0, 3);
       const totalEffortDays = workedDays;
 
       return {
@@ -255,7 +285,8 @@ export default function TeamWorkload() {
         avgHoursPerWeek,
         isOverloaded,
         utilizationPercent,
-        completionRate: taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0,
+        completionRate:
+          taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0,
         assignedTasks: assignedCoreTasks,
         qaTasks: qaDetailTasks.map((item) => item.task),
         assignedDetailTasks,
@@ -278,7 +309,7 @@ export default function TeamWorkload() {
     });
   }, [selectedSprint, tasks, workloadMembers, qaSprintTasksRaw]);
 
-  const overloadedCount = workloadData.filter(d => d.isOverloaded).length;
+  const overloadedCount = workloadData.filter((d) => d.isOverloaded).length;
   const detailMember = detailMemberId
     ? workloadData.find((member) => member.id === detailMemberId) || null
     : null;
@@ -287,11 +318,15 @@ export default function TeamWorkload() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Team Workload</h1>
           <p className="text-muted-foreground">
-            {workloadMembers.length} team members {selectedSprint ? `in ${selectedSprint.sprint_name}` : 'with no sprint selected'}
+            {workloadMembers.length} team members{' '}
+            {selectedSprint
+              ? `in ${selectedSprint.sprint_name}`
+              : 'with no sprint selected'}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -312,7 +347,8 @@ export default function TeamWorkload() {
               <SelectContent>
                 {teamSprints.map((item) => (
                   <SelectItem key={item.id} value={item.id}>
-                    {item.sprint_name} ({item.start_date} - {item.end_date})
+                    {item.sprint_name} ({formatLocalDate(item.start_date)} -{' '}
+                    {formatLocalDate(item.end_date)})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -327,100 +363,127 @@ export default function TeamWorkload() {
         </div>
       </div>
 
-      {/* Workload Cards */}
+      {/* ── Workload Cards ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {workloadData.map(member => (
-          <Card key={member.id} className={member.isOverloaded ? 'border-warning' : ''}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
-                    {member.name.charAt(0)}
+        {workloadData.map((member) => {
+          const hasLeave = (member.leave_dates ?? []).length > 0;
+          return (
+            <Card key={member.id} className={member.isOverloaded ? 'border-warning' : ''}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
+                      {member.name.charAt(0)}
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setDetailMemberId(member.id)}
+                        className="text-left"
+                        title="View workload details"
+                      >
+                        <CardTitle className="text-base hover:underline">
+                          {member.name}
+                        </CardTitle>
+                      </button>
+                      <p className="text-xs text-muted-foreground">
+                        {member.taskBreakdown.taskCount} tasks ·{' '}
+                        {member.taskBreakdown.bugCount} bugs ·{' '}
+                        {member.taskBreakdown.changeCount} changes
+                      </p>
+                      {member.role === 'QA' && (
+                        <p className="text-[11px] text-muted-foreground">
+                          QA items: {member.qaTasks.length}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={() => setDetailMemberId(member.id)}
-                      className="text-left"
-                      title="View workload details"
-                    >
-                      <CardTitle className="text-base hover:underline">{member.name}</CardTitle>
-                    </button>
-                    <p className="text-xs text-muted-foreground">
-                      {member.taskBreakdown.taskCount} tasks · {member.taskBreakdown.bugCount} bugs ·{' '}
-                      {member.taskBreakdown.changeCount} changes
-                    </p>
-                    {member.role === 'QA' && (
-                      <p className="text-[11px] text-muted-foreground">QA items: {member.qaTasks.length}</p>
+                  <div className="flex items-center gap-1.5">
+                    {/* Leave indicator dot on card header */}
+                    {hasLeave && (
+                      <span title="Has scheduled leave">
+                      <CalendarDays className="h-3.5 w-3.5 text-blue-400 opacity-70" />
+                      </span>
+                    )}
+                    {member.isOverloaded && (
+                      <AlertTriangle className="h-4 w-4 text-warning" />
                     )}
                   </div>
                 </div>
-                {member.isOverloaded && (
-                  <AlertTriangle className="h-4 w-4 text-warning" />
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Days */}
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Estimated (hrs)</p>
-                  <p className="font-semibold">{member.estimatedHours}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Worked (hrs)</p>
-                  <p className="font-semibold">{member.workedHours}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Blocked (hrs)</p>
-                  <p className="font-semibold">{member.blockedHours}</p>
-                </div>
-              </div>
+              </CardHeader>
 
-              {/* Weekly Average */}
-              <div className={`p-2 rounded-lg ${member.isOverloaded ? 'bg-warning/10' : 'bg-secondary'}`}>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Weekly Avg</span>
-                  <span className={`font-medium ${member.isOverloaded ? 'text-warning' : ''}`}>
-                    {member.avgHoursPerWeek.toFixed(1)}h/week
-                  </span>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Estimated (hrs)</p>
+                    <p className="font-semibold">{member.estimatedHours}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Worked (hrs)</p>
+                    <p className="font-semibold">{member.workedHours}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Blocked (hrs)</p>
+                    <p className="font-semibold">{member.blockedHours}</p>
+                  </div>
                 </div>
-                {member.isOverloaded && (
-                  <p className="text-xs text-warning mt-1">
-                    Exceeds {OVERLOAD_THRESHOLD_HOURS}h/week threshold
-                  </p>
-                )}
-              </div>
 
-              {/* Progress */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Completion</span>
-                  <span>{member.completionRate}%</span>
+                <div
+                  className={`p-2 rounded-lg ${
+                    member.isOverloaded ? 'bg-warning/10' : 'bg-secondary'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Weekly Avg</span>
+                    <span
+                      className={`font-medium ${member.isOverloaded ? 'text-warning' : ''}`}
+                    >
+                      {member.avgHoursPerWeek.toFixed(1)}h/week
+                    </span>
+                  </div>
+                  {member.isOverloaded && (
+                    <p className="text-xs text-warning mt-1">
+                      Exceeds {OVERLOAD_THRESHOLD_HOURS}h/week threshold
+                    </p>
+                  )}
                 </div>
-                <Progress value={member.completionRate} className="h-2" />
-              </div>
 
-              {/* Task Breakdown */}
-              <div className="flex items-center gap-2">
-                <Badge variant="success" className="text-xs">
-                  {member.completedCount} Done
-                </Badge>
-                {member.blockedCount > 0 && (
-                  <Badge variant="destructive" className="text-xs">
-                    {member.blockedCount} Blocked
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Completion</span>
+                    <span>{member.completionRate}%</span>
+                  </div>
+                  <Progress value={member.completionRate} className="h-2" />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Badge variant="success" className="text-xs">
+                    {member.completedCount} Done
                   </Badge>
-                )}
-                <Badge variant="secondary" className="text-xs">
-                  {member.taskCount - member.completedCount - member.blockedCount} In Progress
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  {member.blockedCount > 0 && (
+                    <Badge variant="destructive" className="text-xs">
+                      {member.blockedCount} Blocked
+                    </Badge>
+                  )}
+                  <Badge variant="secondary" className="text-xs">
+                    {member.taskCount - member.completedCount - member.blockedCount} In
+                    Progress
+                  </Badge>
+                </div>
+
+                {/* ── Compact leave chips on the card ── */}
+                <EmployeeLeavePanel
+                  leaveDates={member.leave_dates}
+                  sprint={selectedSprint}
+                  compact
+                />
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Summary Table */}
+      {/* ── Summary Table ── */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Workload Summary</CardTitle>
@@ -463,8 +526,16 @@ export default function TeamWorkload() {
               </p>
               <p className="text-sm text-muted-foreground">Total Blocked (hrs)</p>
             </div>
-            <div className={`p-4 rounded-lg ${overloadedCount > 0 ? 'bg-warning/10' : 'bg-secondary'}`}>
-              <p className={`text-2xl font-semibold ${overloadedCount > 0 ? 'text-warning' : ''}`}>
+            <div
+              className={`p-4 rounded-lg ${
+                overloadedCount > 0 ? 'bg-warning/10' : 'bg-secondary'
+              }`}
+            >
+              <p
+                className={`text-2xl font-semibold ${
+                  overloadedCount > 0 ? 'text-warning' : ''
+                }`}
+              >
                 {overloadedCount}
               </p>
               <p className="text-sm text-muted-foreground">Overloaded</p>
@@ -473,8 +544,10 @@ export default function TeamWorkload() {
         </CardContent>
       </Card>
 
+      {/* ── Detail Dialog ── */}
       <WorkloadDetailsDialog
         member={detailMember}
+        sprint={selectedSprint}
         open={Boolean(detailMember)}
         onOpenChange={(open) => {
           if (!open) setDetailMemberId(null);
@@ -483,6 +556,8 @@ export default function TeamWorkload() {
     </div>
   );
 }
+
+// ─── Sub-components ────────────────────────────────────────────────────────────
 
 function DetailGroup({
   title,
@@ -548,10 +623,12 @@ function TaskEffortList({
 
 function WorkloadDetailsDialog({
   member,
+  sprint,
   open,
   onOpenChange,
 }: {
   member: WorkloadMemberData | null;
+  sprint: Sprint | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -559,7 +636,9 @@ function WorkloadDetailsDialog({
 
   const longTaskIds = new Set(member.longTasks.map((item) => item.task.id));
   const lowTaskIds = new Set(member.lowTasks.map((item) => item.task.id));
-  const detailTasks = [...member.assignedDetailTasks].sort((a, b) => b.effortHours - a.effortHours);
+  const detailTasks = [...member.assignedDetailTasks].sort(
+    (a, b) => b.effortHours - a.effortHours,
+  );
   const isQaMember = member.role === 'QA';
 
   const assignmentItems = [
@@ -583,7 +662,9 @@ function WorkloadDetailsDialog({
     { label: 'Worked', value: `${member.workedHours}h` },
     { label: 'Estimated', value: `${member.estimatedHours}h` },
     { label: 'Blocked', value: `${member.blockedHours}h` },
-    ...(member.fixingHours > 0 ? [{ label: 'Fixing', value: `${member.fixingHours}h` }] : []),
+    ...(member.fixingHours > 0
+      ? [{ label: 'Fixing', value: `${member.fixingHours}h` }]
+      : []),
   ];
 
   const qaItems = [
@@ -599,6 +680,8 @@ function WorkloadDetailsDialog({
         </DialogHeader>
 
         <div className="space-y-5">
+
+          {/* ── Assignment & Hours grids (unchanged) ── */}
           <div className="grid gap-3 sm:grid-cols-2">
             <DetailGroup title="Assignment Mix" items={assignmentItems} />
             <DetailGroup title="Hours" items={hoursItems} />
@@ -615,11 +698,36 @@ function WorkloadDetailsDialog({
 
           <Separator />
 
+          {/* ── Leave Section (new) ── */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Leave Schedule
+                {sprint && (
+                  <span className="ml-1.5 normal-case font-normal">
+                    · {sprint.sprint_name}
+                  </span>
+                )}
+              </div>
+            </div>
+            <EmployeeLeavePanel
+              leaveDates={member.leave_dates}
+              sprint={sprint}
+              compact={false}
+              showCalendar={true}
+            />
+          </div>
+
+          <Separator />
+
+          {/* ── Long / Low tasks ── */}
           <div className="grid gap-3 sm:grid-cols-2">
             <TaskEffortList title="Longest tasks" items={member.longTasks} />
             <TaskEffortList title="Lowest tasks" items={member.lowTasks} />
           </div>
 
+          {/* ── Assigned Workload list ── */}
           <div className="space-y-2">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Assigned Workload
@@ -644,7 +752,9 @@ function WorkloadDetailsDialog({
                         </div>
                         <div className="text-[11px] text-muted-foreground">
                           Worked {item.actualHours}h
-                          {item.qaFixingHours > 0 ? ` · Fixing ${item.qaFixingHours}h` : ''}
+                          {item.qaFixingHours > 0
+                            ? ` · Fixing ${item.qaFixingHours}h`
+                            : ''}
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
@@ -654,11 +764,12 @@ function WorkloadDetailsDialog({
                             Long
                           </Badge>
                         )}
-                        {!longTaskIds.has(item.task.id) && lowTaskIds.has(item.task.id) && (
-                          <Badge variant="secondary" className="text-[10px]">
-                            Low
-                          </Badge>
-                        )}
+                        {!longTaskIds.has(item.task.id) &&
+                          lowTaskIds.has(item.task.id) && (
+                            <Badge variant="secondary" className="text-[10px]">
+                              Low
+                            </Badge>
+                          )}
                       </div>
                     </div>
                   ))}
@@ -666,6 +777,8 @@ function WorkloadDetailsDialog({
               </ScrollArea>
             )}
           </div>
+
+          {/* ── QA Workload list ── */}
           {isQaMember && (
             <div className="space-y-2">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -682,7 +795,9 @@ function WorkloadDetailsDialog({
                         className="flex items-start justify-between gap-3 rounded-lg border bg-background p-3"
                       >
                         <div className="min-w-0 space-y-1">
-                          <p className="text-sm font-medium truncate">{item.task.title}</p>
+                          <p className="text-sm font-medium truncate">
+                            {item.task.title}
+                          </p>
                           <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                             <Badge variant="outline" className="text-[10px]">
                               {item.task.type}

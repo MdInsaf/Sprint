@@ -31,6 +31,7 @@ import { TaskCommentsDialog } from '@/components/TaskCommentsDialog';
 import { TaskDetailsDialog } from '@/components/TaskDetailsDialog';
 import { Bug as BugIcon, Clock, User, PencilLine, X, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatLocalDate } from '@/lib/utils';
 
 type BugStatus = Extract<TaskStatus, 'To Do' | 'In Progress' | 'Fixed' | 'Closed' | 'Reopen' | 'Done'>;
 
@@ -579,7 +580,6 @@ function BugRow({
           value={bug.status as BugStatus}
           onValueChange={(v) => onStatusChange?.(v as BugStatus)}
           disabled={!onStatusChange}
-          className="h-9"
         >
           <SelectTrigger className="h-9">
             <SelectValue />
@@ -593,9 +593,9 @@ function BugRow({
           </SelectContent>
         </Select>
         <div className="text-[11px] text-muted-foreground space-y-1 leading-tight">
-          <div>Created: {bug.created_date || '-'}</div>
+          <div>Created: {formatLocalDate(bug.created_date)}</div>
           {(bug.status === 'Closed' || bug.status === 'Done') && (
-            <div>Closed: {bug.closed_date || 'Not tracked'}</div>
+            <div>Closed: {bug.closed_date ? formatLocalDate(bug.closed_date) : 'Not tracked'}</div>
           )}
           {showProgress && (
             <div className="flex items-center gap-1">

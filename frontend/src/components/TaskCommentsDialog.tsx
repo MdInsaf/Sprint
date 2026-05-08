@@ -8,10 +8,10 @@ import { deleteAttachment } from '@/lib/store';
 import { useTeamMembers, useTaskComments, useCreateTaskComment, useUpdateTask } from '@/hooks';
 import { useAuth } from '@/context/AuthContext';
 import { MessageSquare, Paperclip, Send, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { toHours } from '@/lib/time';
+import { formatLocalDateTime } from '@/lib/utils';
 
 interface TaskCommentsDialogProps {
   task: Task;
@@ -289,7 +289,7 @@ export function TaskCommentsDialog({ task, onCommentAdded, open, onOpenChange, s
                         {getAuthorName(comment.author_id)}
                       </span>
                       <span className="text-[10px] text-muted-foreground">
-                        {format(new Date(comment.created_date), 'MMM d, h:mm a')}
+                        {formatLocalDateTime(comment.created_date)}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">

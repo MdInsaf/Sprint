@@ -9,6 +9,7 @@ import { Paperclip, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { toHours } from '@/lib/time';
+import { formatLocalDate } from '@/lib/utils';
 
 interface TaskDetailsDialogProps {
   task: Task | null;
@@ -21,7 +22,7 @@ function formatText(value?: string | null) {
 }
 
 function formatDate(value?: string | null) {
-  return value && value.trim() ? value : '-';
+  return formatLocalDate(value);
 }
 
 function formatHours(value?: number | null) {

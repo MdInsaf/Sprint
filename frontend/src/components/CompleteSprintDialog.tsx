@@ -12,6 +12,7 @@ import { DEFAULT_TEAM } from '@/lib/store';
 import { useSprints, useTasksBySprint, useUpdateTask, useUpdateSprint, useCreateOrUpdateSprintSummary } from '@/hooks';
 import { CheckCircle2, Flag, AlertTriangle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { formatLocalDate } from '@/lib/utils';
 
 const DONE_STATUSES: TaskStatus[] = ['Done', 'Closed', 'Fixed'];
 const CARRY_FORWARD_STATUSES: TaskStatus[] = ['In Progress', 'Blocked', 'Reopen'];
@@ -221,7 +222,7 @@ export function CompleteSprintDialog({ sprint, onSprintCompleted }: CompleteSpri
                   <SelectContent>
                     {availableSprints.map((candidate) => (
                       <SelectItem key={candidate.id} value={candidate.id}>
-                        {candidate.sprint_name} ({candidate.start_date} - {candidate.end_date})
+                        {candidate.sprint_name} ({formatLocalDate(candidate.start_date)} - {formatLocalDate(candidate.end_date)})
                       </SelectItem>
                     ))}
                   </SelectContent>

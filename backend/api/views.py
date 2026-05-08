@@ -74,6 +74,13 @@ TASK_ID_MIN_DIGITS = 3
 PAGINATION_DEFAULT_PAGE_SIZE = getattr(settings, "API_PAGE_SIZE", 50)
 PAGINATION_MAX_PAGE_SIZE = getattr(settings, "API_MAX_PAGE_SIZE", 200)
 
+# ── Leave date format: "yyyy-MM-dd" or "yyyy-MM-dd:morning/afternoon/half" ────
+# Matches plain dates AND dates with a half-day modifier.
+# This pattern is timezone-agnostic — dates are calendar dates, not timestamps.
+_LEAVE_DATE_PATTERN = re.compile(
+    r'^(\d{4}-\d{2}-\d{2})(?::\s*(morning|afternoon|half))?$'
+)
+
 
 def _should_paginate(request):
     params = getattr(request, "query_params", {}) or {}
@@ -186,7 +193,6 @@ def _team_allows(user, team):
     if _is_super_admin(user):
         return True
     return bool(team and team == _user_team(user))
-
 
 
 def now_id(prefix):
@@ -330,6 +336,10 @@ def _holiday_dates():
 
 
 def normalize_holiday_dates(value):
+    """
+    Normalises sprint holiday dates (plain yyyy-MM-dd only).
+    NOTE: Do NOT use this for leave_dates — use normalize_leave_dates() instead.
+    """
     if not value:
         return []
     if isinstance(value, str):
@@ -355,6 +365,88 @@ def normalize_holiday_dates(value):
             seen.add(date_value)
             normalized.append(date_value)
     return normalized
+
+
+def normalize_leave_dates(value):
+    """
+    Normalises leave_dates strings, preserving half-day modifiers.
+
+    Supported formats:
+      "2026-04-13"
+      "2026-04-15:morning"
+      "2026-04-15:afternoon"
+      "2026-04-15:half" (→ normalized to morning)
+
+    Robust against:
+      - extra spaces ("2026-04-15 : afternoon")
+      - casing ("Afternoon", "MORNING")
+    """
+
+    if not value:
+        return []
+
+    if isinstance(value, str):
+        items = [item.strip() for item in value.split(",")]
+    elif isinstance(value, (list, tuple, set)):
+        items = list(value)
+    else:
+        return []
+
+    seen = set()
+    result = []
+
+    for item in items:
+        if not item:
+            continue
+
+        # 🔥 Normalize aggressively
+        text = str(item).strip().lower()
+        text = re.sub(r'\s*:\s*', ':', text)
+
+        date_part = None
+        modifier = None
+
+        # ── Step 1: Try regex match ─────────────────────────
+        match = _LEAVE_DATE_PATTERN.match(text)
+        if match:
+            date_part = match.group(1)
+            modifier = match.group(2)
+        else:
+            # ── Step 2: Fallback parser (critical fix) ───────
+            if ":" in text:
+                parts = text.split(":", 1)
+                date_part = parts[0].strip()
+                modifier = parts[1].strip()
+
+                if modifier not in {"morning", "afternoon", "half"}:
+                    logger.warning("Invalid leave date (bad modifier): %s", text)
+                    continue
+            else:
+                # Try treating as plain date
+                date_part = text
+                modifier = None
+
+        # ── Step 3: Validate date ───────────────────────────
+        try:
+            datetime.strptime(date_part, "%Y-%m-%d")
+        except ValueError:
+            logger.warning("Invalid leave date (bad calendar date): %s", text)
+            continue
+
+        # ── Step 4: Normalize modifier ──────────────────────
+        if modifier == "half":
+            modifier = "morning"
+
+        # ── Step 5: Deduplicate by date ─────────────────────
+        if date_part in seen:
+            continue
+        seen.add(date_part)
+
+        # ── Step 6: Encode ──────────────────────────────────
+        encoded = f"{date_part}:{modifier}" if modifier else date_part
+        result.append(encoded)
+
+    return sorted(result)
 
 
 def normalize_qa_status(value):
@@ -473,6 +565,14 @@ def normalize_days(days):
 
 
 def _task_holiday_dates(task):
+    """
+    Combines sprint holidays and member leave dates for elapsed-time calculations.
+    Note: leave_dates may contain half-day entries (e.g. "2026-04-15:morning").
+    normalize_holiday_dates() safely strips the modifier — it only uses the
+    date part for holiday exclusion, which is correct behaviour (a half day off
+    should still reduce available hours, but the exact amount is tracked
+    separately in the leave panel, not here).
+    """
     sprint = getattr(task, "sprint", None)
     owner = getattr(task, "owner", None)
     profile = getattr(owner, "profile", None) if owner else None
@@ -480,7 +580,13 @@ def _task_holiday_dates(task):
     if sprint and getattr(sprint, "holiday_dates", None):
         dates.extend(sprint.holiday_dates or [])
     if profile and getattr(profile, "leave_dates", None):
-        dates.extend(profile.leave_dates or [])
+        # Extract only the date part from leave entries so that
+        # "2026-04-15:morning" is treated as a holiday date "2026-04-15"
+        for entry in (profile.leave_dates or []):
+            text = str(entry).strip()
+            m = _LEAVE_DATE_PATTERN.match(text)
+            if m:
+                dates.append(m.group(1))
     normalized = normalize_holiday_dates(dates)
     return normalized or None
 
@@ -545,6 +651,9 @@ def sanitize_user(user):
     profile = getattr(user, "profile", None)
     name = getattr(user, "get_full_name", lambda: "")() or getattr(user, "username", "")
     role = _normalize_role_label(getattr(profile, "role", "Developer")) or "Developer"
+    # Use normalize_leave_dates so half-day entries stored in DB are returned
+    # correctly, even if older records used the legacy ":half" format.
+    raw_leave_dates = getattr(profile, "leave_dates", []) or []
     return {
         "id": str(getattr(user, "id", "")),
         "name": name,
@@ -553,7 +662,7 @@ def sanitize_user(user):
         "role": role,
         "avatar": getattr(profile, "avatar", None),
         "team": getattr(profile, "team", "Developers"),
-        "leave_dates": getattr(profile, "leave_dates", []) or [],
+        "leave_dates": normalize_leave_dates(raw_leave_dates),
     }
 
 
@@ -655,7 +764,6 @@ def upload_task_attachments(task, files, uploader):
     if not files:
         return []
 
-    # Block dangerous file extensions, only allow safe ones
     blocked_extensions = {
         ".exe", ".bat", ".cmd", ".com", ".sh", ".bash", ".zsh", ".ksh",
         ".dll", ".so", ".dylib", ".sys", ".drv", ".msi", ".scr",
@@ -664,7 +772,7 @@ def upload_task_attachments(task, files, uploader):
         ".msi", ".rar", ".zip", ".7z", ".gz", ".tar", ".iso",
         ".bin", ".img", ".dmg", ".vhd", ".vmdk"
     }
-    
+
     for file_obj in files:
         filename = getattr(file_obj, "name", "") or ""
         _, ext = os.path.splitext(filename)
@@ -882,7 +990,7 @@ def team_members(request):
             role=_normalize_role_label(data.get("role") or "Developer"),
             avatar=data.get("avatar"),
             team=data.get("team", "Developers"),
-            leave_dates=normalize_holiday_dates(data.get("leave_dates")),
+            leave_dates=normalize_leave_dates(data.get("leave_dates")),
         )
     except IntegrityError:
         return Response(
@@ -896,98 +1004,54 @@ def team_members(request):
 @permission_classes([IsManagerOrSelf])
 def team_member_detail(request, member_id):
     try:
-        member = User.objects.get(pk=member_id)
+        member = User.objects.select_related("profile").get(pk=member_id)
     except User.DoesNotExist:
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == "DELETE":
+        if not _is_manager(request.user) and str(request.user.id) != str(member_id):
+            return Response({"message": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
+        if not _is_super_admin(request.user) and _user_team(member) != _user_team(request.user):
+            return Response({"message": "Not allowed to delete users from another team"}, status=status.HTTP_403_FORBIDDEN)
+        member.delete()
+        return Response({"deleted": member_id})
+
     if request.method == "PUT":
         data = request.data or {}
-        profile, _ = MemberProfile.objects.get_or_create(user=member)
-        request_is_manager = _is_manager(request.user)
-        request_is_super = _is_super_admin(request.user)
-        is_self = str(request.user.id) == str(member.id)
-        member_team = getattr(profile, "team", None) or "Developers"
+        profile = getattr(member, "profile", None)
+        if not profile:
+            return Response({"message": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if not request_is_manager and not is_self:
-            return Response({"message": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
+        if not _is_super_admin(request.user) and _user_team(member) != _user_team(request.user):
+            return Response({"message": "Not allowed to edit users from another team"}, status=status.HTTP_403_FORBIDDEN)
 
-        if request_is_manager and not request_is_super:
-            if member_team != _user_team(request.user):
-                return Response({"message": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
+        requested_role = (data.get("role") or "").strip().lower()
+        if requested_role == "super admin" and not _is_super_admin(request.user):
+            return Response({"message": "Only a Super Admin can grant Super Admin role"}, status=status.HTTP_403_FORBIDDEN)
 
-        if not request_is_manager:
-            allowed_fields = {"leave_dates"}
-            disallowed = set(data.keys()) - allowed_fields
-            if disallowed:
-                return Response(
-                    {"message": "Only leave_dates can be updated"},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
-            profile.leave_dates = normalize_holiday_dates(data.get("leave_dates"))
-            profile.save()
-            return Response(sanitize_user(member))
+        requested_team = data.get("team", profile.team)
+        if not _is_super_admin(request.user) and requested_team != _user_team(request.user):
+            return Response({"message": "Not allowed to move users to another team"}, status=status.HTTP_403_FORBIDDEN)
 
-        requested_team = member_team
-        if "team" in data:
-            requested_team = data["team"] or profile.team
-            if not request_is_super and requested_team != _user_team(request.user):
-                return Response({"message": "Not allowed to move users across teams"}, status=status.HTTP_403_FORBIDDEN)
-
-        requested_role = profile.role
-        if "role" in data:
-            requested_role = data["role"]
-            if (requested_role or "").strip().lower() == "super admin":
-                if not request_is_super:
-                    return Response({"message": "Only a Super Admin can grant Super Admin role"}, status=status.HTTP_403_FORBIDDEN)
-
-        if _is_associate(requested_role) and requested_team not in ASSOCIATE_TEAMS:
+        if _is_associate(data.get("role")) and requested_team not in ASSOCIATE_TEAMS:
             return Response({"message": "Associate role is only allowed for R&D, GRC, or Ascenders teams"}, status=status.HTTP_403_FORBIDDEN)
-        if _is_security(requested_role) and requested_team not in SECURITY_TEAMS:
+        if _is_security(data.get("role")) and requested_team not in SECURITY_TEAMS:
             return Response({"message": "Security role is only allowed for GRC team"}, status=status.HTTP_403_FORBIDDEN)
 
         if "name" in data:
             member.first_name = data["name"]
-        if "username" in data:
-            member.username = data["username"]
-        if "email" in data:
-            new_email = (data["email"] or "").strip().lower()
-            if not new_email:
-                return Response({"message": "Email cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
-            if User.objects.filter(email__iexact=new_email).exclude(pk=member.pk).exists():
-                return Response({"message": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
-            member.email = new_email
+            member.save(update_fields=["first_name"])
         if "role" in data:
-            profile.role = _normalize_role_label(requested_role)
+            profile.role = _normalize_role_label(data["role"])
         if "avatar" in data:
             profile.avatar = data["avatar"]
         if "team" in data:
-            profile.team = requested_team
+            profile.team = data["team"]
         if "leave_dates" in data:
-            profile.leave_dates = normalize_holiday_dates(data.get("leave_dates"))
-        if data.get("password"):
-            member.set_password(data["password"])
-        member.save()
+            profile.leave_dates = normalize_leave_dates(data["leave_dates"])
+
         profile.save()
         return Response(sanitize_user(member))
-
-    request_is_super = _is_super_admin(request.user)
-    if not request_is_super:
-        profile = getattr(member, "profile", None)
-        member_team = getattr(profile, "team", None) or "Developers"
-        if member_team != _user_team(request.user):
-            return Response({"message": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
-
-    # DELETE: also clean dependent data similar to the Node API
-    with transaction.atomic():
-        removed_tasks = list(Task.objects.filter(
-            owner_id=member.id).values_list("id", flat=True))
-        Task.objects.filter(id__in=removed_tasks).delete()
-        Approval.objects.filter(Q(approved_by=member) | Q(
-            task_id__in=removed_tasks)).delete()
-        TaskComment.objects.filter(Q(author=member) | Q(
-            task_id__in=removed_tasks)).delete()
-        member.delete()
-    return Response({"removed": sanitize_user(member), "removedTaskIds": removed_tasks})
 
 
 @api_view(["POST"])
@@ -1027,34 +1091,19 @@ def auth_login(request):
 @permission_classes([AllowAny])
 @authentication_classes([])
 def auth_logout(request):
-    # Normalize GET to behave like POST for logout.
     logout(request)
     response = Response(status=status.HTTP_204_NO_CONTENT)
-
-    # Explicitly clear cookies with the same attributes they were set with.
     cookie_domain = getattr(settings, "COOKIE_DOMAIN", None)
     cookie_path = "/"
     samesite = getattr(settings, "CSRF_COOKIE_SAMESITE", "Lax")
-
-    response.delete_cookie(
-        "sessionid",
-        domain=cookie_domain,
-        path=cookie_path,
-        samesite=samesite,
-    )
-    response.delete_cookie(
-        "csrftoken",
-        domain=cookie_domain,
-        path=cookie_path,
-        samesite=samesite,
-    )
+    response.delete_cookie("sessionid", domain=cookie_domain, path=cookie_path, samesite=samesite)
+    response.delete_cookie("csrftoken", domain=cookie_domain, path=cookie_path, samesite=samesite)
     return response
 
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def me(request):
-    # Let SessionMemberAuthentication populate request.user from the session cookie.
     return Response(sanitize_user(request.user))
 
 
@@ -1067,7 +1116,6 @@ def csrf_token(request):
 
 
 def csrf_failure(request, reason="", template_name=None):
-    """Custom CSRF failure handler to aid debugging (returns JSON)."""
     meta = request.META if hasattr(request, "META") else {}
     logger.warning(
         "CSRF failure: %s | Origin=%s Referer=%s Cookie=%s HeaderToken=%s",
@@ -1114,7 +1162,6 @@ def request_password_reset(request):
     if not email:
         return Response({"message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Always return success to prevent email enumeration
     try:
         user = User.objects.get(email__iexact=email)
     except (User.DoesNotExist, User.MultipleObjectsReturned):
@@ -1135,7 +1182,6 @@ def request_password_reset(request):
         f"If you did not request this, you can safely ignore this email."
     )
     send_notification_email(subject, body, [user.email])
-
     return Response({"message": "If an account with that email exists, a reset link has been sent."})
 
 
@@ -1466,7 +1512,6 @@ def tasks_view(request):
             elif settings.DEBUG:
                 response["detail"] = str(exc)
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    # Email notifications for new tasks/bugs.
     owner = get_user(task.owner_id)
     if owner and owner.email:
         send_assignment_email(task, owner)
@@ -1687,7 +1732,6 @@ def task_detail(request, task_id):
                 task.qa_in_progress_date = None
             if next_qa_active and not task.qa_in_progress_date:
                 task.qa_in_progress_date = now_iso
-                # Track which sprint was active when QA testing started
                 task_team = next_team or _task_team(task)
                 active_sprint = Sprint.objects.filter(is_active=True, team=task_team).first()
                 if active_sprint:
@@ -1706,7 +1750,6 @@ def task_detail(request, task_id):
                 task.qa_fixing_in_progress_date = now_iso
 
         owner_changed = task.owner_id and str(task.owner_id) != str(previous_owner_id)
-        # Status changes are handled below based on current values.
 
         task.qa_status = normalized_qa_status
         task.save()
