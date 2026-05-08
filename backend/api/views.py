@@ -514,14 +514,27 @@ def _get_workday_window():
     return start_hour, end_hour
 
 
-def _get_workday_timezone():
+def _get_workday_timezone(tz_name=None):
+    if tz_name:
+        try:
+            import zoneinfo
+            return zoneinfo.ZoneInfo(tz_name)
+        except Exception:
+            pass
     try:
         return django_timezone.get_default_timezone()
     except Exception:
         return timezone.utc
 
 
-def compute_elapsed_days(start_value, end_value=None, holiday_dates=None):
+def _task_owner_timezone(task):
+    owner = getattr(task, 'owner', None)
+    profile = getattr(owner, 'profile', None) if owner else None
+    tz_name = getattr(profile, 'timezone', None) if profile else None
+    return tz_name or None
+
+
+def compute_elapsed_days(start_value, end_value=None, holiday_dates=None, user_tz=None):
     start = parse_datetime(start_value)
     if not start:
         return 0.0
@@ -530,7 +543,7 @@ def compute_elapsed_days(start_value, end_value=None, holiday_dates=None):
         return 0.0
     workday_hours = _get_workday_hours()
     workday_start, workday_end = _get_workday_window()
-    work_tz = _get_workday_timezone()
+    work_tz = _get_workday_timezone(user_tz)
     start_local = start.astimezone(work_tz)
     end_local = end.astimezone(work_tz)
     holiday_set = set(_holiday_dates())
@@ -594,13 +607,15 @@ def _task_holiday_dates(task):
 def compute_actual_days(task):
     total = float(task.actual_hours or 0)
     holiday_dates = _task_holiday_dates(task)
+    user_tz = _task_owner_timezone(task)
     if task.status in WORK_STATUSES and task.in_progress_date:
-        total += compute_elapsed_days(task.in_progress_date, holiday_dates=holiday_dates)
+        total += compute_elapsed_days(task.in_progress_date, holiday_dates=holiday_dates, user_tz=user_tz)
     elif task.status in DONE_STATUSES and task.in_progress_date:
         total += compute_elapsed_days(
             task.in_progress_date,
             task.closed_date,
             holiday_dates=holiday_dates,
+            user_tz=user_tz,
         )
     return normalize_days(total)
 
@@ -608,13 +623,15 @@ def compute_actual_days(task):
 def compute_blocked_days(task):
     total = float(getattr(task, "blocked_hours", 0) or 0)
     holiday_dates = _task_holiday_dates(task)
+    user_tz = _task_owner_timezone(task)
     if task.status == BLOCKED_STATUS and task.blocker_date:
-        total += compute_elapsed_days(task.blocker_date, holiday_dates=holiday_dates)
+        total += compute_elapsed_days(task.blocker_date, holiday_dates=holiday_dates, user_tz=user_tz)
     elif task.status in DONE_STATUSES and task.blocker_date:
         total += compute_elapsed_days(
             task.blocker_date,
             task.closed_date,
             holiday_dates=holiday_dates,
+            user_tz=user_tz,
         )
     return normalize_days(total) if total > 0 else 0
 
@@ -622,6 +639,7 @@ def compute_blocked_days(task):
 def compute_qa_days(task):
     total = float(getattr(task, "qa_actual_hours", 0) or 0)
     holiday_dates = _task_holiday_dates(task)
+    user_tz = _task_owner_timezone(task)
     if (
         getattr(task, "qa_status", None) in QA_ACTIVE_STATUSES
         and getattr(task, "qa_in_progress_date", None)
@@ -629,6 +647,7 @@ def compute_qa_days(task):
         total += compute_elapsed_days(
             task.qa_in_progress_date,
             holiday_dates=holiday_dates,
+            user_tz=user_tz,
         )
     return normalize_days(total) if total > 0 else 0
 
@@ -636,10 +655,12 @@ def compute_qa_days(task):
 def compute_qa_fixing_days(task):
     total = float(getattr(task, "qa_fixing_hours", 0) or 0)
     holiday_dates = _task_holiday_dates(task)
+    user_tz = _task_owner_timezone(task)
     if getattr(task, "qa_status", None) == "Fixing" and getattr(task, "qa_fixing_in_progress_date", None):
         total += compute_elapsed_days(
             task.qa_fixing_in_progress_date,
             holiday_dates=holiday_dates,
+            user_tz=user_tz,
         )
     return normalize_days(total) if total > 0 else 0
 
@@ -663,6 +684,7 @@ def sanitize_user(user):
         "avatar": getattr(profile, "avatar", None),
         "team": getattr(profile, "team", "Developers"),
         "leave_dates": normalize_leave_dates(raw_leave_dates),
+        "timezone": getattr(profile, "timezone", "UTC") or "UTC",
     }
 
 
@@ -1049,6 +1071,8 @@ def team_member_detail(request, member_id):
             profile.team = data["team"]
         if "leave_dates" in data:
             profile.leave_dates = normalize_leave_dates(data["leave_dates"])
+        if "timezone" in data:
+            profile.timezone = (data["timezone"] or "UTC").strip()
 
         profile.save()
         return Response(sanitize_user(member))
@@ -1606,6 +1630,7 @@ def task_detail(request, task_id):
             )
 
         holiday_dates = _task_holiday_dates(task)
+        user_tz = _task_owner_timezone(task)
         previous_owner_id = task.owner_id
         previous_blocker = task.blocker
         provided_qa_status = data.get("qa_status") if "qa_status" in data else None
@@ -1671,6 +1696,7 @@ def task_detail(request, task_id):
                         task.in_progress_date,
                         closed_at if new_status in DONE_STATUSES else None,
                         holiday_dates=holiday_dates,
+                        user_tz=user_tz,
                     )
                     task.actual_hours = (task.actual_hours or 0) + regular_days
                     task.in_progress_date = None
@@ -1679,6 +1705,7 @@ def task_detail(request, task_id):
                         task.blocker_date,
                         closed_at if new_status in DONE_STATUSES else None,
                         holiday_dates=holiday_dates,
+                        user_tz=user_tz,
                     )
                     task.blocker_date = None
                     task.blocker = None
@@ -1696,6 +1723,7 @@ def task_detail(request, task_id):
                             task.in_progress_date,
                             task.closed_date,
                             holiday_dates=holiday_dates,
+                            user_tz=user_tz,
                         )
                         task.actual_hours = (task.actual_hours or 0) + regular_days
                         task.in_progress_date = None
@@ -1704,6 +1732,7 @@ def task_detail(request, task_id):
                             task.blocker_date,
                             task.closed_date,
                             holiday_dates=holiday_dates,
+                            user_tz=user_tz,
                         )
                         task.blocker_date = None
         if _is_grc_team(next_team):
@@ -1728,6 +1757,7 @@ def task_detail(request, task_id):
                     task.qa_in_progress_date,
                     now_iso,
                     holiday_dates=holiday_dates,
+                    user_tz=user_tz,
                 )
                 task.qa_in_progress_date = None
             if next_qa_active and not task.qa_in_progress_date:
@@ -1742,6 +1772,7 @@ def task_detail(request, task_id):
                     task.qa_fixing_in_progress_date,
                     now_iso,
                     holiday_dates=holiday_dates,
+                    user_tz=user_tz,
                 )
                 task.actual_hours = (task.actual_hours or 0) + elapsed_fixing
                 task.qa_fixing_hours = (task.qa_fixing_hours or 0) + elapsed_fixing

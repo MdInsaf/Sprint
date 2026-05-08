@@ -94,6 +94,7 @@ export function useUpdateTeamMember() {
         avatar: member.avatar ?? null,
         team: member.team || 'Developers',
         leave_dates: member.leave_dates || [],
+        timezone: member.timezone || 'UTC',
         password: member.password || undefined,
       }),
     onSuccess: async (updatedMember) => {

@@ -10,6 +10,7 @@ class MemberProfile(models.Model):
   avatar = models.CharField(max_length=1024, blank=True, null=True)
   team = models.CharField(max_length=64, default="Developers")
   leave_dates = models.JSONField(default=list, blank=True)
+  timezone = models.CharField(max_length=64, default='UTC')
 
   class Meta:
     db_table = "member_profiles"
