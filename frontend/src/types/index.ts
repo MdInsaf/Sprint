@@ -27,6 +27,7 @@ export interface TeamMember {
   role: UserRole;
   avatar?: string;
   team?: string;
+  timezone?: string;
   leave_dates?: string[];
 }
 
