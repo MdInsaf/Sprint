@@ -9,6 +9,7 @@ class MemberProfile(models.Model):
   role = models.CharField(max_length=64, default="Developer")
   avatar = models.CharField(max_length=1024, blank=True, null=True)
   team = models.CharField(max_length=64, default="Developers")
+  timezone = models.CharField(max_length=64, default="UTC")
   leave_dates = models.JSONField(default=list, blank=True)
   timezone = models.CharField(max_length=64, default='UTC')
 

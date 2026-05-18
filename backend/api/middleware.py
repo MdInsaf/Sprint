@@ -1,7 +1,9 @@
 import logging
 import uuid
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from django.utils import timezone as django_timezone
 from django.utils.deprecation import MiddlewareMixin
 
 from .models import AuditLog
@@ -17,6 +19,7 @@ AUDIT_LOG_SKIP_PREFIXES = (
     "/v1/api/health",
 )
 AUDIT_LOG_ENTITY_KEYS = ("id", "task_id", "sprint_id", "member_id", "attachment_id", "deleted")
+DEFAULT_USER_TIMEZONE = "UTC"
 
 
 def _audit_now_iso():
@@ -38,6 +41,7 @@ def _audit_user_metadata(user):
         "user_email": getattr(user, "email", None),
         "user_role": getattr(profile, "role", None) if profile else None,
         "user_team": getattr(profile, "team", None) if profile else None,
+        "user_timezone": getattr(profile, "timezone", None) if profile else None,
     }
 
 
@@ -89,6 +93,61 @@ class NoCacheAuthMiddleware(MiddlewareMixin):
         else:
             response["Cache-Control"] = "no-store"
 
+        return response
+
+
+class UserTimezoneMiddleware(MiddlewareMixin):
+    """
+    Activate the authenticated user's IANA timezone for request-scoped Django code
+    (ORM localtime helpers, admin display, etc.).
+
+    NOTE: All business-critical elapsed-day calculations pass work_tz explicitly
+    and do NOT rely on this activation for correctness.
+
+    Auth ordering note:
+    - Django session auth (AuthenticationMiddleware) populates request.user before
+      this middleware runs, so process_request works for session-authenticated users.
+    - DRF token/JWT authentication runs inside view dispatch (after all middleware),
+      so process_request sees AnonymousUser for those auth schemes and falls back to
+      UTC. process_view re-activates with the correct timezone for DRF views that
+      use Django's own session authentication backend (which populates request.user
+      via AuthenticationMiddleware). Pure DRF token/JWT auth will still see UTC here;
+      if that matters for display, move activation into a DRF authentication class.
+    """
+
+    @staticmethod
+    def _activate_for_user(user):
+        profile = getattr(user, "profile", None) if getattr(user, "is_authenticated", False) else None
+        timezone_name = (getattr(profile, "timezone", None) or DEFAULT_USER_TIMEZONE).strip()
+        try:
+            tz = ZoneInfo(timezone_name)
+        except (ZoneInfoNotFoundError, ValueError):
+            logger.warning(
+                "UserTimezoneMiddleware: invalid timezone %r for user %s, falling back to UTC",
+                timezone_name,
+                getattr(user, "username", "<anonymous>"),
+            )
+            tz = ZoneInfo(DEFAULT_USER_TIMEZONE)
+        django_timezone.activate(tz)
+
+    def process_request(self, request):
+        user = getattr(request, "user", None)
+        if not getattr(user, "is_authenticated", False):
+            # Unauthenticated at this stage — activate UTC as a safe default.
+            # process_view will upgrade this if DRF session auth has run by then.
+            django_timezone.activate(ZoneInfo(DEFAULT_USER_TIMEZONE))
+            return
+        self._activate_for_user(user)
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        # Re-check in case Django's AuthenticationMiddleware wasn't processed yet
+        # during process_request (e.g. test clients that inject request.user late).
+        user = getattr(request, "user", None)
+        if getattr(user, "is_authenticated", False):
+            self._activate_for_user(user)
+
+    def process_response(self, request, response):
+        django_timezone.deactivate()
         return response
 
 
