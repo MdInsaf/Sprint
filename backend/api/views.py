@@ -40,13 +40,19 @@ from .models import (
 from .notifications import (
     email_delivery_diagnostics,
     get_role_emails,
+    get_team_member_emails,
     get_user,
     send_assignment_email,
     send_blocker_email,
     send_bug_fixed_email,
     send_needs_fix_email,
     send_ready_to_test_email,
+    send_sprint_closed_email,
+    send_sprint_opened_email,
     send_status_changed_email,
+    send_task_created_email,
+    send_task_deleted_email,
+    send_task_edited_email,
 )
 from .permissions import IsManager, IsManagerOrReadOnly, IsOwnerOrManager, PublicReadManagerWrite, IsManagerOrSelf
 
@@ -1340,6 +1346,8 @@ def sprints_view(request):
             is_active=is_active,
             team=team_value,
         )
+    if is_active:
+        send_sprint_opened_email(sprint, get_team_member_emails(team_value))
     return Response({
         "id": sprint.id,
         "sprint_name": sprint.sprint_name,
@@ -1391,6 +1399,7 @@ def sprint_detail(request, sprint_id):
         return Response({"message": "Not allowed"}, status=status.HTTP_403_FORBIDDEN)
 
     data = request.data or {}
+    prev_is_active = sprint.is_active
     is_active = data.get("is_active", sprint.is_active)
     next_team = data.get("team", sprint.team)
     if not _is_super_admin(request.user) and next_team != _user_team(request.user):
@@ -1407,6 +1416,13 @@ def sprint_detail(request, sprint_id):
         sprint.is_active = bool(is_active)
         sprint.team = next_team
         sprint.save()
+
+    if "is_active" in data and bool(is_active) != bool(prev_is_active):
+        team_emails = get_team_member_emails(next_team)
+        if bool(is_active):
+            send_sprint_opened_email(sprint, team_emails)
+        else:
+            send_sprint_closed_email(sprint, team_emails)
 
     return Response({
         "id": sprint.id,
@@ -1598,6 +1614,8 @@ def tasks_view(request):
         if task.blocker:
             send_blocker_email(task, owner)
     task_team = _task_team(task)
+    manager_emails = get_role_emails("Manager", team=task_team)
+    send_task_created_email(task, manager_emails)
     if (
         task_team
         and not _is_grc_team(task_team)
@@ -1689,6 +1707,9 @@ def task_detail(request, task_id):
         user_tz = _task_owner_timezone(task)
         previous_owner_id = task.owner_id
         previous_blocker = task.blocker
+        _tracked_fields = ("title", "priority", "type", "module", "description", "estimated_hours")
+        _prev_values = {f: getattr(task, f, None) for f in _tracked_fields}
+        _prev_sprint_id = task.sprint_id
         provided_qa_status = data.get("qa_status") if "qa_status" in data else None
         normalized_qa_status = (
             normalize_qa_status(provided_qa_status)
@@ -1936,9 +1957,26 @@ def task_detail(request, task_id):
                         link=f"{getattr(settings, 'FRONTEND_ORIGIN', '')}/test-board",
                     )
 
+        _changed_fields = {}
+        for _f in _tracked_fields:
+            _new_val = getattr(task, _f, None)
+            if _new_val != _prev_values[_f]:
+                _changed_fields[_f.replace("_", " ").title()] = f"{_prev_values[_f]} → {_new_val}"
+        if task.sprint_id != _prev_sprint_id:
+            old_sprint = task.sprint.sprint_name if getattr(task, "sprint", None) else "None"
+            _changed_fields["Sprint"] = f"→ {old_sprint}"
+        if _changed_fields:
+            _edit_owner = owner or get_user(task.owner_id)
+            _edit_managers = get_role_emails("Manager", team=task_team)
+            send_task_edited_email(task, _changed_fields, _edit_owner, _edit_managers)
+
         return Response(sanitize_task(task))
 
     deleted_id = task.id
+    deleted_owner = get_user(task.owner_id)
+    deleted_task_team = _task_team(task)
+    deleted_manager_emails = get_role_emails("Manager", team=deleted_task_team)
+    send_task_deleted_email(task, deleted_owner, deleted_manager_emails)
     task.delete()
     return Response({"deleted": deleted_id})
 

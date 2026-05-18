@@ -10,6 +10,13 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+def get_team_member_emails(team: str | None) -> list[str]:
+    qs = User.objects.exclude(email="")
+    if team:
+        qs = qs.filter(profile__team=team)
+    return list(qs.values_list("email", flat=True))
+
+
 def _normalize_emails(emails: Iterable[str] | None) -> list[str]:
     seen: set[str] = set()
     normalized: list[str] = []
@@ -196,3 +203,69 @@ def send_status_changed_email(
     if target:
         body = f"{body}\n\nView: {target}"
     send_notification_email(subject, body, recipients)
+
+
+def send_task_created_email(task, manager_emails: Iterable[str]) -> None:
+    label = task_label(task)
+    subject = f"New {label} created: {task.title}"
+    body = (
+        f"A new {label.lower()} has been created.\n"
+        f"{build_task_context(task)}\n\n"
+        f"View: {getattr(settings, 'FRONTEND_ORIGIN', '')}"
+    )
+    send_notification_email(subject, body, manager_emails)
+
+
+def send_task_deleted_email(task, assignee, manager_emails: Iterable[str]) -> None:
+    label = task_label(task)
+    subject = f"{label} deleted: {task.title}"
+    body = (
+        f"A {label.lower()} has been deleted.\n"
+        f"{build_task_context(task)}\n\n"
+        f"Dashboard: {getattr(settings, 'FRONTEND_ORIGIN', '')}"
+    )
+    recipients = list(manager_emails)
+    if assignee and getattr(assignee, "email", None):
+        recipients.append(assignee.email)
+    send_notification_email(subject, body, recipients)
+
+
+def send_task_edited_email(task, changed_fields: dict, assignee, manager_emails: Iterable[str]) -> None:
+    label = task_label(task)
+    subject = f"{label} updated: {task.title}"
+    changes_text = "\n".join(f"  • {k}: {v}" for k, v in changed_fields.items())
+    body = (
+        f"A {label.lower()} has been updated.\n"
+        f"{build_task_context(task)}\n\n"
+        f"Changes:\n{changes_text}\n\n"
+        f"View: {getattr(settings, 'FRONTEND_ORIGIN', '')}"
+    )
+    recipients = list(manager_emails)
+    if assignee and getattr(assignee, "email", None):
+        recipients.append(assignee.email)
+    send_notification_email(subject, body, recipients)
+
+
+def send_sprint_opened_email(sprint, team_emails: Iterable[str]) -> None:
+    subject = f"Sprint started: {sprint.sprint_name}"
+    body = (
+        f"A new sprint has been activated.\n\n"
+        f"Sprint: {sprint.sprint_name}\n"
+        f"Start:  {sprint.start_date}\n"
+        f"End:    {sprint.end_date}\n"
+        f"Goal:   {sprint.sprint_goal or 'N/A'}\n\n"
+        f"View: {getattr(settings, 'FRONTEND_ORIGIN', '')}"
+    )
+    send_notification_email(subject, body, team_emails)
+
+
+def send_sprint_closed_email(sprint, team_emails: Iterable[str]) -> None:
+    subject = f"Sprint closed: {sprint.sprint_name}"
+    body = (
+        f"A sprint has been closed.\n\n"
+        f"Sprint: {sprint.sprint_name}\n"
+        f"Start:  {sprint.start_date}\n"
+        f"End:    {sprint.end_date}\n\n"
+        f"Dashboard: {getattr(settings, 'FRONTEND_ORIGIN', '')}"
+    )
+    send_notification_email(subject, body, team_emails)
