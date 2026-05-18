@@ -13,6 +13,7 @@ const TASK_ID_PREFIXES: Record<TaskType, string> = {
 
 export const DEFAULT_TEAMS = ['Developers', 'R&D', 'GRC', 'Ascenders'];
 export const DEFAULT_TEAM = DEFAULT_TEAMS[0];
+export const DEFAULT_TIMEZONE = 'UTC';
 
 let currentUser: TeamMember | null = null;
 
@@ -25,6 +26,7 @@ function normalizeTeamMember(member: TeamMember | null): TeamMember | null {
     ...member,
     id: String(member.id),
     team: member.team || DEFAULT_TEAM,
+    timezone: member.timezone || DEFAULT_TIMEZONE,
     leave_dates: member.leave_dates || [],
   };
 }
@@ -45,6 +47,21 @@ export async function loginWithCredentials(email: string, password: string): Pro
     password,
   });
   currentUser = normalizeTeamMember(user);
+  // If the stored timezone is still the migration default "UTC" but the browser
+  // reports a different timezone, persist the browser timezone to the profile so
+  // that business-hours calculations (compute_elapsed_days) use the correct window.
+  if (currentUser && (!currentUser.timezone || currentUser.timezone === 'UTC')) {
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (browserTz && browserTz !== 'UTC') {
+      try {
+        await apiPutJson<TeamMember>(`/team-members/${currentUser.id}`, { timezone: browserTz });
+        currentUser = { ...currentUser, timezone: browserTz };
+        await queryClient.invalidateQueries({ queryKey: teamMemberKeys.all });
+      } catch (err) {
+        console.error('[store] timezone auto-sync PUT /team-members failed:', err);
+      }
+    }
+  }
   return currentUser as TeamMember;
 }
 

@@ -22,8 +22,24 @@ import { CalendarDays, ShieldCheck, Trash2, UserPlus2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const DEFAULT_TEAM = 'Developers';
+const DEFAULT_TIMEZONE = 'UTC';
 const ASSOCIATE_TEAMS = new Set(['R&D', 'GRC', 'Ascenders']);
 const SECURITY_TEAMS = new Set(['GRC', 'Ascenders']);
+const TIMEZONE_OPTIONS = [
+  'UTC',
+  'Asia/Kolkata',
+  'America/Toronto',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'America/Vancouver',
+  'Europe/London',
+  'Europe/Berlin',
+  'Asia/Dubai',
+  'Asia/Singapore',
+  'Australia/Sydney',
+];
 
 export default function Users() {
   const { user } = useAuth();
@@ -38,6 +54,9 @@ export default function Users() {
   const [newPassword, setNewPassword] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('Developer');
   const [newTeam, setNewTeam] = useState(teamOptions[0] || DEFAULT_TEAM);
+  const [newTimezone, setNewTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_TIMEZONE
+  );
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [leaveMember, setLeaveMember] = useState<TeamMember | null>(null);
   const [leaveDates, setLeaveDates] = useState<Date[]>([]);
@@ -88,6 +107,7 @@ export default function Users() {
     setNewUsername('');
     setNewPassword('');
     setNewTeam(teamOptions[0] || DEFAULT_TEAM);
+    setNewTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_TIMEZONE);
   };
 
   const openLeaveEditor = (member: TeamMember) => {
@@ -150,6 +170,7 @@ export default function Users() {
       email: trimmedEmail,
       role: newRole,
       team: newTeam || DEFAULT_TEAM,
+      timezone: newTimezone || DEFAULT_TIMEZONE,
     };
 
     createMemberMutation.mutate(
@@ -200,6 +221,12 @@ export default function Users() {
     updateMemberMutation.mutate({ ...member, team });
   };
 
+  const handleTimezoneChange = (memberId: string, timezone: string) => {
+    const member = members.find((m) => m.id === memberId);
+    if (!member) return;
+    updateMemberMutation.mutate({ ...member, timezone });
+  };
+
   const handleDelete = (memberId: string) => {
     const member = members.find((m) => m.id === memberId);
     if (!member) return;
@@ -235,7 +262,7 @@ export default function Users() {
           <CardTitle>Add team member</CardTitle>
           <CardDescription>Create a new account and choose their role.</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.2fr,1.2fr,1fr,1fr,0.9fr,0.9fr,auto] items-start">
+        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.2fr,1.2fr,1fr,1fr,0.9fr,0.9fr,1.1fr,auto] items-start">
           <Input
             placeholder="Full name"
             value={newName}
@@ -291,6 +318,18 @@ export default function Users() {
               ))}
             </SelectContent>
           </Select>
+          <Select value={newTimezone} onValueChange={setNewTimezone}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TIMEZONE_OPTIONS.map((timezone) => (
+                <SelectItem key={timezone} value={timezone}>
+                  {timezone}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button onClick={handleAdd} className="md:w-auto w-full">
             <UserPlus2 className="h-4 w-4 mr-2" />
             Add user
@@ -307,10 +346,11 @@ export default function Users() {
           <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[30%]">Name</TableHead>
-                <TableHead className="w-[25%]">Email</TableHead>
-                <TableHead className="w-[20%]">Role</TableHead>
-                <TableHead className="w-[15%]">Team</TableHead>
+                <TableHead className="w-[22%]">Name</TableHead>
+                <TableHead className="w-[22%]">Email</TableHead>
+                <TableHead className="w-[17%]">Role</TableHead>
+                <TableHead className="w-[14%]">Team</TableHead>
+                <TableHead className="w-[15%]">Timezone</TableHead>
                 <TableHead className="w-[10%] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -362,6 +402,23 @@ export default function Users() {
                       </SelectContent>
                     </Select>
                   </TableCell>
+                  <TableCell>
+                    <Select
+                      value={member.timezone || DEFAULT_TIMEZONE}
+                      onValueChange={(value) => handleTimezoneChange(member.id, value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIMEZONE_OPTIONS.map((timezone) => (
+                          <SelectItem key={timezone} value={timezone}>
+                            {timezone}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2 flex-wrap">
                       <Button
@@ -388,7 +445,7 @@ export default function Users() {
               ))}
               {members.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No team members yet. Add your first user above.
                   </TableCell>
                 </TableRow>
