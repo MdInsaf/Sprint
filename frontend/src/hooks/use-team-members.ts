@@ -68,6 +68,7 @@ export function useCreateTeamMember() {
         role: member.role,
         avatar: member.avatar ?? null,
         team: member.team || 'Developers',
+        timezone: member.timezone || 'UTC',
         leave_dates: member.leave_dates || [],
       }),
     onSuccess: async (createdMember) => {
@@ -93,6 +94,7 @@ export function useUpdateTeamMember() {
         role: member.role,
         avatar: member.avatar ?? null,
         team: member.team || 'Developers',
+        timezone: member.timezone || 'UTC',
         leave_dates: member.leave_dates || [],
         timezone: member.timezone || 'UTC',
         password: member.password || undefined,
