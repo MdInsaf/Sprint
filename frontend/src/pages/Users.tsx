@@ -60,6 +60,7 @@ export default function Users() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [leaveMember, setLeaveMember] = useState<TeamMember | null>(null);
   const [leaveDates, setLeaveDates] = useState<Date[]>([]);
+  const [memberTimezone, setMemberTimezone] = useState('UTC');
 
   const isManagerRole = (role: UserRole) => role === 'Manager' || role === 'Super Admin';
   const isAssociateRole = (role: UserRole) => role === 'Associate';
@@ -112,6 +113,7 @@ export default function Users() {
   const openLeaveEditor = (member: TeamMember) => {
     setLeaveMember(member);
     setLeaveDates(parseLeaveDates(member.leave_dates));
+    setMemberTimezone(member.timezone || 'UTC');
     setLeaveOpen(true);
   };
 
@@ -120,6 +122,7 @@ export default function Users() {
     const updated = {
       ...leaveMember,
       leave_dates: formatLeaveDates(leaveDates),
+      timezone: memberTimezone,
     };
     updateMemberMutation.mutate(updated);
     setLeaveOpen(false);
@@ -459,16 +462,49 @@ export default function Users() {
           if (!open) {
             setLeaveMember(null);
             setLeaveDates([]);
+            setMemberTimezone('UTC');
           }
         }}
       >
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>
-              Leave Dates {leaveMember ? `: ${leaveMember.name}` : ''}
+              Schedule Settings {leaveMember ? `: ${leaveMember.name}` : ''}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Timezone</label>
+              <Select value={memberTimezone} onValueChange={setMemberTimezone}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UTC">UTC</SelectItem>
+                  <SelectItem value="America/Toronto">America/Toronto (ET)</SelectItem>
+                  <SelectItem value="America/New_York">America/New_York (ET)</SelectItem>
+                  <SelectItem value="America/Chicago">America/Chicago (CT)</SelectItem>
+                  <SelectItem value="America/Denver">America/Denver (MT)</SelectItem>
+                  <SelectItem value="America/Los_Angeles">America/Los_Angeles (PT)</SelectItem>
+                  <SelectItem value="America/Vancouver">America/Vancouver (PT)</SelectItem>
+                  <SelectItem value="America/Sao_Paulo">America/Sao_Paulo (BRT)</SelectItem>
+                  <SelectItem value="Europe/London">Europe/London (GMT/BST)</SelectItem>
+                  <SelectItem value="Europe/Paris">Europe/Paris (CET)</SelectItem>
+                  <SelectItem value="Europe/Berlin">Europe/Berlin (CET)</SelectItem>
+                  <SelectItem value="Europe/Moscow">Europe/Moscow (MSK)</SelectItem>
+                  <SelectItem value="Asia/Dubai">Asia/Dubai (GST)</SelectItem>
+                  <SelectItem value="Asia/Kolkata">Asia/Kolkata (IST)</SelectItem>
+                  <SelectItem value="Asia/Dhaka">Asia/Dhaka (BST)</SelectItem>
+                  <SelectItem value="Asia/Bangkok">Asia/Bangkok (ICT)</SelectItem>
+                  <SelectItem value="Asia/Singapore">Asia/Singapore (SGT)</SelectItem>
+                  <SelectItem value="Asia/Shanghai">Asia/Shanghai (CST)</SelectItem>
+                  <SelectItem value="Asia/Tokyo">Asia/Tokyo (JST)</SelectItem>
+                  <SelectItem value="Asia/Seoul">Asia/Seoul (KST)</SelectItem>
+                  <SelectItem value="Australia/Sydney">Australia/Sydney (AEST)</SelectItem>
+                  <SelectItem value="Pacific/Auckland">Pacific/Auckland (NZST)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Calendar
               mode="multiple"
               selected={leaveDates}

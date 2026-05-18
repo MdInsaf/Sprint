@@ -11,6 +11,7 @@ class MemberProfile(models.Model):
   team = models.CharField(max_length=64, default="Developers")
   timezone = models.CharField(max_length=64, default="UTC")
   leave_dates = models.JSONField(default=list, blank=True)
+  timezone = models.CharField(max_length=64, default='UTC')
 
   class Meta:
     db_table = "member_profiles"

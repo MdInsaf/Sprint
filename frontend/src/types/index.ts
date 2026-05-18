@@ -29,6 +29,7 @@ export interface TeamMember {
   team?: string;
   timezone?: string;
   leave_dates?: string[];
+  timezone?: string;
 }
 
 export interface Sprint {

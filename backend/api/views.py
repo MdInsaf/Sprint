@@ -728,6 +728,7 @@ def sanitize_user(user):
         "team": getattr(profile, "team", "Developers"),
         "timezone": timezone_name,
         "leave_dates": normalize_leave_dates(raw_leave_dates),
+        "timezone": getattr(profile, "timezone", "UTC") or "UTC",
     }
 
 
@@ -1118,6 +1119,8 @@ def team_member_detail(request, member_id):
             profile.timezone = normalize_timezone_name(data["timezone"])
         if "leave_dates" in data:
             profile.leave_dates = normalize_leave_dates(data["leave_dates"])
+        if "timezone" in data:
+            profile.timezone = (data["timezone"] or "UTC").strip()
 
         profile.save()
         return Response(sanitize_user(member))
@@ -1683,6 +1686,7 @@ def task_detail(request, task_id):
             )
 
         holiday_dates = _task_holiday_dates(task)
+        user_tz = _task_owner_timezone(task)
         previous_owner_id = task.owner_id
         previous_blocker = task.blocker
         provided_qa_status = data.get("qa_status") if "qa_status" in data else None

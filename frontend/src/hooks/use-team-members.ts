@@ -96,6 +96,7 @@ export function useUpdateTeamMember() {
         team: member.team || 'Developers',
         timezone: member.timezone || 'UTC',
         leave_dates: member.leave_dates || [],
+        timezone: member.timezone || 'UTC',
         password: member.password || undefined,
       }),
     onSuccess: async (updatedMember) => {
