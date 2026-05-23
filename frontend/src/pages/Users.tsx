@@ -245,8 +245,8 @@ export default function Users() {
   if (membersLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Team & Roles</h1>
           <p className="text-muted-foreground">Add, edit, or remove people on the team.</p>
@@ -466,7 +466,7 @@ export default function Users() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="sm:max-w-[520px] max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               Schedule Settings {leaveMember ? `: ${leaveMember.name}` : ''}

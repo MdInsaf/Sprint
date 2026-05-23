@@ -195,7 +195,7 @@ export default function TestSummary() {
 
   if (sprints.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <h1 className="text-2xl font-semibold">Test Summary</h1>
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
@@ -208,8 +208,8 @@ export default function TestSummary() {
 
   if (teamSprints.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Test Summary</h1>
             <p className="text-muted-foreground">Select a team to view QA progress.</p>
@@ -219,7 +219,7 @@ export default function TestSummary() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -234,7 +234,7 @@ export default function TestSummary() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <div className="space-y-3">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -243,18 +243,18 @@ export default function TestSummary() {
               {selectedSprint?.sprint_name || 'Select a sprint'} - QA pipeline overview
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {!hideTeamSelect && (
               <TeamSelect
                 teams={teams}
                 value={selectedTeam}
                 onChange={setSelectedTeam}
-                triggerClassName="w-40"
+                triggerClassName="w-full sm:w-40"
                 placeholder="Team"
               />
             )}
             <Select value={selectedSprintId} onValueChange={setSelectedSprintId}>
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-full sm:w-56">
                 <SelectValue placeholder="Select Sprint" />
               </SelectTrigger>
               <SelectContent>
@@ -387,8 +387,8 @@ export default function TestSummary() {
                     key={task.id}
                     className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
                   >
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{task.title}</p>
+                    <div className="min-w-0 space-y-1">
+                      <p className="truncate text-sm font-medium">{task.title}</p>
                       <p className="text-xs text-muted-foreground">
                         {task.module || 'Unspecified'} | {owner}
                       </p>
@@ -396,7 +396,7 @@ export default function TestSummary() {
                         Dev (Fixing) {task.qa_fixing_hours ?? 0}h - QA (Testing) {task.qa_actual_hours ?? 0}h
                       </p>
                     </div>
-                    <Badge variant={qaStatus === 'Blocked' ? 'destructive' : 'outline'}>
+                    <Badge variant={qaStatus === 'Blocked' ? 'destructive' : 'outline'} className="flex-shrink-0">
                       {qaStatus || 'Ready to Test'}
                     </Badge>
                   </div>

@@ -132,7 +132,7 @@ export default function BacklogSummary() {
   if (membersLoading || tasksLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-semibold">Backlog Summary</h1>
         <p className="text-muted-foreground">Team-level backlog totals</p>
@@ -240,9 +240,9 @@ export default function BacklogSummary() {
                   <div className="space-y-2">
                     {selectedUserTasks.map((task) => (
                       <div key={task.id} className="rounded-md border bg-background p-3">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium">{task.title}</p>
-                          <Badge variant="outline" className="text-[10px]">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="min-w-0 truncate text-sm font-medium">{task.title}</p>
+                          <Badge variant="outline" className="flex-shrink-0 text-[10px]">
                             {task.type}
                           </Badge>
                         </div>

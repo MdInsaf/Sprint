@@ -22,6 +22,7 @@ import { useTeamSelection } from '@/hooks/use-team-selection';
 import { toHours } from '@/lib/time';
 import { AlertTriangle, User, Clock, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const statusColumns: TaskStatus[] = ['To Do', 'In Progress', 'Blocked', 'Done'];
 const DONE_STATUSES: TaskStatus[] = ['Done', 'Closed', 'Fixed'];
@@ -77,6 +78,10 @@ export default function SprintBoard() {
   const [pageSize, setPageSize] = useState('12');
   const [currentPage, setCurrentPage] = useState(1);
   const [activeColumn, setActiveColumn] = useState<SprintBoardColumn | null>(null);
+  const [mobileColumn, setMobileColumn] = useState<SprintBoardColumn>('To Do');
+  const [isMobileBoard, setIsMobileBoard] = useState(
+    () => window.matchMedia('(max-width: 1023px)').matches
+  );
   const isSuperAdmin = (user?.role || '').toLowerCase() === 'super admin';
   const hideTeamSelect = ['GRC', 'Ascenders'].includes(user?.team || '') && !isSuperAdmin;
   const isGrcTeam = ['GRC', 'Ascenders'].includes(selectedTeam);
@@ -192,6 +197,13 @@ export default function SprintBoard() {
     }
   }, [teamSprints, activeSprint?.id, selectedSprintId]);
 
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1023px)');
+    const update = (e: MediaQueryListEvent) => setIsMobileBoard(e.matches);
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
   const tasksByStatus = useMemo(() => {
     const grouped: Partial<Record<TaskStatus, Task[]>> = {
       'To Do': [],
@@ -230,6 +242,14 @@ export default function SprintBoard() {
   }, [tasksByStatus, pageStart, pageEnd]);
 
   const pagedBacklogTasks = useMemo(() => backlogTasks.slice(pageStart, pageEnd), [backlogTasks, pageStart, pageEnd]);
+
+  // O(1) array selection — derives from already-memoized paged structures, no re-mapping
+  const mobileTasks = useMemo(
+    () => mobileColumn === 'Backlog'
+      ? pagedBacklogTasks
+      : (pagedTasksByStatus[mobileColumn as TaskStatus] ?? []),
+    [mobileColumn, pagedBacklogTasks, pagedTasksByStatus]
+  );
 
   const handleDragStart = (task: Task) => {
     setDraggedTask(task);
@@ -363,9 +383,9 @@ export default function SprintBoard() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <div>
             <h1 className="text-2xl font-semibold">Sprint Board</h1>
             <p className="text-muted-foreground">{selectedSprint?.sprint_name || 'Select a sprint'}</p>
@@ -376,13 +396,13 @@ export default function SprintBoard() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
 
           <Select value={selectedSprintId} onValueChange={setSelectedSprintId} disabled={teamSprints.length === 0}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select Sprint" />
             </SelectTrigger>
             <SelectContent>
@@ -395,7 +415,7 @@ export default function SprintBoard() {
           </Select>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {!isManager && user && selectedSprint && (
             <QuickAddTaskDialog
               ownerId={user.id}
@@ -467,7 +487,7 @@ export default function SprintBoard() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tasks..."
-            className="w-48"
+            className="w-full sm:w-48"
             aria-label="Search sprint tasks"
           />
 
@@ -475,91 +495,249 @@ export default function SprintBoard() {
       </div>
 
       {selectedSprint ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:gap-4">
-          <div
-            role="region"
-            aria-label={`Backlog column, ${backlogTasks.length} tasks`}
-            className={`space-y-3 xl:flex xl:flex-col xl:transition-all ${getColumnClass('Backlog')}`}
-            onDragOver={handleDragOver}
-            onDrop={handleDropToBacklog}
-          >
-            <button
-              type="button"
-              onClick={() => setActiveColumn((prev) => (prev === 'Backlog' ? null : 'Backlog'))}
-              className={`flex items-center justify-between rounded-md px-2 py-1.5 text-left transition ${
-                activeColumn === 'Backlog'
-                  ? 'bg-slate-900/10 shadow-sm'
-                  : 'hover:bg-secondary/30'
-              }`}
-              aria-pressed={activeColumn === 'Backlog'}
+        isMobileBoard ? (
+          // Mobile: tab bar + single column. Only the active column's cards mount —
+          // no hidden desktop tree in the DOM, so no duplicate TaskCard rendering.
+          <div className="space-y-3">
+            <div
+              className="flex overflow-x-auto gap-1.5 pb-0.5"
+              role="tablist"
+              aria-label="Board columns"
             >
-              <h3 className="font-medium text-sm">Backlog</h3>
-              <Badge variant="outline" className="text-xs">
-                {backlogTasks.length}
-              </Badge>
-            </button>
-            <div className="min-h-[500px] p-2 rounded-lg bg-slate-900/10 space-y-2 border-2 border-solid border-foreground shadow-sm">
-              {pagedBacklogTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  teamMembers={teamMembers}
-                  onDragStart={() => handleDragStart(task)}
-                  onUpdateBlocker={handleUpdateBlocker}
-                  canEditBlocker={isManager || user?.id === task.owner_id}
-                  onRefresh={() => {/* React Query handles cache invalidation automatically */}}
-                  onOpenDetails={() => handleOpenDetails(task)}
-                  dropTargets={keyboardDropTargets}
-                  onKeyboardDrop={(targetId) => handleKeyboardDrop(task, targetId)}
-                />
-              ))}
+              {(['Backlog', ...statusColumns] as SprintBoardColumn[]).map((col) => {
+                const count =
+                  col === 'Backlog'
+                    ? backlogTasks.length
+                    : (tasksByStatus[col as TaskStatus]?.length ?? 0);
+                return (
+                  <button
+                    key={col}
+                    role="tab"
+                    aria-selected={mobileColumn === col}
+                    onClick={() => setMobileColumn(col)}
+                    className={cn(
+                      'shrink-0 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap',
+                      mobileColumn === col
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    )}
+                  >
+                    {col}
+                    <span
+                      className={cn(
+                        'rounded-full px-1.5 text-[10px] tabular-nums',
+                        mobileColumn === col
+                          ? 'bg-white/20 text-primary-foreground'
+                          : 'bg-background/60 text-foreground'
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              role="tabpanel"
+              aria-label={`${mobileColumn} column`}
+              className="space-y-2 min-h-48"
+              onDragOver={handleDragOver}
+              onDrop={() =>
+                mobileColumn === 'Backlog'
+                  ? handleDropToBacklog()
+                  : handleDrop(mobileColumn as TaskStatus)
+              }
+            >
+              {mobileTasks.length === 0 ? (
+                <p className="py-10 text-center text-sm text-muted-foreground">
+                  No tasks in {mobileColumn}
+                </p>
+              ) : (
+                mobileTasks.map((task) => (
+                  <div key={task.id} className="space-y-1.5">
+                    <TaskCard
+                      task={task}
+                      teamMembers={teamMembers}
+                      onDragStart={() => handleDragStart(task)}
+                      onUpdateBlocker={handleUpdateBlocker}
+                      canEditBlocker={isManager || user?.id === task.owner_id}
+                      onRefresh={() => {}}
+                      onOpenDetails={() => handleOpenDetails(task)}
+                      dropTargets={keyboardDropTargets}
+                      onKeyboardDrop={(targetId) => handleKeyboardDrop(task, targetId)}
+                      isMobile
+                    />
+                    <div className="flex flex-wrap items-center gap-2 px-1 pt-0.5 pb-2">
+                      <span className="text-xs font-semibold text-foreground/60 shrink-0">Move to:</span>
+                      {(['To Do', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          disabled={task.status === s}
+                          onClick={() => handleKeyboardDrop(task, s)}
+                          className={cn(
+                            'h-7 px-3 rounded-full text-xs font-semibold border-2 transition-colors active:scale-95',
+                            task.status === s
+                              ? 'bg-primary text-primary-foreground border-primary cursor-default'
+                              : 'bg-background border-border/60 text-foreground hover:border-primary hover:text-primary hover:bg-primary/5'
+                          )}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                      {task.sprint_id && !DONE_STATUSES.includes(task.status as TaskStatus) && (
+                        <button
+                          type="button"
+                          onClick={() => handleKeyboardDrop(task, 'Backlog')}
+                          className="h-7 px-3 rounded-full text-xs font-semibold border-2 bg-background border-border/60 text-foreground transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 active:scale-95"
+                        >
+                          Backlog
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
-
-          {statusColumns.map((status) => (
+        ) : (
+          // Desktop: original grid, pixel-identical to before
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:gap-4">
             <div
-              key={status}
               role="region"
-              aria-label={`${status} column, ${tasksByStatus[status].length} tasks`}
-              className={`space-y-3 xl:flex xl:flex-col xl:transition-all ${getColumnClass(status)}`}
+              aria-label={`Backlog column, ${backlogTasks.length} tasks`}
+              className={`space-y-3 xl:flex xl:flex-col xl:transition-all ${getColumnClass('Backlog')}`}
               onDragOver={handleDragOver}
-              onDrop={() => handleDrop(status)}
+              onDrop={handleDropToBacklog}
             >
               <button
                 type="button"
-                onClick={() => setActiveColumn((prev) => (prev === status ? null : status))}
-                className={`flex items-center justify-between rounded-md px-1 py-1 text-left transition ${
-                  activeColumn === status ? 'bg-secondary/40' : 'hover:bg-secondary/30'
+                onClick={() => setActiveColumn((prev) => (prev === 'Backlog' ? null : 'Backlog'))}
+                className={`flex items-center justify-between rounded-md px-2 py-1.5 text-left transition ${
+                  activeColumn === 'Backlog'
+                    ? 'bg-slate-900/10 shadow-sm'
+                    : 'hover:bg-secondary/30'
                 }`}
-                aria-pressed={activeColumn === status}
+                aria-pressed={activeColumn === 'Backlog'}
               >
-                <h3 className="font-medium text-sm">{status}</h3>
+                <h3 className="font-medium text-sm">Backlog</h3>
                 <Badge variant="outline" className="text-xs">
-                  {tasksByStatus[status].length}
+                  {backlogTasks.length}
                 </Badge>
               </button>
-
-              <div
-                className={`min-h-[500px] p-2 rounded-lg bg-secondary/30 space-y-2 border-t-2 ${statusColors[status]}`}
-              >
-                {pagedTasksByStatus[status].map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    teamMembers={teamMembers}
-                    onDragStart={() => handleDragStart(task)}
-                    onUpdateBlocker={handleUpdateBlocker}
-                    canEditBlocker={isManager || user?.id === task.owner_id}
-                    onRefresh={() => {/* React Query handles cache invalidation automatically */}}
-                    onOpenDetails={() => handleOpenDetails(task)}
-                    dropTargets={keyboardDropTargets}
-                    onKeyboardDrop={(targetId) => handleKeyboardDrop(task, targetId)}
-                  />
+              <div className="min-h-[500px] p-2 rounded-lg bg-slate-900/10 space-y-2 border-2 border-solid border-foreground shadow-sm">
+                {pagedBacklogTasks.map((task) => (
+                  <div key={task.id} className="space-y-1.5">
+                    <TaskCard
+                      task={task}
+                      teamMembers={teamMembers}
+                      onDragStart={() => handleDragStart(task)}
+                      onUpdateBlocker={handleUpdateBlocker}
+                      canEditBlocker={isManager || user?.id === task.owner_id}
+                      onRefresh={() => {/* React Query handles cache invalidation automatically */}}
+                      onOpenDetails={() => handleOpenDetails(task)}
+                      dropTargets={keyboardDropTargets}
+                      onKeyboardDrop={(targetId) => handleKeyboardDrop(task, targetId)}
+                    />
+                    <div className="flex flex-wrap items-center gap-2 px-1 pt-0.5 pb-2 lg:hidden">
+                      <span className="text-xs font-semibold text-foreground/60 shrink-0">Move to:</span>
+                      {(['To Do', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          disabled={task.status === s}
+                          onClick={() => handleKeyboardDrop(task, s)}
+                          className={cn(
+                            'h-7 px-3 rounded-full text-xs font-semibold border-2 transition-colors active:scale-95',
+                            task.status === s
+                              ? 'bg-primary text-primary-foreground border-primary cursor-default'
+                              : 'bg-background border-border/60 text-foreground hover:border-primary hover:text-primary hover:bg-primary/5'
+                          )}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+
+            {statusColumns.map((status) => (
+              <div
+                key={status}
+                role="region"
+                aria-label={`${status} column, ${tasksByStatus[status].length} tasks`}
+                className={`space-y-3 xl:flex xl:flex-col xl:transition-all ${getColumnClass(status)}`}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(status)}
+              >
+                <button
+                  type="button"
+                  onClick={() => setActiveColumn((prev) => (prev === status ? null : status))}
+                  className={`flex items-center justify-between rounded-md px-1 py-1 text-left transition ${
+                    activeColumn === status ? 'bg-secondary/40' : 'hover:bg-secondary/30'
+                  }`}
+                  aria-pressed={activeColumn === status}
+                >
+                  <h3 className="font-medium text-sm">{status}</h3>
+                  <Badge variant="outline" className="text-xs">
+                    {tasksByStatus[status].length}
+                  </Badge>
+                </button>
+
+                <div
+                  className={`min-h-[500px] p-2 rounded-lg bg-secondary/30 space-y-2 border-t-2 ${statusColors[status]}`}
+                >
+                  {pagedTasksByStatus[status].map((task) => (
+                    <div key={task.id} className="space-y-1.5">
+                      <TaskCard
+                        task={task}
+                        teamMembers={teamMembers}
+                        onDragStart={() => handleDragStart(task)}
+                        onUpdateBlocker={handleUpdateBlocker}
+                        canEditBlocker={isManager || user?.id === task.owner_id}
+                        onRefresh={() => {/* React Query handles cache invalidation automatically */}}
+                        onOpenDetails={() => handleOpenDetails(task)}
+                        dropTargets={keyboardDropTargets}
+                        onKeyboardDrop={(targetId) => handleKeyboardDrop(task, targetId)}
+                      />
+                      <div className="flex flex-wrap items-center gap-2 px-1 pt-0.5 pb-2 lg:hidden">
+                        <span className="text-xs font-semibold text-foreground/60 shrink-0">Move to:</span>
+                        {(['To Do', 'In Progress', 'Done'] as TaskStatus[]).map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            disabled={task.status === s}
+                            onClick={() => handleKeyboardDrop(task, s)}
+                            className={cn(
+                              'h-7 px-3 rounded-full text-xs font-semibold border-2 transition-colors active:scale-95',
+                              task.status === s
+                                ? 'bg-primary text-primary-foreground border-primary cursor-default'
+                                : 'bg-background border-border/60 text-foreground hover:border-primary hover:text-primary hover:bg-primary/5'
+                            )}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                        {task.sprint_id && !DONE_STATUSES.includes(task.status as TaskStatus) && (
+                          <button
+                            type="button"
+                            onClick={() => handleKeyboardDrop(task, 'Backlog')}
+                            className="h-7 px-3 rounded-full text-xs font-semibold border-2 bg-background border-border/60 text-foreground transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 active:scale-95"
+                          >
+                            Backlog
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
@@ -633,6 +811,7 @@ function TaskCard({
   onOpenDetails,
   dropTargets,
   onKeyboardDrop,
+  isMobile = false,
 }: {
   task: Task;
   teamMembers: TeamMember[];
@@ -643,6 +822,7 @@ function TaskCard({
   onOpenDetails: () => void;
   dropTargets: { id: string; label: string }[];
   onKeyboardDrop: (targetId: string) => void;
+  isMobile?: boolean;
 }) {
   const [blockerPopoverOpen, setBlockerPopoverOpen] = useState(false);
   const [blockerValue, setBlockerValue] = useState(task.blocker || '');
@@ -691,8 +871,11 @@ function TaskCard({
       onKeyboardDrop={onKeyboardDrop}
     >
     <Card
-      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow break-words"
-      draggable
+      className={cn(
+        'hover:shadow-md transition-shadow break-words',
+        !isMobile && 'cursor-grab active:cursor-grabbing'
+      )}
+      draggable={!isMobile}
       onDragStart={onDragStart}
     >
       <CardContent className="p-3 space-y-3">
@@ -817,6 +1000,7 @@ function TaskCard({
             SP: {task.estimated_hours}
           </span>
         </div>
+
       </CardContent>
     </Card>
     </KeyboardDraggable>

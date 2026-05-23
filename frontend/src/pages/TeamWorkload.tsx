@@ -317,9 +317,9 @@ export default function TeamWorkload() {
   if (isLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Team Workload</h1>
           <p className="text-muted-foreground">
@@ -329,19 +329,19 @@ export default function TeamWorkload() {
               : 'with no sprint selected'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {!hideTeamSelect && (
             <TeamSelect
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
           {teamSprints.length > 0 && (
             <Select value={selectedSprintId} onValueChange={setSelectedSprintId}>
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-full sm:w-56">
                 <SelectValue placeholder="Select sprint" />
               </SelectTrigger>
               <SelectContent>
@@ -375,7 +375,7 @@ export default function TeamWorkload() {
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
                       {member.name.charAt(0)}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <button
                         type="button"
                         onClick={() => setDetailMemberId(member.id)}
@@ -398,7 +398,7 @@ export default function TeamWorkload() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-shrink-0 items-center gap-1.5">
                     {/* Leave indicator dot on card header */}
                     {hasLeave && (
                       <span title="Has scheduled leave">
@@ -674,7 +674,7 @@ function WorkloadDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Workload: {member.name}</DialogTitle>
         </DialogHeader>

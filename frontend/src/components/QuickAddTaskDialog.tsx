@@ -129,7 +129,7 @@ export function QuickAddTaskDialog({ ownerId, team, onTaskCreated }: QuickAddTas
           Add Task
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[450px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[450px] max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Task</DialogTitle>
           <DialogDescription>

@@ -78,7 +78,7 @@ export default function BugSummary() {
   if (membersLoading || tasksLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <div className="space-y-3">
         <div>
           <h1 className="text-2xl font-semibold">Bugs Summary</h1>
@@ -300,13 +300,13 @@ export default function BugSummary() {
                 key={bug.id}
                 className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
               >
-                <div className="space-y-1">
+                <div className="min-w-0 space-y-1">
                   <p className="text-sm font-medium">{bug.title}</p>
                   <p className="text-xs text-muted-foreground">
                     {bug.module || 'Unspecified'} | {formatLocalDate(bug.created_date)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-shrink-0 items-center gap-2">
                   <Badge variant="outline" className="text-[10px]">
                     {bug.type || 'Bug'}
                   </Badge>

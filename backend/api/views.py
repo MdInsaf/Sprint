@@ -1686,7 +1686,6 @@ def task_detail(request, task_id):
             )
 
         holiday_dates = _task_holiday_dates(task)
-        user_tz = _task_owner_timezone(task)
         previous_owner_id = task.owner_id
         previous_blocker = task.blocker
         provided_qa_status = data.get("qa_status") if "qa_status" in data else None
