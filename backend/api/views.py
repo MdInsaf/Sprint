@@ -1704,7 +1704,6 @@ def task_detail(request, task_id):
             )
 
         holiday_dates = _task_holiday_dates(task)
-        user_tz = _task_owner_timezone(task)
         previous_owner_id = task.owner_id
         previous_blocker = task.blocker
         _tracked_fields = ("title", "priority", "type", "module", "description", "estimated_hours")

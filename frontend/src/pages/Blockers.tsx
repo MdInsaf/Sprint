@@ -36,8 +36,8 @@ export default function Blockers() {
 
   if (!sprint) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Blocked Tasks</h1>
             <p className="text-muted-foreground">Select a team to view blockers.</p>
@@ -47,7 +47,7 @@ export default function Blockers() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -62,19 +62,19 @@ export default function Blockers() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Blocked Tasks</h1>
           <p className="text-muted-foreground">{blockedTasks.length} tasks blocked in {sprint.sprint_name}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {!hideTeamSelect && (
             <TeamSelect
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -123,7 +123,7 @@ export default function Blockers() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Blocker Details</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

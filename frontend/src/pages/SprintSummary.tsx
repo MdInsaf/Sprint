@@ -153,7 +153,7 @@ export default function SprintSummary() {
 
   if (sprints.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <h1 className="text-2xl font-semibold">Sprint Summary</h1>
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
@@ -166,8 +166,8 @@ export default function SprintSummary() {
 
   if (teamSprints.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Sprint Summary</h1>
             <p className="text-muted-foreground">Select a team to view sprint summaries.</p>
@@ -177,7 +177,7 @@ export default function SprintSummary() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -192,8 +192,8 @@ export default function SprintSummary() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Sprint Summary</h1>
           <p className="text-muted-foreground">
@@ -201,19 +201,18 @@ export default function SprintSummary() {
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {!hideTeamSelect && (
             <TeamSelect
               teams={teams}
               value={selectedTeam}
-              onChange={setSelectedTeam
-              }
-              triggerClassName="w-40"
+              onChange={setSelectedTeam}
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
           <Select value={selectedSprintId} onValueChange={setSelectedSprintId}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select Sprint" />
             </SelectTrigger>
             <SelectContent>
@@ -287,10 +286,10 @@ export default function SprintSummary() {
           {/* Success Rate */}
           <Card>
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <CardTitle className="text-base">Sprint Success</CardTitle>
                 {stats.completedDate && (
-                  <Badge variant="secondary">Completed {formatLocalDate(stats.completedDate)}</Badge>
+                  <Badge variant="secondary" className="flex-shrink-0">Completed {formatLocalDate(stats.completedDate)}</Badge>
                 )}
               </div>
             </CardHeader>
@@ -435,11 +434,11 @@ export default function SprintSummary() {
                       return (
                         <div key={data.sprint_id} className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{data.sprint.sprint_name}</span>
-                              {index === 0 && <Badge variant="secondary" className="text-[10px]">Latest</Badge>}
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="truncate font-medium">{data.sprint.sprint_name}</span>
+                              {index === 0 && <Badge variant="secondary" className="flex-shrink-0 text-[10px]">Latest</Badge>}
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-shrink-0 items-center gap-2">
                               <span className="text-lg font-semibold">{data.success_percentage}%</span>
                               {trend === 'up' && <TrendingUp className="h-4 w-4 text-success" />}
                               {trend === 'down' && <TrendingDown className="h-4 w-4 text-destructive" />}

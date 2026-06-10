@@ -232,9 +232,9 @@ export default function TestBoard() {
   if (sprintsLoading || membersLoading || tasksLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <div>
             <h1 className="text-2xl font-semibold">Test Board</h1>
             <p className="text-muted-foreground">{selectedSprint?.sprint_name || 'Select a sprint'}</p>
@@ -245,13 +245,13 @@ export default function TestBoard() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
 
           <Select value={selectedSprintId} onValueChange={setSelectedSprintId} disabled={teamSprints.length === 0}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select Sprint" />
             </SelectTrigger>
             <SelectContent>
@@ -264,7 +264,7 @@ export default function TestBoard() {
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">Filters</Button>
@@ -332,7 +332,7 @@ export default function TestBoard() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tasks..."
-            className="w-48"
+            className="w-full sm:w-48"
             aria-label="Search QA tasks"
           />
 

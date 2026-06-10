@@ -179,7 +179,7 @@ export function TaskCommentsDialog({ task, onCommentAdded, open, onOpenChange, s
           {commentCount > 0 && <span>{commentCount}</span>}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-xl" onClick={(e) => e.stopPropagation()}>
+      <DialogContent className="max-w-xl max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle className="text-base">Comments: {task.title}</DialogTitle>
         </DialogHeader>

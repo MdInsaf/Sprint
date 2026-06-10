@@ -82,19 +82,19 @@ export default function Dashboard() {
 
   if (!sprint) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Dashboard</h1>
             <p className="text-muted-foreground">Select a team to view sprint progress.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {!hideTeamSelect && (
               <TeamSelect
                 teams={teams}
                 value={selectedTeam}
                 onChange={setSelectedTeam}
-                triggerClassName="w-40"
+                triggerClassName="w-full sm:w-40"
                 placeholder="Team"
               />
             )}
@@ -113,19 +113,19 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, {user?.name}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {!hideTeamSelect && (
             <TeamSelect
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -144,9 +144,9 @@ export default function Dashboard() {
       {/* Sprint Info */}
       <Card>
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <CardTitle className="text-lg">{sprint.sprint_name}</CardTitle>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-shrink-0 items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               {formatLocalDate(sprint.start_date)} — {formatLocalDate(sprint.end_date)}
             </div>
@@ -266,18 +266,18 @@ export default function Dashboard() {
               const owner = teamMembers.find(m => m.id === task.owner_id);
               return (
                 <div key={task.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
+                  <div className="min-w-0 flex items-center gap-3">
+                    <div className={`flex-shrink-0 w-2 h-2 rounded-full ${
                       task.status === 'Done' ? 'bg-success' :
                       task.status === 'Blocked' ? 'bg-destructive' :
                       task.status === 'In Progress' ? 'bg-primary' : 'bg-muted-foreground'
                     }`} />
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-medium">{task.title}</p>
                       <p className="text-xs text-muted-foreground">{owner?.name} • {task.module}</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="flex-shrink-0 text-xs">
                     {task.status}
                   </Badge>
                 </div>

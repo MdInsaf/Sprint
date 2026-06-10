@@ -48,8 +48,8 @@ export default function AdditionalWork() {
 
   if (!sprint) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Additional Work Log</h1>
             <p className="text-muted-foreground">Select a team to view sprint details.</p>
@@ -59,7 +59,7 @@ export default function AdditionalWork() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -74,8 +74,8 @@ export default function AdditionalWork() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Additional Work Log</h1>
           <p className="text-muted-foreground">Unplanned work added to {sprint.sprint_name}</p>
@@ -85,7 +85,7 @@ export default function AdditionalWork() {
             teams={teams}
             value={selectedTeam}
             onChange={setSelectedTeam}
-            triggerClassName="w-40"
+            triggerClassName="w-full sm:w-40"
             placeholder="Team"
           />
         )}
@@ -166,7 +166,7 @@ export default function AdditionalWork() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Additional Tasks</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

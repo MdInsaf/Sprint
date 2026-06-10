@@ -116,7 +116,7 @@ export function CreateSprintDialog({ onSprintCreated }: CreateSprintDialogProps)
           New Sprint
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Sprint</DialogTitle>
           <DialogDescription>
