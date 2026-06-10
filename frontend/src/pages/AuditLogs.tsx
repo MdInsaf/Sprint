@@ -80,7 +80,7 @@ export default function AuditLogs() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Audit Logs</h1>
@@ -88,7 +88,7 @@ export default function AuditLogs() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Select value={actionFilter} onValueChange={(value) => setActionFilter(value as typeof actionFilter)}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Action" />
             </SelectTrigger>
             <SelectContent>
@@ -103,7 +103,7 @@ export default function AuditLogs() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by user, entity, path..."
-            className="w-64"
+            className="w-full sm:w-64"
             aria-label="Search audit logs"
           />
         </div>
@@ -113,7 +113,7 @@ export default function AuditLogs() {
         <CardHeader>
           <CardTitle className="text-base">Recent activity</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

@@ -596,7 +596,7 @@ export default function MyWorkspace() {
 
   if (!member) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <h1 className="text-2xl font-semibold">My Workspace</h1>
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
@@ -608,10 +608,10 @@ export default function MyWorkspace() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">My Workspace</h1>
           <p className="text-muted-foreground">
@@ -620,13 +620,13 @@ export default function MyWorkspace() {
               : 'No sprint selected'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleOpenLeave}>
             Manage Leave
           </Button>
           {teamSprints.length > 0 && (
             <Select value={selectedSprintId} onValueChange={setSelectedSprintId}>
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-full sm:w-56">
                 <SelectValue placeholder="Select sprint" />
               </SelectTrigger>
               <SelectContent>
@@ -653,7 +653,7 @@ export default function MyWorkspace() {
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
                   {member.name.charAt(0)}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-[11px] text-muted-foreground">
                     {selectedSprint?.sprint_name || 'Current Sprint'}
                   </p>
@@ -670,7 +670,7 @@ export default function MyWorkspace() {
                 </div>
               </div>
               {member.isOverloaded && (
-                <Badge variant="warning" className="text-xs px-2 py-1">
+                <Badge variant="warning" className="text-xs px-2 py-1 flex-shrink-0">
                   <AlertTriangle className="h-3 w-3 mr-1" />
                   Overloaded
                 </Badge>
@@ -756,7 +756,7 @@ export default function MyWorkspace() {
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
                     {previousWorkload.member.name.charAt(0)}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-[11px] text-muted-foreground">
                         {previousWorkload.sprint.sprint_name}
@@ -781,7 +781,7 @@ export default function MyWorkspace() {
                   </div>
                 </div>
                 {previousWorkload.member.isOverloaded && (
-                  <Badge variant="warning" className="text-xs px-2 py-1">
+                  <Badge variant="warning" className="text-xs px-2 py-1 flex-shrink-0">
                     <AlertTriangle className="h-3 w-3 mr-1" />
                     Overloaded
                   </Badge>
@@ -948,7 +948,7 @@ export default function MyWorkspace() {
           setLeaveOpen(open);
         }}
       >
-        <DialogContent className="sm:max-w-[560px]" aria-describedby={undefined}>
+        <DialogContent className="sm:max-w-[560px] max-h-[90dvh] overflow-y-auto" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>My Leave Dates</DialogTitle>
           </DialogHeader>
@@ -985,7 +985,7 @@ export default function MyWorkspace() {
                         key={dateStr}
                         className="rounded-lg border bg-secondary/40 px-3 py-2 space-y-2"
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="text-sm font-medium flex items-center gap-2">
                             {isHalf ? (
                               entry.period === 'morning' ? (
@@ -998,7 +998,7 @@ export default function MyWorkspace() {
                             )}
                             {format(entry.date, 'MMM d, yyyy')}
                           </span>
-                          <div className="flex items-center gap-1 rounded-full border bg-background p-0.5 text-xs">
+                          <div className="flex flex-shrink-0 items-center gap-1 rounded-full border bg-background p-0.5 text-xs">
                             <button
                               type="button"
                               onClick={() => setLeaveType(dateStr, 'full')}

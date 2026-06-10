@@ -238,8 +238,8 @@ export default function BugBoard() {
   if (isLoading) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div>
             <h1 className="text-2xl font-semibold">Bugs Board</h1>
@@ -247,7 +247,7 @@ export default function BugBoard() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">Filters</Button>
@@ -349,7 +349,7 @@ export default function BugBoard() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search bugs..."
-            className="w-56"
+            className="w-full sm:w-56"
             aria-label="Search bugs"
           />
 
@@ -376,7 +376,7 @@ export default function BugBoard() {
                   New Bug
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+              <DialogContent className="max-w-xl max-h-[90dvh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{editingBug ? 'Edit Bug' : 'Log New Bug'}</DialogTitle>
                   <DialogDescription>

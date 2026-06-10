@@ -191,8 +191,8 @@ export default function TaskManagement() {
 
   if (!selectedSprint) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold">{isManager ? 'Task Management' : 'My Tasks'}</h1>
             <p className="text-muted-foreground">Select a team to view tasks.</p>
@@ -202,7 +202,7 @@ export default function TaskManagement() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -217,8 +217,8 @@ export default function TaskManagement() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{isManager ? 'Task Management' : 'My Tasks'}</h1>
           <p className="text-muted-foreground">{tasks.length} tasks in {selectedSprint?.sprint_name}</p>
@@ -230,7 +230,7 @@ export default function TaskManagement() {
               teams={teams}
               value={selectedTeam}
               onChange={setSelectedTeam}
-              triggerClassName="w-40"
+              triggerClassName="w-full sm:w-40"
               placeholder="Team"
             />
           )}
@@ -238,7 +238,7 @@ export default function TaskManagement() {
             value={selectedSprintId}
             onValueChange={setSelectedSprintId}
           >
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select sprint" />
             </SelectTrigger>
             <SelectContent>
@@ -293,7 +293,7 @@ export default function TaskManagement() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search title or ID..."
-            className="w-52"
+            className="w-full sm:w-52"
             aria-label="Search tasks"
           />
           
@@ -306,7 +306,7 @@ export default function TaskManagement() {
                 </Button>
               </DialogTrigger>
             )}
-            <DialogContent className="max-w-lg max-h-[85vh]">
+            <DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingTask ? 'Edit Task' : 'Create New Task'}</DialogTitle>
               </DialogHeader>
@@ -326,7 +326,7 @@ export default function TaskManagement() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

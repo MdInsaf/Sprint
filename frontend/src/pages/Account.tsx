@@ -38,7 +38,7 @@ export default function Account() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in">
+    <div className="max-w-xl mx-auto space-y-4 md:space-y-6 animate-fade-in">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
           <ShieldCheck className="h-5 w-5 text-primary" />

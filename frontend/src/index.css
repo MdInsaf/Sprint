@@ -42,6 +42,13 @@
 
     --radius: 0.5rem;
 
+    /* Safe-area inset tokens — activated by viewport-fit=cover in index.html.
+       Evaluate to 0px on desktop and non-notched devices. */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
     /* Sprint health colors */
     --health-healthy: 142 71% 45%;
     --health-at-risk: 38 92% 50%;
@@ -138,6 +145,7 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .dark body {
@@ -151,6 +159,7 @@
 
 .app-loading {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -231,5 +240,20 @@
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: hsl(var(--border));
     border-radius: 3px;
+  }
+}
+
+/* ── Mobile safety — guarded by max-width: 767px, desktop unaffected ──── */
+@media (max-width: 767px) {
+  /* background-attachment:fixed flickers and causes black-flash repaints on
+     iOS Safari when the scroll container is not the body (it never is here). */
+  .dark body {
+    background-attachment: scroll;
+  }
+
+  main {
+    /* Reserve bottom scroll space so the last content row clears the iPhone
+       home indicator.  Evaluates to 0px on devices with no home bar. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
